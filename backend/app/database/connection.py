@@ -9,6 +9,9 @@ class Database:
 db_instance = Database()
 
 async def connect_to_mongo():
+    import re
+    masked = re.sub(r":([^:@]+)@", r":****@", settings.MONGODB_URI)
+    print(f"Connecting to MongoDB at: {masked}")
     db_instance.client = AsyncIOMotorClient(settings.MONGODB_URI)
     db_instance.db = db_instance.client[settings.DATABASE_NAME]
     await init_db_indexes()

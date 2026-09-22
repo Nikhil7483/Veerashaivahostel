@@ -40,17 +40,26 @@ class Settings(BaseSettings):
         return v
 
     def model_post_init(self, __context):
-        if self.MONGO_URI and not self.MONGODB_URI:
-            self.MONGODB_URI = self.MONGO_URI
-        elif self.MONGO_URI:
-            self.MONGODB_URI = self.MONGO_URI
-        if self.JWT_SECRET and not self.JWT_SECRET_KEY:
-            self.JWT_SECRET_KEY = self.JWT_SECRET
-        elif self.JWT_SECRET:
-            self.JWT_SECRET_KEY = self.JWT_SECRET
+        env_uri = (
+            os.environ.get("MONGODB_URI")
+            or os.environ.get("MONGO_URI")
+            or os.environ.get("MONGODB_URL")
+            or os.environ.get("MONGO_URL")
+            or self.MONGO_URI
+        )
+        if env_uri:
+            self.MONGODB_URI = env_uri
+
+        env_jwt = (
+            os.environ.get("JWT_SECRET")
+            or os.environ.get("JWT_SECRET_KEY")
+            or self.JWT_SECRET
+        )
+        if env_jwt:
+            self.JWT_SECRET_KEY = env_jwt
 
     class Config:
-        case_sensitive = True
+        case_sensitive = False
         env_file = ".env"
         extra = "allow"
 
