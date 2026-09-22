@@ -1,6 +1,6 @@
 # Veerashaiva Lingayath Boys Hostel - Resident Student Logins
 
-> **Portal Login URL**: `http://localhost:5173/login`  
+> **Portal Login URL**: `https://veerashaivahostel.vercel.app/login`  
 > **Default Password for All Students**: `Student@123`  
 > **Login Methods**: Students can log in using their **Student ID** (e.g. `001`), **Login Email** (e.g. `guru@hostel.edu`), **USN**, or **Phone Number**.
 
@@ -89,7 +89,7 @@ You can copy any of the message blocks below and send directly to the student or
 Hello Guru,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 001 (or guru@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 01, Bed B1
@@ -104,7 +104,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Rudra,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 002 (or rudra@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 01, Bed B2
@@ -119,7 +119,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Dileepa,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 003 (or dileepa@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 01, Bed B3
@@ -134,7 +134,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shivaraj,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 004 (or shivaraj.r1@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 01, Bed B4
@@ -149,7 +149,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Gowtham,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 005 (or gowtham.r1@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 01, Bed B5
@@ -164,7 +164,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Bharath B M,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 006 (or bharath.bm@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 02, Bed B1
@@ -179,7 +179,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Palakshaiah,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 007 (or palakshaiah@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 02, Bed B2
@@ -194,7 +194,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Chidanand,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 008 (or chidanand@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 02, Bed B3
@@ -209,7 +209,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Mallikarjuna S.R,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 009 (or mallikarjuna.sr@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 04, Bed B1
@@ -224,7 +224,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Madesh R.,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 010 (or madesh.r@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 04, Bed B2
@@ -239,7 +239,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Punith,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 011 (or punith.mca@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 04, Bed B3
@@ -254,7 +254,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Harsha,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 012 (or harsha.bca@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 04, Bed B4
@@ -269,7 +269,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shivaji,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 013 (or shivaji@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 04, Bed B5
@@ -284,7 +284,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Vinay G. P,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 014 (or vinay.gp@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B1
@@ -299,7 +299,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Darshan S. O,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 015 (or darshan.so@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B2
@@ -314,7 +314,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Sachin,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 016 (or sachin@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B3
@@ -329,7 +329,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Harsha,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 017 (or harsha.rai@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B4
@@ -344,7 +344,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Akshay,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 018 (or akshay@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B5
@@ -359,7 +359,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Bharath,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 019 (or bharath.cce@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 05, Bed B6
@@ -374,7 +374,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Manju M.N.,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 020 (or manju.mn@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 06, Bed B1
@@ -389,7 +389,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Harsha R.M.,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 021 (or harsha.rm@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 06, Bed B2
@@ -404,7 +404,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shankar,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 022 (or shankar@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 06, Bed B3
@@ -419,7 +419,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Vishwa,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 023 (or vishwa@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 06, Bed B4
@@ -434,7 +434,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Vikas,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 024 (or vikas@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 06, Bed B5
@@ -449,7 +449,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Suraj,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 025 (or suraj@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 07, Bed B1
@@ -464,7 +464,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Bharath,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 026 (or bharath.dip@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 07, Bed B2
@@ -479,7 +479,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Tejas,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 027 (or tejas@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 07, Bed B3
@@ -494,7 +494,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Goutham,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 028 (or goutham.bcom@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 07, Bed B4
@@ -509,7 +509,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Akash Biradar,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 029 (or akash.biradar@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B1
@@ -524,7 +524,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Ichith M,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 030 (or ichith.m@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B2
@@ -539,7 +539,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Keerthiraj,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 031 (or keerthiraj@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B3
@@ -554,7 +554,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Vinay,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 032 (or vinay.bba@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B4
@@ -569,7 +569,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Chetan,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 033 (or chetan.pharm@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B5
@@ -584,7 +584,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Sujith L P,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 034 (or sujith.lp@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 08, Bed B6
@@ -599,7 +599,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shivashakthi N S,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 035 (or shivashakthi.ns@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B1
@@ -614,7 +614,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Bharath M K,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 036 (or bharath.mk@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B2
@@ -629,7 +629,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Charan H,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 037 (or charan.h@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B3
@@ -644,7 +644,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Chethan Y,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 038 (or chethan.y@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B4
@@ -659,7 +659,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Sagar RG,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 039 (or sagar.rg@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B5
@@ -674,7 +674,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Sandeep,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 040 (or sandeep@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 09, Bed B6
@@ -689,7 +689,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shreyas T S,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 041 (or shreyas.ts@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B1
@@ -704,7 +704,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Nandish G S,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 042 (or nandish.gs@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B2
@@ -719,7 +719,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Prasanna R K,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 043 (or prasanna.rk@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B3
@@ -734,7 +734,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Bharath,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 044 (or bharath.llb@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B4
@@ -749,7 +749,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Mahadeva,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 045 (or mahadeva@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B5
@@ -764,7 +764,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Dharshan,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 046 (or dharshan.llb@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 10, Bed B6
@@ -779,7 +779,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Veeresh Hiremath,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 047 (or veeresh.hiremath@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 11, Bed B1
@@ -794,7 +794,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Punith S H,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 048 (or punith.sh@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 11, Bed B2
@@ -809,7 +809,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Aditya,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 049 (or aditya@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 11, Bed B3
@@ -824,7 +824,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Jayant JK,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 050 (or jayant.jk@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 11, Bed B4
@@ -839,7 +839,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Kiran,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 051 (or kiran.bcom@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 11, Bed B5
@@ -854,7 +854,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Nikhil N R,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 052 (or nikhil.nr@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B1
@@ -869,7 +869,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello K M Vasishta,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 053 (or km.vasishta@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B2
@@ -884,7 +884,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Mohan J K,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 054 (or mohan.jk@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B3
@@ -899,7 +899,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Praveen,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 055 (or praveen@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B4
@@ -914,7 +914,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Yashwant Gowda Patil,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 056 (or yashwant.gowda@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B5
@@ -929,7 +929,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Rakesh,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 057 (or rakesh@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 12, Bed B6
@@ -944,7 +944,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Yashwanth P M,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 058 (or yashwanth.pm@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B1
@@ -959,7 +959,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Prajwal,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 059 (or prajwal@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B2
@@ -974,7 +974,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Samartha,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 060 (or samartha@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B3
@@ -989,7 +989,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shashank,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 061 (or shashank@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B4
@@ -1004,7 +1004,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Kiran,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 062 (or kiran.bse@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B5
@@ -1019,7 +1019,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Shivaraj,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 063 (or shivaraj.r13@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B6
@@ -1034,7 +1034,7 @@ Please log in to manage meal preferences, gate passes, room cleaning, and notice
 Hello Amruth,
 Here are your official resident portal login credentials:
 
-🌐 Portal URL: http://localhost:5173/login
+🌐 Portal URL: https://veerashaivahostel.vercel.app/login
 👤 Username / ID: 064 (or amruth@hostel.edu)
 🔑 Default Password: Student@123
 🛏️ Allocation: Room 13, Bed B7
