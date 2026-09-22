@@ -115,6 +115,17 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error"}
     )
 
+# Root endpoint for platform health and keepalive
+@app.get("/")
+@app.head("/")
+async def root():
+    return {
+        "status": "online",
+        "service": settings.PROJECT_NAME,
+        "version": "1.0.0",
+        "docs": f"{settings.API_V1_STR}/docs"
+    }
+
 # Priority 10: Health Check with MongoDB Verification
 @app.get("/health")
 @app.get("/api/health")
