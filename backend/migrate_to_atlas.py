@@ -100,13 +100,25 @@ def migrate(atlas_uri: str):
         print("Migration finished with minor count differences (e.g. Room 03 excluded).")
     print("=" * 60)
 
+import re
+import urllib.parse
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        target_uri = sys.argv[1]
-    else:
-        target_uri = os.getenv("ATLAS_MONGODB_URI", "")
-        if not target_uri:
-            print("Usage:")
-            print("  python migrate_to_atlas.py \"<YOUR_MONGODB_ATLAS_CONNECTION_STRING>\"")
-            sys.exit(0)
+    target_uri = sys.argv[1] if len(sys.argv) > 1 else os.getenv("ATLAS_MONGODB_URI", "")
+    
+    if not target_uri:
+        print("Please enter your MongoDB Atlas connection string:")
+        target_uri = input("> ").strip()
+        
+    # Check if placeholder like <YOUR_PASSWORD> or <db_password> exists
+    match = re.search(r":(<[^>]+>|YOUR_PASSWORD|db_password)@", target_uri, re.IGNORECASE)
+    if match or "<" in target_uri:
+        print("\nEnter your actual MongoDB Atlas database password:")
+        raw_pwd = input("> ").strip()
+        encoded_pwd = urllib.parse.quote_plus(raw_pwd)
+        if match:
+            target_uri = target_uri[:match.start()] + ":" + encoded_pwd + "@" + target_uri[match.end():]
+        else:
+            target_uri = re.sub(r":<[^>]+>@", f":{encoded_pwd}@", target_uri)
+            
     migrate(target_uri)
