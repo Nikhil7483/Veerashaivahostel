@@ -20,7 +20,8 @@ import {
   LogOut,
   X,
   ChefHat,
-  ClipboardCheck
+  ClipboardCheck,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -76,7 +77,8 @@ const Sidebar = ({ isOpen, onClose }) => {
       title: 'Overview',
       links: [
         { to: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { to: '/student/profile', label: 'My Profile', icon: User },
+        { to: '/student/profile', label: 'My Profile & Security', icon: User },
+        { to: '/student/profile', label: 'Change Password', icon: KeyRound },
       ]
     },
     {

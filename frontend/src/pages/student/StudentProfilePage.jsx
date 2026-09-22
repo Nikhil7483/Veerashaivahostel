@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { User, Shield, Save, UtensilsCrossed } from 'lucide-react';
+import { User, Shield, Save, UtensilsCrossed, KeyRound, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { formatDate } from '../../utils/dateUtils';
 
 const StudentProfilePage = () => {
@@ -11,6 +11,14 @@ const StudentProfilePage = () => {
   const [foodHistory, setFoodHistory] = useState([]);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Password Change State
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const fetchProfile = async () => {
     try {
@@ -48,6 +56,39 @@ const StudentProfilePage = () => {
       alert('Failed to update profile.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordMessage('');
+    setPasswordError('');
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match. Please re-enter.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const res = await api.post('/auth/change-password', {
+        old_password: oldPassword,
+        new_password: newPassword,
+      });
+      setPasswordMessage(res.data?.message || 'Password changed successfully! Keep it safe.');
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      const detail = err.response?.data?.detail || 'Failed to change password. Please verify your current password.';
+      setPasswordError(detail);
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -187,6 +228,93 @@ const StudentProfilePage = () => {
           </div>
         </div>
       </form>
+
+      {/* CHANGE PASSWORD CARD */}
+      <div id="password" className="p-6 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="flex items-center space-x-3 border-b border-slate-100 pb-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <KeyRound className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-black text-slate-900">Change Account Password</h3>
+            <p className="text-xs text-slate-400 font-medium">Update your secret password to protect your resident portal</p>
+          </div>
+        </div>
+
+        {passwordMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>{passwordMessage}</span>
+          </div>
+        )}
+
+        {passwordError && (
+          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{passwordError}</span>
+          </div>
+        )}
+
+        <form onSubmit={handlePasswordChange} className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">
+              Current Password <span className="text-[10px] text-slate-400 font-normal">(Default: Student@123)</span>
+            </label>
+            <div className="relative">
+              <input
+                type="password"
+                required
+                placeholder="Current password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="w-full p-2.5 pl-8 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+              />
+              <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">New Password</label>
+            <div className="relative">
+              <input
+                type="password"
+                required
+                placeholder="At least 6 characters"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full p-2.5 pl-8 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+              />
+              <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-700 mb-1">Confirm New Password</label>
+            <div className="relative">
+              <input
+                type="password"
+                required
+                placeholder="Re-enter new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2.5 pl-8 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+              />
+              <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+            </div>
+          </div>
+
+          <div className="sm:col-span-3 flex justify-end">
+            <button
+              type="submit"
+              disabled={passwordSaving}
+              className="py-2.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-xs transition flex items-center space-x-2 disabled:opacity-50"
+            >
+              <KeyRound className="w-4 h-4 text-amber-400" />
+              <span>{passwordSaving ? 'Updating Password...' : 'Update Password'}</span>
+            </button>
+          </div>
+        </form>
+      </div>
 
       {/* 15. STUDENT FOOD ROUTINE HISTORY */}
       <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
