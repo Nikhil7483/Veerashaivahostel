@@ -1,0 +1,47 @@
+{
+    admin off
+}
+
+veerashaivahostel.run.place, 127.0.0.1, localhost {
+    tls internal
+
+    root * C:/Users/Samsung/Desktop/finalhost/HOSTEL/frontend/dist
+
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle /health {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle /uploads/* {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle {
+        try_files {path} /index.html
+        file_server
+    }
+}
+
+:8080 {
+    root * C:/Users/Samsung/Desktop/finalhost/HOSTEL/frontend/dist
+
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle /health {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle /uploads/* {
+        reverse_proxy 127.0.0.1:8000
+    }
+
+    handle {
+        try_files {path} /index.html
+        file_server
+    }
+}

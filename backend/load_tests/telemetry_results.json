@@ -1,0 +1,357 @@
+{
+  "timestamp": "2026-09-18T12:24:29.510518",
+  "conn_before": 13,
+  "conn_after": 28,
+  "ramp_results": {
+    "10": {
+      "name": "Ramp_10_Users",
+      "total": 10,
+      "duration_s": 0.054,
+      "rps": 186.89,
+      "avg_ms": 42.86,
+      "p50_ms": 42.12,
+      "p95_ms": 48.44,
+      "p99_ms": 48.44,
+      "min_ms": 39.42,
+      "max_ms": 48.44,
+      "status_codes": {
+        "200": 10
+      },
+      "errors_count": 0
+    },
+    "25": {
+      "name": "Ramp_25_Users",
+      "total": 25,
+      "duration_s": 0.134,
+      "rps": 187.06,
+      "avg_ms": 81.39,
+      "p50_ms": 79.3,
+      "p95_ms": 120.96,
+      "p99_ms": 128.63,
+      "min_ms": 39.56,
+      "max_ms": 128.63,
+      "status_codes": {
+        "200": 25
+      },
+      "errors_count": 0
+    },
+    "50": {
+      "name": "Ramp_50_Users",
+      "total": 50,
+      "duration_s": 0.213,
+      "rps": 235.02,
+      "avg_ms": 122.93,
+      "p50_ms": 128.41,
+      "p95_ms": 190.21,
+      "p99_ms": 202.22,
+      "min_ms": 56.89,
+      "max_ms": 202.22,
+      "status_codes": {
+        "200": 50
+      },
+      "errors_count": 0
+    },
+    "64": {
+      "name": "Ramp_64_Users",
+      "total": 64,
+      "duration_s": 0.323,
+      "rps": 198.3,
+      "avg_ms": 173.12,
+      "p50_ms": 169.72,
+      "p95_ms": 287.77,
+      "p99_ms": 300.87,
+      "min_ms": 69.21,
+      "max_ms": 300.87,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "75": {
+      "name": "Ramp_75_Users",
+      "total": 75,
+      "duration_s": 0.419,
+      "rps": 179.05,
+      "avg_ms": 219.84,
+      "p50_ms": 206.11,
+      "p95_ms": 380.55,
+      "p99_ms": 395.01,
+      "min_ms": 84.91,
+      "max_ms": 395.01,
+      "status_codes": {
+        "200": 75
+      },
+      "errors_count": 0
+    },
+    "100": {
+      "name": "Ramp_100_Users",
+      "total": 100,
+      "duration_s": 0.46,
+      "rps": 217.49,
+      "avg_ms": 234.08,
+      "p50_ms": 225.68,
+      "p95_ms": 398.18,
+      "p99_ms": 442.25,
+      "min_ms": 91.67,
+      "max_ms": 442.25,
+      "status_codes": {
+        "200": 100
+      },
+      "errors_count": 0
+    }
+  },
+  "login_summary": {
+    "name": "64_Concurrent_Logins",
+    "total": 64,
+    "duration_s": 3.646,
+    "rps": 17.55,
+    "avg_ms": 2285.32,
+    "p50_ms": 2378.67,
+    "p95_ms": 3438.24,
+    "p99_ms": 3623.48,
+    "min_ms": 839.34,
+    "max_ms": 3623.48,
+    "status_codes": {
+      "200": 64
+    },
+    "errors_count": 0
+  },
+  "dash_total": {
+    "name": "Total_Dashboard",
+    "total": 512,
+    "duration_s": 18.036,
+    "rps": 28.39,
+    "avg_ms": 10604.8,
+    "p50_ms": 10347.94,
+    "p95_ms": 12868.57,
+    "p99_ms": 17284.21,
+    "min_ms": 7739.77,
+    "max_ms": 17634.86,
+    "status_codes": {
+      "200": 512
+    },
+    "errors_count": 0
+  },
+  "dash_per_ep": {
+    "Profile": {
+      "name": "Profile",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10264.71,
+      "p50_ms": 10345.84,
+      "p95_ms": 12739.42,
+      "p99_ms": 13131.26,
+      "min_ms": 7739.77,
+      "max_ms": 13131.26,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Attendance": {
+      "name": "Attendance",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10634.18,
+      "p50_ms": 10360.42,
+      "p95_ms": 12838.14,
+      "p99_ms": 17609.65,
+      "min_ms": 7841.73,
+      "max_ms": 17609.65,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Room": {
+      "name": "Room",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 11349.47,
+      "p50_ms": 10499.43,
+      "p95_ms": 13259.2,
+      "p99_ms": 17459.6,
+      "min_ms": 9805.91,
+      "max_ms": 17459.6,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Leaves": {
+      "name": "Leaves",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10670.68,
+      "p50_ms": 10579.92,
+      "p95_ms": 12863.67,
+      "p99_ms": 17634.86,
+      "min_ms": 7883.68,
+      "max_ms": 17634.86,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Complaints": {
+      "name": "Complaints",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10633.19,
+      "p50_ms": 10294.12,
+      "p95_ms": 12806.0,
+      "p99_ms": 17209.96,
+      "min_ms": 7898.7,
+      "max_ms": 17209.96,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Announcements": {
+      "name": "Announcements",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10421.03,
+      "p50_ms": 10257.34,
+      "p95_ms": 12868.57,
+      "p99_ms": 17453.48,
+      "min_ms": 7776.82,
+      "max_ms": 17453.48,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Food_Today": {
+      "name": "Food_Today",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10242.97,
+      "p50_ms": 10287.63,
+      "p95_ms": 12741.21,
+      "p99_ms": 12803.05,
+      "min_ms": 7817.6,
+      "max_ms": 12803.05,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "Notifications": {
+      "name": "Notifications",
+      "total": 64,
+      "duration_s": 18.036,
+      "rps": 3.55,
+      "avg_ms": 10622.17,
+      "p50_ms": 10391.74,
+      "p95_ms": 17173.2,
+      "p99_ms": 17375.84,
+      "min_ms": 7818.6,
+      "max_ms": 17375.84,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    }
+  },
+  "att_results": {
+    "read_summary": {
+      "name": "Attendance_Concurrent_Reads",
+      "total": 64,
+      "duration_s": 0.451,
+      "rps": 141.87,
+      "avg_ms": 352.77,
+      "p50_ms": 355.89,
+      "p95_ms": 425.6,
+      "p99_ms": 436.1,
+      "min_ms": 251.69,
+      "max_ms": 436.1,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "student_blocked": true,
+    "admin_status": 200,
+    "admin_lat_ms": 232.89,
+    "duplicates": 0,
+    "total_records": 64
+  },
+  "meal_results": {
+    "read_summary": {
+      "name": "MealCount_Concurrent_Reads",
+      "total": 64,
+      "duration_s": 0.646,
+      "rps": 99.14,
+      "avg_ms": 540.15,
+      "p50_ms": 545.16,
+      "p95_ms": 613.45,
+      "p99_ms": 621.46,
+      "min_ms": 404.56,
+      "max_ms": 621.46,
+      "status_codes": {
+        "200": 64
+      },
+      "errors_count": 0
+    },
+    "student_blocked": true,
+    "admin_status": 200,
+    "audit_ok": true,
+    "db_ok": true
+  },
+  "comp_summary": {
+    "name": "Concurrent_Complaints",
+    "total": 20,
+    "duration_s": 0.199,
+    "rps": 100.36,
+    "avg_ms": 180.43,
+    "p50_ms": 182.67,
+    "p95_ms": 195.15,
+    "p99_ms": 195.15,
+    "min_ms": 156.23,
+    "max_ms": 195.15,
+    "status_codes": {
+      "201": 20
+    },
+    "errors_count": 0
+  },
+  "comp_created": 20,
+  "comp_unique": 20,
+  "comp_iso": true,
+  "file_results": {
+    "valid_upload": {
+      "status": 201,
+      "lat_ms": 27.54,
+      "pass": true
+    },
+    "oversized_rejection": {
+      "status": 400,
+      "pass": true
+    },
+    "extension_rejection": {
+      "status": 400,
+      "pass": true
+    }
+  },
+  "sec_results": {
+    "idor_profile_access": true,
+    "admin_students_list": true,
+    "visitors_access": true,
+    "audit_logs_access": true,
+    "room_mutation": true,
+    "invalid_token_rejection": true
+  },
+  "fail_results": {
+    "malformed_json": true,
+    "non_existent_route": true,
+    "bad_object_id": true
+  }
+}
