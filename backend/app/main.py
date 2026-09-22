@@ -70,9 +70,20 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 # Priority 1: Secure Configurable CORS Middleware
+allowed_origins = list(settings.CORS_ORIGINS) if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+for o in [
+    "https://veerashaivahostel.vercel.app",
+    "https://veerashaivahostel.run.place",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]:
+    if o not in allowed_origins:
+        allowed_origins.append(o)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
