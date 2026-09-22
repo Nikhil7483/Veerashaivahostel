@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://veerashaiva-hostel-api.onrender.com/api/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://veerashaiva-hostel-api.onrender.com/health"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://veerashaiva-hostel-api.onrender.com/uploads/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
