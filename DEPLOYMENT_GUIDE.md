@@ -41,36 +41,37 @@ To keep your website online **24/7 forever** without needing your laptop turned 
 
 ---
 
-### STEP 2: Setup Free MongoDB Atlas Database
-1. Go to [https://www.mongodb.com/cloud/atlas/register](https://www.mongodb.com/cloud/atlas/register) and create a free M0 cluster.
-2. Under **Network Access**, add IP Address `0.0.0.0/0` (Allow access from anywhere).
-3. Under **Database Access**, create a user `hosteladmin` with a secure password.
-4. Click **Connect** > **Drivers** and copy your connection string:
-   `mongodb+srv://hosteladmin:<password>@cluster0.xxxx.mongodb.net/?retryWrites=true&w=majority`
-5. Migrate all 64 students and 12 rooms from your PC to Atlas by running:
-   ```bash
-   python backend/migrate_to_atlas.py "<YOUR_ATLAS_CONNECTION_STRING>"
-   ```
-   *All records, students, passwords, and rooms will be uploaded safely in seconds!*
+### 🗄️ Step 2: Cloud Database (COMPLETED! ✓)
+- **Status:** All 249 documents, 64 students, 12 rooms, users, mess menu, and cleaning records are **already migrated to your MongoDB Atlas cluster**!
+- **Your Working MongoDB Atlas URI:**
+  ```text
+  mongodb+srv://nikhilnikki74831_db_user:Hostel2026@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+  ```
 
 ---
 
-### STEP 3: Deploy Backend API on Render (Free)
-1. Go to [https://render.com](https://render.com) and click **New +** > **Web Service**.
-2. Connect your GitHub repository `hostel-management`.
-3. Configure the service:
-   - **Name:** `hostel-api`
+### ⚙️ Step 3: Deploy Backend API on Render (Free) — Takes 2 Minutes
+1. Open **[https://dashboard.render.com](https://dashboard.render.com)** and log in with your GitHub account (`Nikhil7483`).
+2. Click the blue button **New +** (top right) > Select **Web Service**.
+3. Choose **Build and deploy from a Git repository** > Select **`Nikhil7483/Veerashaivahostel`**.
+4. Configure these exact settings:
+   - **Name:** `veerashaiva-hostel-api`
+   - **Region:** `Singapore` (closest to India)
+   - **Branch:** `main`
    - **Root Directory:** `backend`
-   - **Environment:** `Python 3`
+   - **Runtime:** `Python 3`
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-4. Under **Environment Variables**, add:
+   - **Instance Type:** `Free`
+5. Scroll down to **Environment Variables** and add these 5 keys:
    - `ENVIRONMENT` = `production`
-   - `MONGODB_URI` = `<Your MongoDB Atlas Connection String>`
+   - `MONGODB_URI` = `mongodb+srv://nikhilnikki74831_db_user:Hostel2026@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
    - `DATABASE_NAME` = `smart_hostel`
    - `JWT_SECRET` = `smart_hostel_super_secure_jwt_secret_key_2026_production_grade`
    - `CORS_ORIGINS` = `["https://veerashaivahostel.run.place", "https://*.vercel.app"]`
-5. Click **Create Web Service**. Your backend will be live at `https://hostel-api.onrender.com`.
+6. Click **Create Web Service**.
+7. In ~2 minutes, Render will show **Live** and give your backend URL:  
+   `https://veerashaiva-hostel-api.onrender.com`
 
 ---
 
