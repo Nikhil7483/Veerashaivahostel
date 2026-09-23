@@ -86,11 +86,11 @@ async def seed_database():
         ("Chidanand", "chidanand@hostel.edu", "8792801317", "B.Sc Nursing", 1, "Room 02", "B3", "Veerabhadrappa", "9876500108", "Davangere, Karnataka"),
 
         # Room 04
-        ("Mallikarjuna S.R", "mallikarjuna.sr@hostel.edu", "9876543109", "BA Defence", 1, "Room 04", "B1", "Rudresh", "9876500109", "Ballari, Karnataka"),
-        ("Madesh R.", "madesh.r@hostel.edu", "9876543110", "BA Defence", 1, "Room 04", "B2", "Rajanna", "9876500110", "Kolar, Karnataka"),
+        ("Mallikarjuna S.R", "mallikarjuna.sr@hostel.edu", "9632370226", "BA Defence", 1, "Room 04", "B1", "Rudresh", "6366772156", "Ballari, Karnataka"),
+        ("Madesh R.", "madesh.r@hostel.edu", "7795296527", "BA Defence", 1, "Room 04", "B2", "Rajanna", "9876500110", "Kolar, Karnataka"),
         ("Punith", "punith.mca@hostel.edu", "8431137231", "MCA", 3, "Room 04", "B3", "Narayanaswamy", "9876500111", "Bengaluru Rural, Karnataka"),
         ("Harsha", "harsha.bca@hostel.edu", "7483012787", "BCA", 5, "Room 04", "B4", "Govindappa", "9876500112", "Chikkamagaluru, Karnataka"),
-        ("Shivaji", "shivaji@hostel.edu", "9876543113", "BCA", 1, "Room 04", "B5", "Tanaji", "9876500113", "Bagalkot, Karnataka"),
+        ("Shivaji", "shivaji@hostel.edu", "8073235797", "BCA", 1, "Room 04", "B5", "Tanaji", "9876500113", "Bagalkot, Karnataka"),
 
         # Room 05
         ("Vinay G. P", "vinay.gp@hostel.edu", "9353068837", "ISG", 7, "Room 05", "B1", "Prabhakar G", "9876500114", "Udupi, Karnataka"),
