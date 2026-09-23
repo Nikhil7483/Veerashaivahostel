@@ -117,36 +117,6 @@ const AnalyticsPage = () => {
 
       {/* Visual Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Complaints Categories Bar Chart */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Complaint Categories Breakdown</h3>
-              <p className="text-xs text-slate-500">Distribution of reported issues across domains</p>
-            </div>
-          </div>
-
-          <div className="h-72 w-full">
-            {problems?.complaint_categories?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={problems.complaint_categories} layout="vertical" margin={{ left: 20 }}>
-                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
-                  <YAxis type="category" dataKey="category" tick={{ fontSize: 11 }} width={90} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#0F172A', color: '#FFF', borderRadius: '12px', border: 'none' }}
-                  />
-                  <Bar dataKey="count" fill="#3B82F6" radius={[0, 6, 6, 0]}>
-                    {problems.complaint_categories.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-full text-xs text-slate-400">No complaint data.</div>
-            )}
-          </div>
-        </div>
 
         {/* 13 Rooms Bed Occupancy Ratio */}
         <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">

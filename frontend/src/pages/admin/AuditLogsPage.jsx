@@ -48,7 +48,6 @@ const AuditLogsPage = () => {
             <option value="ROOMS">Rooms</option>
             <option value="ATTENDANCE">Attendance</option>
             <option value="LEAVES">Leaves</option>
-            <option value="COMPLAINTS">Complaints</option>
             <option value="EMERGENCY">Emergency</option>
             <option value="VISITORS">Visitors</option>
           </select>

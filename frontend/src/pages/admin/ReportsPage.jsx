@@ -6,7 +6,6 @@ import {
   Download,
   Users,
   CalendarCheck,
-  Ticket,
   Bed,
   ClipboardList,
   Calendar,
@@ -90,13 +89,6 @@ const ReportsPage = () => {
       description: 'Historical attendance logs, student attendance records, daily roll call breakdown.',
       icon: CalendarCheck,
       color: 'emerald',
-    },
-    {
-      id: 'complaints',
-      title: 'Complaints & Resolution Audit',
-      description: 'All tickets (HTL-XXXX), category breakdown, SLA overdue logs, and technician assignments.',
-      icon: Ticket,
-      color: 'amber',
     },
     {
       id: 'rooms',

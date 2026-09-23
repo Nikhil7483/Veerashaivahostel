@@ -15,7 +15,6 @@ import {
   MapPin,
   CalendarCheck,
   PlaneTakeoff,
-  Ticket,
   Sparkles,
   Users,
   Pencil,
@@ -1020,29 +1019,6 @@ const StudentsPage = () => {
                           </span>
                         </div>
                         <p className="text-slate-500 mt-0.5">{l.reason}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Complaints History */}
-              <div className="p-4 border border-slate-200 rounded-xl space-y-2">
-                <h4 className="font-bold text-slate-800 flex items-center space-x-1.5">
-                  <Ticket className="w-4 h-4 text-amber-600" />
-                  <span>Complaints / Tickets Filed</span>
-                </h4>
-                <div className="divide-y divide-slate-100 max-h-48 overflow-y-auto">
-                  {selectedStudentHistory.complaint_history.length === 0 ? (
-                    <p className="text-slate-400 py-3 text-center">No complaints filed.</p>
-                  ) : (
-                    selectedStudentHistory.complaint_history.map((c) => (
-                      <div key={c.id} className="py-2 text-[11px]">
-                        <div className="flex justify-between font-semibold">
-                          <span className="font-mono text-blue-600">{c.ticket_id} - {c.category}</span>
-                          <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[10px]">{c.status}</span>
-                        </div>
-                        <p className="text-slate-600 mt-0.5 line-clamp-1">{c.description}</p>
                       </div>
                     ))
                   )}
