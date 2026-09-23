@@ -56,7 +56,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     {
       title: 'Campus & Support',
       links: [
-        { to: '/admin/complaints', label: 'Complaints', icon: Ticket },
         { to: '/admin/announcements', label: 'Announcements', icon: Megaphone },
         { to: '/admin/lost-found', label: 'Lost & Found', icon: Search },
         { to: '/admin/notifications', label: 'Notifications', icon: Bell },
@@ -94,7 +93,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     {
       title: 'Campus & Support',
       links: [
-        { to: '/student/complaints', label: 'Complaints & Tickets', icon: Ticket },
         { to: '/student/announcements', label: 'Announcements', icon: Megaphone },
         { to: '/student/notifications', label: 'Notifications', icon: Bell },
         { to: '/student/lost-found', label: 'Lost & Found', icon: Search },

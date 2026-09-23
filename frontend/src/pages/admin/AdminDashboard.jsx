@@ -9,10 +9,8 @@ import {
   CalendarCheck,
   PlaneTakeoff,
   Sparkles,
-  Ticket,
   PlusCircle,
   Megaphone,
-  Clock,
   UtensilsCrossed,
   Coffee,
   Moon,
@@ -23,19 +21,16 @@ import {
 
 const AdminDashboard = () => {
   const [overview, setOverview] = useState(null);
-  const [recentComplaints, setRecentComplaints] = useState([]);
   const [todayFood, setTodayFood] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
     try {
-      const [overRes, compRes, foodRes] = await Promise.all([
+      const [overRes, foodRes] = await Promise.all([
         api.get('/analytics/overview'),
-        api.get('/complaints?status=PENDING'),
         api.get('/food-allocation/today').catch(() => ({ data: null }))
       ]);
       setOverview(overRes.data);
-      setRecentComplaints(compRes.data.slice(0, 5));
       setTodayFood(foodRes?.data || null);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
@@ -119,11 +114,11 @@ const AdminDashboard = () => {
           subtitle={`${overview?.attendance?.absent || 0} Absent | ${overview?.attendance?.on_leave || 0} On Leave`}
         />
         <StatCard
-          title="Pending Tickets"
-          value={overview?.complaints?.pending || 0}
-          icon={Ticket}
-          color={overview?.complaints?.overdue > 0 ? 'rose' : 'amber'}
-          subtitle={`${overview?.complaints?.overdue || 0} Overdue Escalated`}
+          title="Leave Requests"
+          value={overview?.pending_leaves || 0}
+          icon={PlaneTakeoff}
+          color="amber"
+          subtitle={`${overview?.attendance?.on_leave || 0} Residents On Leave`}
         />
       </div>
 
@@ -320,63 +315,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Priority Pending Complaints Feed */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">Active Complaints</h3>
-            <p className="text-xs text-slate-500">Real-time resident grievances and maintenance tickets</p>
-          </div>
-          <Link to="/admin/complaints" className="text-xs text-blue-600 font-bold hover:underline">
-            View All
-          </Link>
-        </div>
-
-        <div>
-          {recentComplaints.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-6">No pending complaints. All clear!</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {recentComplaints.map((c) => (
-                <div
-                  key={c.id}
-                  className={`p-3.5 rounded-xl border transition ${
-                    c.overdue
-                      ? 'border-red-300 bg-red-50/50'
-                      : 'border-slate-200 bg-slate-50/60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-extrabold font-mono text-slate-800">{c.ticket_id}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      c.priority === 'URGENT' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
-                    }`}>
-                      {c.priority}
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold text-slate-800 mt-1">{c.student_name} ({c.room_number})</p>
-                  <p className="text-[11px] text-slate-600 line-clamp-2 mt-0.5">{c.description}</p>
-                  {c.overdue && (
-                    <span className="text-[10px] text-red-600 font-bold flex items-center space-x-1 mt-1">
-                      <Clock className="w-3 h-3" />
-                      <span>Overdue &gt; 48h (Escalated)</span>
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="pt-2 border-t border-slate-100 flex justify-end">
-          <Link
-            to="/admin/complaints"
-            className="py-2 px-4 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition inline-block"
-          >
-            Manage All Complaint Tickets
-          </Link>
-        </div>
-      </div>
     </div>
   );
 };

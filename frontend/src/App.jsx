@@ -18,12 +18,10 @@ import StudentsPage from './pages/admin/StudentsPage';
 import RoomsPage from './pages/admin/RoomsPage';
 import AttendancePage from './pages/admin/AttendancePage';
 import LeavePage from './pages/admin/LeavePage';
-import ComplaintsPage from './pages/admin/ComplaintsPage';
 import StudentProfilePage from './pages/student/StudentProfilePage';
 import StudentRoomPage from './pages/student/StudentRoomPage';
 import StudentAttendancePage from './pages/student/StudentAttendancePage';
 import StudentLeavePage from './pages/student/StudentLeavePage';
-import StudentComplaintsPage from './pages/student/StudentComplaintsPage';
 import AnnouncementsPage from './pages/admin/AnnouncementsPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 
@@ -112,7 +110,7 @@ function App() {
                 <Route path="attendance" element={<AttendancePage />} />
                 <Route path="leaves" element={<LeavePage />} />
                 <Route path="cleaning" element={<CleaningPage />} />
-                <Route path="complaints" element={<ComplaintsPage />} />
+                <Route path="complaints" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="maintenance" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="food-allocation" element={<FoodAllocationPage />} />
                 <Route path="mess-menu" element={<WeeklyMessMenuPage />} />
@@ -150,7 +148,7 @@ function App() {
                 <Route path="leave" element={<StudentLeavePage />} />
                 <Route path="cleaning" element={<StudentCleaningPage />} />
                 <Route path="cleaning-room" element={<CleaningRoomPage />} />
-                <Route path="complaints" element={<StudentComplaintsPage />} />
+                <Route path="complaints" element={<Navigate to="/student/dashboard" replace />} />
                 <Route path="mess-menu" element={<Navigate to="/student/dashboard" replace />} />
                 <Route path="kitchen-order" element={<Navigate to="/student/dashboard" replace />} />
                 <Route path="lost-found" element={<StudentLostFoundPage />} />

@@ -8,7 +8,6 @@ import {
   CalendarCheck,
   PlaneTakeoff,
   Bed,
-  Ticket,
   UtensilsCrossed,
   Megaphone,
   Lock,
@@ -26,7 +25,6 @@ const StudentDashboard = () => {
   const [attendanceStats, setAttendanceStats] = useState(null);
   const [roomDetails, setRoomDetails] = useState(null);
   const [leaves, setLeaves] = useState([]);
-  const [complaints, setComplaints] = useState([]);
   const [cleaningStatus, setCleaningStatus] = useState('COMPLETED');
   const [announcements, setAnnouncements] = useState([]);
   const [foodHistory, setFoodHistory] = useState([]);
@@ -37,12 +35,11 @@ const StudentDashboard = () => {
 
   const loadStudentDashboard = async (isSilent = false) => {
     try {
-      const [profRes, attRes, roomRes, leaveRes, compRes, annRes, foodRes, histRes] = await Promise.all([
+      const [profRes, attRes, roomRes, leaveRes, annRes, foodRes, histRes] = await Promise.all([
         api.get('/students/my/profile'),
         api.get('/attendance/my/records'),
         api.get('/rooms/my/room'),
         api.get('/leaves/my/applications'),
-        api.get('/complaints'),
         api.get('/announcements'),
         api.get('/food-allocation/student/today').catch(() => ({ data: null })),
         api.get('/food-allocation/student/history').catch(() => ({ data: [] }))
@@ -52,7 +49,6 @@ const StudentDashboard = () => {
       setAttendanceStats(attRes.data);
       setRoomDetails(roomRes.data);
       setLeaves(leaveRes.data);
-      setComplaints(compRes.data);
       setCleaningStatus(roomRes.data.cleaning_status || 'COMPLETED');
       setAnnouncements(annRes.data.slice(0, 3));
       setStudentFood(foodRes?.data || null);
@@ -103,7 +99,6 @@ const StudentDashboard = () => {
   const hasCleaningDuty = roomDetails?.is_scheduled_today === true;
   const isCleaningCompleted = cleaningStatus === 'COMPLETED';
   const pendingLeavesCount = leaves.filter((l) => l.status === 'PENDING').length;
-  const activeComplaintsCount = complaints.filter((c) => c.status !== 'RESOLVED' && c.status !== 'REJECTED').length;
 
   return (
     <div className="space-y-6">
@@ -225,16 +220,16 @@ const StudentDashboard = () => {
         />
 
         <StatCard
-          title="Active Complaints"
-          value={activeComplaintsCount}
-          icon={Ticket}
-          color={activeComplaintsCount > 0 ? 'amber' : 'emerald'}
-          subtitle={activeComplaintsCount > 0 ? 'Work order ongoing' : 'All tickets resolved'}
+          title="Room Sanitation"
+          value={cleaningStatus}
+          icon={Sparkles}
+          color={isCleaningCompleted ? 'emerald' : 'amber'}
+          subtitle={hasCleaningDuty ? 'Cleaning Duty Today' : `Next: ${roomDetails?.next_cleaning || 'Scheduled'}`}
         />
       </div>
 
       {/* Quick Action Buttons */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Link
           to="/student/room"
           className="p-4 bg-white rounded-2xl border border-slate-200 hover:border-purple-500 shadow-2xs hover:shadow-xs transition flex flex-col justify-between space-y-2"
@@ -273,17 +268,6 @@ const StudentDashboard = () => {
             <span className="text-[10px] text-slate-400">
               {isLeaveLocked ? 'Locked (Cleaning Pending)' : 'Outstation / Medical'}
             </span>
-          </div>
-        </Link>
-
-        <Link
-          to="/student/complaints"
-          className="p-4 bg-white rounded-2xl border border-slate-200 hover:border-amber-500 shadow-2xs hover:shadow-xs transition flex flex-col justify-between space-y-2"
-        >
-          <Ticket className="w-5 h-5 text-amber-600" />
-          <div>
-            <span className="text-xs font-bold text-slate-800 block">Complaints</span>
-            <span className="text-[10px] text-slate-400">Maintenance Tickets</span>
           </div>
         </Link>
 
