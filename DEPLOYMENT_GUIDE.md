@@ -45,7 +45,7 @@ To keep your website online **24/7 forever** without needing your laptop turned 
 - **Status:** All 249 documents, 64 students, 12 rooms, users, mess menu, and cleaning records are **already migrated to your MongoDB Atlas cluster**!
 - **Your Working MongoDB Atlas URI:**
   ```text
-  mongodb+srv://nikhilnikki74831_db_user:Hostel2026@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+  mongodb+srv://nikhilnikki74831_db_user:<YOUR_PASSWORD>@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
   ```
 
 ---
@@ -65,7 +65,7 @@ To keep your website online **24/7 forever** without needing your laptop turned 
    - **Instance Type:** `Free`
 5. Scroll down to **Environment Variables** and add these 5 keys:
    - `ENVIRONMENT` = `production`
-   - `MONGODB_URI` = `mongodb+srv://nikhilnikki74831_db_user:Hostel2026@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+   - `MONGODB_URI` = `mongodb+srv://nikhilnikki74831_db_user:<YOUR_PASSWORD>@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
    - `DATABASE_NAME` = `smart_hostel`
    - `JWT_SECRET` = `smart_hostel_super_secure_jwt_secret_key_2026_production_grade`
    - `CORS_ORIGINS` = `["https://veerashaivahostel.run.place", "https://*.vercel.app"]`

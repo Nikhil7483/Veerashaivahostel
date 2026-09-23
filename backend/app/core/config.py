@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     
     MONGODB_URI: str = os.getenv(
         "MONGODB_URI",
-        "mongodb+srv://nikhilnikki74831_db_user:Hostel2026@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        "mongodb://localhost:27017"
     )
     MONGO_URI: Optional[str] = None
     DATABASE_NAME: str = "smart_hostel"
