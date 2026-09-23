@@ -1,65 +1,65 @@
 Student ID,Name,Room,Bed,USN / Login ID,Login Email,Phone / WhatsApp,Department,Semester,Default Password,Login Portal URL
-001,Guru,Room 01,B1,001,guru@hostel.edu,9876543101,Pharmacy,1,Student@123,https://veerashaivahostel.vercel.app/login
-002,Rudra,Room 01,B2,002,rudra@hostel.edu,9876543102,Diploma,1,Student@123,https://veerashaivahostel.vercel.app/login
-003,Dileepa,Room 01,B3,003,dileepa@hostel.edu,9876543103,BCA,1,Student@123,https://veerashaivahostel.vercel.app/login
-004,Shivaraj,Room 01,B4,004,shivaraj.r1@hostel.edu,9876543104,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
-005,Gowtham,Room 01,B5,005,gowtham.r1@hostel.edu,9876543105,BCA,1,Student@123,https://veerashaivahostel.vercel.app/login
-006,Bharath B M,Room 02,B1,006,bharath.bm@hostel.edu,9876543106,M.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
-007,Palakshaiah,Room 02,B2,007,palakshaiah@hostel.edu,9876543107,B.Sc Nursing,1,Student@123,https://veerashaivahostel.vercel.app/login
-008,Chidanand,Room 02,B3,008,chidanand@hostel.edu,9876543108,B.Sc Nursing,1,Student@123,https://veerashaivahostel.vercel.app/login
+001,Guru,Room 01,B1,001,guru@hostel.edu,6362333078,Pharmacy,1,Student@123,https://veerashaivahostel.vercel.app/login
+002,Rudra,Room 01,B2,002,rudra@hostel.edu,8197212109,Diploma,1,Student@123,https://veerashaivahostel.vercel.app/login
+003,Dileepa,Room 01,B3,003,dileepa@hostel.edu,9663754933,BCA,1,Student@123,https://veerashaivahostel.vercel.app/login
+004,Shivaraj,Room 01,B4,004,shivaraj.r1@hostel.edu,7019398199,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
+005,Gowtham,Room 01,B5,005,gowtham.r1@hostel.edu,9686790176,BCA,1,Student@123,https://veerashaivahostel.vercel.app/login
+006,Bharath B M,Room 02,B1,006,bharath.bm@hostel.edu,7019159672,M.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
+007,Palakshaiah,Room 02,B2,007,palakshaiah@hostel.edu,9164258457,B.Sc Nursing,1,Student@123,https://veerashaivahostel.vercel.app/login
+008,Chidanand,Room 02,B3,008,chidanand@hostel.edu,8792801317,B.Sc Nursing,1,Student@123,https://veerashaivahostel.vercel.app/login
 009,Mallikarjuna S.R,Room 04,B1,009,mallikarjuna.sr@hostel.edu,9876543109,BA Defence,1,Student@123,https://veerashaivahostel.vercel.app/login
 010,Madesh R.,Room 04,B2,010,madesh.r@hostel.edu,9876543110,BA Defence,1,Student@123,https://veerashaivahostel.vercel.app/login
-011,Punith,Room 04,B3,011,punith.mca@hostel.edu,9876543111,MCA,3,Student@123,https://veerashaivahostel.vercel.app/login
-012,Harsha,Room 04,B4,012,harsha.bca@hostel.edu,9876543112,BCA,5,Student@123,https://veerashaivahostel.vercel.app/login
+011,Punith,Room 04,B3,011,punith.mca@hostel.edu,8431137231,MCA,3,Student@123,https://veerashaivahostel.vercel.app/login
+012,Harsha,Room 04,B4,012,harsha.bca@hostel.edu,7483012787,BCA,5,Student@123,https://veerashaivahostel.vercel.app/login
 013,Shivaji,Room 04,B5,013,shivaji@hostel.edu,9876543113,BCA,1,Student@123,https://veerashaivahostel.vercel.app/login
-014,Vinay G. P,Room 05,B1,014,vinay.gp@hostel.edu,9876543114,ISG,7,Student@123,https://veerashaivahostel.vercel.app/login
-015,Darshan S. O,Room 05,B2,015,darshan.so@hostel.edu,9876543115,Civil,5,Student@123,https://veerashaivahostel.vercel.app/login
-016,Sachin,Room 05,B3,016,sachin@hostel.edu,9876543116,R&AI,5,Student@123,https://veerashaivahostel.vercel.app/login
+014,Vinay G. P,Room 05,B1,014,vinay.gp@hostel.edu,9353068837,ISG,7,Student@123,https://veerashaivahostel.vercel.app/login
+015,Darshan S. O,Room 05,B2,015,darshan.so@hostel.edu,9900401704,Civil,5,Student@123,https://veerashaivahostel.vercel.app/login
+016,Sachin,Room 05,B3,016,sachin@hostel.edu,6360174876,R&AI,5,Student@123,https://veerashaivahostel.vercel.app/login
 017,Harsha,Room 05,B4,017,harsha.rai@hostel.edu,9876543117,R&AI,5,Student@123,https://veerashaivahostel.vercel.app/login
-018,Akshay,Room 05,B5,018,akshay@hostel.edu,9876543118,GTC,1,Student@123,https://veerashaivahostel.vercel.app/login
-019,Bharath,Room 05,B6,019,bharath.cce@hostel.edu,9876543119,CCE,1,Student@123,https://veerashaivahostel.vercel.app/login
+018,Akshay,Room 05,B5,018,akshay@hostel.edu,6363830650,GTC,1,Student@123,https://veerashaivahostel.vercel.app/login
+019,Bharath,Room 05,B6,019,bharath.cce@hostel.edu,9686035983,CCE,1,Student@123,https://veerashaivahostel.vercel.app/login
 020,Manju M.N.,Room 06,B1,020,manju.mn@hostel.edu,9876543120,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
-021,Harsha R.M.,Room 06,B2,021,harsha.rm@hostel.edu,9876543121,B.Com,5,Student@123,https://veerashaivahostel.vercel.app/login
-022,Shankar,Room 06,B3,022,shankar@hostel.edu,9876543122,B.Sc.,1,Student@123,https://veerashaivahostel.vercel.app/login
-023,Vishwa,Room 06,B4,023,vishwa@hostel.edu,9876543123,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
-024,Vikas,Room 06,B5,024,vikas@hostel.edu,9876543124,B.Pharm,5,Student@123,https://veerashaivahostel.vercel.app/login
-025,Suraj,Room 07,B1,025,suraj@hostel.edu,9876543125,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
-026,Bharath,Room 07,B2,026,bharath.dip@hostel.edu,9876543126,Diploma,5,Student@123,https://veerashaivahostel.vercel.app/login
-027,Tejas,Room 07,B3,027,tejas@hostel.edu,9876543127,MBA,3,Student@123,https://veerashaivahostel.vercel.app/login
+021,Harsha R.M.,Room 06,B2,021,harsha.rm@hostel.edu,6360894316,B.Com,5,Student@123,https://veerashaivahostel.vercel.app/login
+022,Shankar,Room 06,B3,022,shankar@hostel.edu,7618715407,B.Sc.,1,Student@123,https://veerashaivahostel.vercel.app/login
+023,Vishwa,Room 06,B4,023,vishwa@hostel.edu,6361133469,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
+024,Vikas,Room 06,B5,024,vikas@hostel.edu,7676089467,B.Pharm,5,Student@123,https://veerashaivahostel.vercel.app/login
+025,Suraj,Room 07,B1,025,suraj@hostel.edu,8867030956,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
+026,Bharath,Room 07,B2,026,bharath.dip@hostel.edu,8296008165,Diploma,5,Student@123,https://veerashaivahostel.vercel.app/login
+027,Tejas,Room 07,B3,027,tejas@hostel.edu,6363445178,MBA,3,Student@123,https://veerashaivahostel.vercel.app/login
 028,Goutham,Room 07,B4,028,goutham.bcom@hostel.edu,9876543128,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
-029,Akash Biradar,Room 08,B1,029,akash.biradar@hostel.edu,9876543129,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
-030,Ichith M,Room 08,B2,030,ichith.m@hostel.edu,9876543130,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
-031,Keerthiraj,Room 08,B3,031,keerthiraj@hostel.edu,9876543131,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
-032,Vinay,Room 08,B4,032,vinay.bba@hostel.edu,9876543132,BBA,1,Student@123,https://veerashaivahostel.vercel.app/login
-033,Chetan,Room 08,B5,033,chetan.pharm@hostel.edu,9876543133,Pharmacy,5,Student@123,https://veerashaivahostel.vercel.app/login
-034,Sujith L P,Room 08,B6,034,sujith.lp@hostel.edu,9876543134,BCA,3,Student@123,https://veerashaivahostel.vercel.app/login
-035,Shivashakthi N S,Room 09,B1,035,shivashakthi.ns@hostel.edu,9876543135,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-036,Bharath M K,Room 09,B2,036,bharath.mk@hostel.edu,9876543136,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-037,Charan H,Room 09,B3,037,charan.h@hostel.edu,9876543137,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-038,Chethan Y,Room 09,B4,038,chethan.y@hostel.edu,9876543138,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-039,Sagar RG,Room 09,B5,039,sagar.rg@hostel.edu,9876543139,Pharmacy,3,Student@123,https://veerashaivahostel.vercel.app/login
-040,Sandeep,Room 09,B6,040,sandeep@hostel.edu,9876543140,Pharmacy,3,Student@123,https://veerashaivahostel.vercel.app/login
+029,Akash Biradar,Room 08,B1,029,akash.biradar@hostel.edu,8147008566,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
+030,Ichith M,Room 08,B2,030,ichith.m@hostel.edu,7795166705,BE,5,Student@123,https://veerashaivahostel.vercel.app/login
+031,Keerthiraj,Room 08,B3,031,keerthiraj@hostel.edu,9901499632,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
+032,Vinay,Room 08,B4,032,vinay.bba@hostel.edu,9845286189,BBA,1,Student@123,https://veerashaivahostel.vercel.app/login
+033,Chetan,Room 08,B5,033,chetan.pharm@hostel.edu,6363243170,Pharmacy,5,Student@123,https://veerashaivahostel.vercel.app/login
+034,Sujith L P,Room 08,B6,034,sujith.lp@hostel.edu,8073538524,BCA,3,Student@123,https://veerashaivahostel.vercel.app/login
+035,Shivashakthi N S,Room 09,B1,035,shivashakthi.ns@hostel.edu,9740953749,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+036,Bharath M K,Room 09,B2,036,bharath.mk@hostel.edu,8951452237,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+037,Charan H,Room 09,B3,037,charan.h@hostel.edu,8088731894,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+038,Chethan Y,Room 09,B4,038,chethan.y@hostel.edu,9019177058,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+039,Sagar RG,Room 09,B5,039,sagar.rg@hostel.edu,9482205047,Pharmacy,3,Student@123,https://veerashaivahostel.vercel.app/login
+040,Sandeep,Room 09,B6,040,sandeep@hostel.edu,7019246208,Pharmacy,3,Student@123,https://veerashaivahostel.vercel.app/login
 041,Shreyas T S,Room 10,B1,041,shreyas.ts@hostel.edu,9876543141,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
 042,Nandish G S,Room 10,B2,042,nandish.gs@hostel.edu,9876543142,LLB,3,Student@123,https://veerashaivahostel.vercel.app/login
 043,Prasanna R K,Room 10,B3,043,prasanna.rk@hostel.edu,9876543143,LLB,3,Student@123,https://veerashaivahostel.vercel.app/login
 044,Bharath,Room 10,B4,044,bharath.llb@hostel.edu,9876543144,LLB,3,Student@123,https://veerashaivahostel.vercel.app/login
 045,Mahadeva,Room 10,B5,045,mahadeva@hostel.edu,9876543145,LLB,3,Student@123,https://veerashaivahostel.vercel.app/login
 046,Dharshan,Room 10,B6,046,dharshan.llb@hostel.edu,9876543146,LLB,3,Student@123,https://veerashaivahostel.vercel.app/login
-047,Veeresh Hiremath,Room 11,B1,047,veeresh.hiremath@hostel.edu,9876543147,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-048,Punith S H,Room 11,B2,048,punith.sh@hostel.edu,9876543148,B.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
-049,Aditya,Room 11,B3,049,aditya@hostel.edu,9876543149,BA,6,Student@123,https://veerashaivahostel.vercel.app/login
-050,Jayant JK,Room 11,B4,050,jayant.jk@hostel.edu,9876543150,General,3,Student@123,https://veerashaivahostel.vercel.app/login
-051,Kiran,Room 11,B5,051,kiran.bcom@hostel.edu,9876543151,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
-052,Nikhil N R,Room 12,B1,052,nikhil.nr@hostel.edu,9876543152,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-053,K M Vasishta,Room 12,B2,053,km.vasishta@hostel.edu,9876543153,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-054,Mohan J K,Room 12,B3,054,mohan.jk@hostel.edu,9876543154,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
-055,Praveen,Room 12,B4,055,praveen@hostel.edu,9876543155,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
-056,Yashwant Gowda Patil,Room 12,B5,056,yashwant.gowda@hostel.edu,9876543156,MSc,3,Student@123,https://veerashaivahostel.vercel.app/login
-057,Rakesh,Room 12,B6,057,rakesh@hostel.edu,9876543157,BE,1,Student@123,https://veerashaivahostel.vercel.app/login
-058,Yashwanth P M,Room 13,B1,058,yashwanth.pm@hostel.edu,9876543158,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
-059,Prajwal,Room 13,B2,059,prajwal@hostel.edu,9876543159,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
-060,Samartha,Room 13,B3,060,samartha@hostel.edu,9876543160,B.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
-061,Shashank,Room 13,B4,061,shashank@hostel.edu,9876543161,BE,1,Student@123,https://veerashaivahostel.vercel.app/login
-062,Kiran,Room 13,B5,062,kiran.bse@hostel.edu,9876543162,BSE,1,Student@123,https://veerashaivahostel.vercel.app/login
-063,Shivaraj,Room 13,B6,063,shivaraj.r13@hostel.edu,9876543163,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
+047,Veeresh Hiremath,Room 11,B1,047,veeresh.hiremath@hostel.edu,6363396053,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+048,Punith S H,Room 11,B2,048,punith.sh@hostel.edu,7022496373,B.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
+049,Aditya,Room 11,B3,049,aditya@hostel.edu,8310858479,BA,6,Student@123,https://veerashaivahostel.vercel.app/login
+050,Jayant JK,Room 11,B4,050,jayant.jk@hostel.edu,7975442176,General,3,Student@123,https://veerashaivahostel.vercel.app/login
+051,Kiran,Room 11,B5,051,kiran.bcom@hostel.edu,7899036843,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
+052,Nikhil N R,Room 12,B1,052,nikhil.nr@hostel.edu,6361224398,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+053,K M Vasishta,Room 12,B2,053,km.vasishta@hostel.edu,7337672627,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+054,Mohan J K,Room 12,B3,054,mohan.jk@hostel.edu,9008766858,BE,7,Student@123,https://veerashaivahostel.vercel.app/login
+055,Praveen,Room 12,B4,055,praveen@hostel.edu,7892907207,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
+056,Yashwant Gowda Patil,Room 12,B5,056,yashwant.gowda@hostel.edu,7026158509,MSc,3,Student@123,https://veerashaivahostel.vercel.app/login
+057,Rakesh,Room 12,B6,057,rakesh@hostel.edu,7975410859,BE,1,Student@123,https://veerashaivahostel.vercel.app/login
+058,Yashwanth P M,Room 13,B1,058,yashwanth.pm@hostel.edu,7795068278,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
+059,Prajwal,Room 13,B2,059,prajwal@hostel.edu,7676408885,BE,3,Student@123,https://veerashaivahostel.vercel.app/login
+060,Samartha,Room 13,B3,060,samartha@hostel.edu,9620344715,B.Com,3,Student@123,https://veerashaivahostel.vercel.app/login
+061,Shashank,Room 13,B4,061,shashank@hostel.edu,9972935921,BE,1,Student@123,https://veerashaivahostel.vercel.app/login
+062,Kiran,Room 13,B5,062,kiran.bse@hostel.edu,6364463398,BSE,1,Student@123,https://veerashaivahostel.vercel.app/login
+063,Shivaraj,Room 13,B6,063,shivaraj.r13@hostel.edu,9187010430,B.Com,1,Student@123,https://veerashaivahostel.vercel.app/login
 064,Amruth,Room 13,B7,064,amruth@hostel.edu,9876543164,BSE,3,Student@123,https://veerashaivahostel.vercel.app/login

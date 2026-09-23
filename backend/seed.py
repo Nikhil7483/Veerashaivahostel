@@ -74,60 +74,60 @@ async def seed_database():
     # 5. Seed Real Students (64 Residents Across 13 Rooms)
     student_raw = [
         # Room 01
-        ("Guru", "guru@hostel.edu", "9876543101", "Pharmacy", 1, "Room 01", "B1", "Basavaraj", "9876500101", "Dharwad, Karnataka"),
-        ("Rudra", "rudra@hostel.edu", "9876543102", "Diploma", 1, "Room 01", "B2", "Somanna", "9876500102", "Belagavi, Karnataka"),
-        ("Dileepa", "dileepa@hostel.edu", "9876543103", "BCA", 1, "Room 01", "B3", "Gowdaiah", "9876500103", "Mandya, Karnataka"),
-        ("Shivaraj", "shivaraj.r1@hostel.edu", "9876543104", "B.Com", 1, "Room 01", "B4", "Ramesh", "9876500104", "Hassan, Karnataka"),
-        ("Gowtham", "gowtham.r1@hostel.edu", "9876543105", "BCA", 1, "Room 01", "B5", "Chandrashekar", "9876500105", "Tumakuru, Karnataka"),
+        ("Guru", "guru@hostel.edu", "6362333078", "Pharmacy", 1, "Room 01", "B1", "Basavaraj", "9876500101", "Dharwad, Karnataka"),
+        ("Rudra", "rudra@hostel.edu", "8197212109", "Diploma", 1, "Room 01", "B2", "Somanna", "9876500102", "Belagavi, Karnataka"),
+        ("Dileepa", "dileepa@hostel.edu", "9663754933", "BCA", 1, "Room 01", "B3", "Gowdaiah", "9876500103", "Mandya, Karnataka"),
+        ("Shivaraj", "shivaraj.r1@hostel.edu", "7019398199", "B.Com", 1, "Room 01", "B4", "Ramesh", "9876500104", "Hassan, Karnataka"),
+        ("Gowtham", "gowtham.r1@hostel.edu", "9686790176", "BCA", 1, "Room 01", "B5", "Chandrashekar", "9876500105", "Tumakuru, Karnataka"),
 
         # Room 02
-        ("Bharath B M", "bharath.bm@hostel.edu", "9876543106", "M.Com", 3, "Room 02", "B1", "Malleshappa", "9876500106", "Shivamogga, Karnataka"),
-        ("Palakshaiah", "palakshaiah@hostel.edu", "9876543107", "B.Sc Nursing", 1, "Room 02", "B2", "Siddaramaiah", "9876500107", "Chitradurga, Karnataka"),
-        ("Chidanand", "chidanand@hostel.edu", "9876543108", "B.Sc Nursing", 1, "Room 02", "B3", "Veerabhadrappa", "9876500108", "Davangere, Karnataka"),
+        ("Bharath B M", "bharath.bm@hostel.edu", "7019159672", "M.Com", 3, "Room 02", "B1", "Malleshappa", "9876500106", "Shivamogga, Karnataka"),
+        ("Palakshaiah", "palakshaiah@hostel.edu", "9164258457", "B.Sc Nursing", 1, "Room 02", "B2", "Siddaramaiah", "9876500107", "Chitradurga, Karnataka"),
+        ("Chidanand", "chidanand@hostel.edu", "8792801317", "B.Sc Nursing", 1, "Room 02", "B3", "Veerabhadrappa", "9876500108", "Davangere, Karnataka"),
 
         # Room 04
         ("Mallikarjuna S.R", "mallikarjuna.sr@hostel.edu", "9876543109", "BA Defence", 1, "Room 04", "B1", "Rudresh", "9876500109", "Ballari, Karnataka"),
         ("Madesh R.", "madesh.r@hostel.edu", "9876543110", "BA Defence", 1, "Room 04", "B2", "Rajanna", "9876500110", "Kolar, Karnataka"),
-        ("Punith", "punith.mca@hostel.edu", "9876543111", "MCA", 3, "Room 04", "B3", "Narayanaswamy", "9876500111", "Bengaluru Rural, Karnataka"),
-        ("Harsha", "harsha.bca@hostel.edu", "9876543112", "BCA", 5, "Room 04", "B4", "Govindappa", "9876500112", "Chikkamagaluru, Karnataka"),
+        ("Punith", "punith.mca@hostel.edu", "8431137231", "MCA", 3, "Room 04", "B3", "Narayanaswamy", "9876500111", "Bengaluru Rural, Karnataka"),
+        ("Harsha", "harsha.bca@hostel.edu", "7483012787", "BCA", 5, "Room 04", "B4", "Govindappa", "9876500112", "Chikkamagaluru, Karnataka"),
         ("Shivaji", "shivaji@hostel.edu", "9876543113", "BCA", 1, "Room 04", "B5", "Tanaji", "9876500113", "Bagalkot, Karnataka"),
 
         # Room 05
-        ("Vinay G. P", "vinay.gp@hostel.edu", "9876543114", "ISG", 7, "Room 05", "B1", "Prabhakar G", "9876500114", "Udupi, Karnataka"),
-        ("Darshan S. O", "darshan.so@hostel.edu", "9876543115", "Civil", 5, "Room 05", "B2", "Onkarappa", "9876500115", "Channagiri, Karnataka"),
-        ("Sachin", "sachin@hostel.edu", "9876543116", "R&AI", 5, "Room 05", "B3", "Manjunath", "9876500116", "Hubballi, Karnataka"),
+        ("Vinay G. P", "vinay.gp@hostel.edu", "9353068837", "ISG", 7, "Room 05", "B1", "Prabhakar G", "9876500114", "Udupi, Karnataka"),
+        ("Darshan S. O", "darshan.so@hostel.edu", "9900401704", "Civil", 5, "Room 05", "B2", "Onkarappa", "9876500115", "Channagiri, Karnataka"),
+        ("Sachin", "sachin@hostel.edu", "6360174876", "R&AI", 5, "Room 05", "B3", "Manjunath", "9876500116", "Hubballi, Karnataka"),
         ("Harsha", "harsha.rai@hostel.edu", "9876543117", "R&AI", 5, "Room 05", "B4", "Krishnamurthy", "9876500117", "Mysuru, Karnataka"),
-        ("Akshay", "akshay@hostel.edu", "9876543118", "GTC", 1, "Room 05", "B5", "Anand", "9876500118", "Gadag, Karnataka"),
-        ("Bharath", "bharath.cce@hostel.edu", "9876543119", "CCE", 1, "Room 05", "B6", "Chandrashekar", "9876500119", "Mangaluru, Karnataka"),
+        ("Akshay", "akshay@hostel.edu", "6363830650", "GTC", 1, "Room 05", "B5", "Anand", "9876500118", "Gadag, Karnataka"),
+        ("Bharath", "bharath.cce@hostel.edu", "9686035983", "CCE", 1, "Room 05", "B6", "Chandrashekar", "9876500119", "Mangaluru, Karnataka"),
 
         # Room 06
         ("Manju M.N.", "manju.mn@hostel.edu", "9876543120", "BE", 5, "Room 06", "B1", "Nanjundappa", "9876500120", "Ramanagara, Karnataka"),
-        ("Harsha R.M.", "harsha.rm@hostel.edu", "9876543121", "B.Com", 5, "Room 06", "B2", "Mallikarjun", "9876500121", "Haveri, Karnataka"),
-        ("Shankar", "shankar@hostel.edu", "9876543122", "B.Sc.", 1, "Room 06", "B3", "Shivanna", "9876500122", "Vijayapura, Karnataka"),
-        ("Vishwa", "vishwa@hostel.edu", "9876543123", "B.Com", 1, "Room 06", "B4", "Visweswaraiah", "9876500123", "Tumakuru, Karnataka"),
-        ("Vikas", "vikas@hostel.edu", "9876543124", "B.Pharm", 5, "Room 06", "B5", "Venkatesh", "9876500124", "Kalaburagi, Karnataka"),
+        ("Harsha R.M.", "harsha.rm@hostel.edu", "6360894316", "B.Com", 5, "Room 06", "B2", "Mallikarjun", "9876500121", "Haveri, Karnataka"),
+        ("Shankar", "shankar@hostel.edu", "7618715407", "B.Sc.", 1, "Room 06", "B3", "Shivanna", "9876500122", "Vijayapura, Karnataka"),
+        ("Vishwa", "vishwa@hostel.edu", "6361133469", "B.Com", 1, "Room 06", "B4", "Visweswaraiah", "9876500123", "Tumakuru, Karnataka"),
+        ("Vikas", "vikas@hostel.edu", "7676089467", "B.Pharm", 5, "Room 06", "B5", "Venkatesh", "9876500124", "Kalaburagi, Karnataka"),
 
         # Room 07
-        ("Suraj", "suraj@hostel.edu", "9876543125", "BE", 5, "Room 07", "B1", "Surendra", "9876500125", "Bengaluru, Karnataka"),
-        ("Bharath", "bharath.dip@hostel.edu", "9876543126", "Diploma", 5, "Room 07", "B2", "Bhadrappa", "9876500126", "Yadgir, Karnataka"),
-        ("Tejas", "tejas@hostel.edu", "9876543127", "MBA", 3, "Room 07", "B3", "Thimmegowda", "9876500127", "Mandya, Karnataka"),
+        ("Suraj", "suraj@hostel.edu", "8867030956", "BE", 5, "Room 07", "B1", "Surendra", "9876500125", "Bengaluru, Karnataka"),
+        ("Bharath", "bharath.dip@hostel.edu", "8296008165", "Diploma", 5, "Room 07", "B2", "Bhadrappa", "9876500126", "Yadgir, Karnataka"),
+        ("Tejas", "tejas@hostel.edu", "6363445178", "MBA", 3, "Room 07", "B3", "Thimmegowda", "9876500127", "Mandya, Karnataka"),
         ("Goutham", "goutham.bcom@hostel.edu", "9876543128", "B.Com", 1, "Room 07", "B4", "Gangadhar", "9876500128", "Chamarajanagar, Karnataka"),
 
         # Room 08
-        ("Akash Biradar", "akash.biradar@hostel.edu", "9876543129", "BE", 5, "Room 08", "B1", "Sharanappa Biradar", "9876500129", "Bidar, Karnataka"),
-        ("Ichith M", "ichith.m@hostel.edu", "9876543130", "BE", 5, "Room 08", "B2", "Madhu Kumar", "9876500130", "Bengaluru, Karnataka"),
-        ("Keerthiraj", "keerthiraj@hostel.edu", "9876543131", "B.Com", 1, "Room 08", "B3", "Rajendra", "9876500131", "Koppal, Karnataka"),
-        ("Vinay", "vinay.bba@hostel.edu", "9876543132", "BBA", 1, "Room 08", "B4", "Vijay Kumar", "9876500132", "Davangere, Karnataka"),
-        ("Chetan", "chetan.pharm@hostel.edu", "9876543133", "Pharmacy", 5, "Room 08", "B5", "Chandru", "9876500133", "Chitradurga, Karnataka"),
-        ("Sujith L P", "sujith.lp@hostel.edu", "9876543134", "BCA", 3, "Room 08", "B6", "Prasanna L", "9876500134", "Shivamogga, Karnataka"),
+        ("Akash Biradar", "akash.biradar@hostel.edu", "8147008566", "BE", 5, "Room 08", "B1", "Sharanappa Biradar", "9876500129", "Bidar, Karnataka"),
+        ("Ichith M", "ichith.m@hostel.edu", "7795166705", "BE", 5, "Room 08", "B2", "Madhu Kumar", "9876500130", "Bengaluru, Karnataka"),
+        ("Keerthiraj", "keerthiraj@hostel.edu", "9901499632", "B.Com", 1, "Room 08", "B3", "Rajendra", "9876500131", "Koppal, Karnataka"),
+        ("Vinay", "vinay.bba@hostel.edu", "9845286189", "BBA", 1, "Room 08", "B4", "Vijay Kumar", "9876500132", "Davangere, Karnataka"),
+        ("Chetan", "chetan.pharm@hostel.edu", "6363243170", "Pharmacy", 5, "Room 08", "B5", "Chandru", "9876500133", "Chitradurga, Karnataka"),
+        ("Sujith L P", "sujith.lp@hostel.edu", "8073538524", "BCA", 3, "Room 08", "B6", "Prasanna L", "9876500134", "Shivamogga, Karnataka"),
 
         # Room 09
-        ("Shivashakthi N S", "shivashakthi.ns@hostel.edu", "9876543135", "BE", 7, "Room 09", "B1", "Somashekhar N", "9876500135", "Bengaluru, Karnataka"),
-        ("Bharath M K", "bharath.mk@hostel.edu", "9876543136", "BE", 7, "Room 09", "B2", "Krishnappa M", "9876500136", "Kolar, Karnataka"),
-        ("Charan H", "charan.h@hostel.edu", "9876543137", "BE", 7, "Room 09", "B3", "Hanumanthappa", "9876500137", "Chikballapur, Karnataka"),
-        ("Chethan Y", "chethan.y@hostel.edu", "9876543138", "BE", 7, "Room 09", "B4", "Yallappa", "9876500138", "Ballari, Karnataka"),
-        ("Sagar RG", "sagar.rg@hostel.edu", "9876543139", "Pharmacy", 3, "Room 09", "B5", "Govindaraj R", "9876500139", "Raichur, Karnataka"),
-        ("Sandeep", "sandeep@hostel.edu", "9876543140", "Pharmacy", 3, "Room 09", "B6", "Sathyanarayana", "9876500140", "Hassan, Karnataka"),
+        ("Shivashakthi N S", "shivashakthi.ns@hostel.edu", "9740953749", "BE", 7, "Room 09", "B1", "Somashekhar N", "9876500135", "Bengaluru, Karnataka"),
+        ("Bharath M K", "bharath.mk@hostel.edu", "8951452237", "BE", 7, "Room 09", "B2", "Krishnappa M", "9876500136", "Kolar, Karnataka"),
+        ("Charan H", "charan.h@hostel.edu", "8088731894", "BE", 7, "Room 09", "B3", "Hanumanthappa", "9876500137", "Chikballapur, Karnataka"),
+        ("Chethan Y", "chethan.y@hostel.edu", "9019177058", "BE", 7, "Room 09", "B4", "Yallappa", "9876500138", "Ballari, Karnataka"),
+        ("Sagar RG", "sagar.rg@hostel.edu", "9482205047", "Pharmacy", 3, "Room 09", "B5", "Govindaraj R", "9876500139", "Raichur, Karnataka"),
+        ("Sandeep", "sandeep@hostel.edu", "7019246208", "Pharmacy", 3, "Room 09", "B6", "Sathyanarayana", "9876500140", "Hassan, Karnataka"),
 
         # Room 10
         ("Shreyas T S", "shreyas.ts@hostel.edu", "9876543141", "BE", 3, "Room 10", "B1", "Srinivas T", "9876500141", "Bengaluru, Karnataka"),
@@ -138,27 +138,27 @@ async def seed_database():
         ("Dharshan", "dharshan.llb@hostel.edu", "9876543146", "LLB", 3, "Room 10", "B6", "Dhananjaya", "9876500146", "Mysuru, Karnataka"),
 
         # Room 11
-        ("Veeresh Hiremath", "veeresh.hiremath@hostel.edu", "9876543147", "BE", 7, "Room 11", "B1", "Shantaveeraiah Hiremath", "9876500147", "Gadag, Karnataka"),
-        ("Punith S H", "punith.sh@hostel.edu", "9876543148", "B.Com", 3, "Room 11", "B2", "Halappa S", "9876500148", "Shivamogga, Karnataka"),
-        ("Aditya", "aditya@hostel.edu", "9876543149", "BA", 6, "Room 11", "B3", "Ashok", "9876500149", "Hubballi, Karnataka"),
-        ("Jayant JK", "jayant.jk@hostel.edu", "9876543150", "General", 3, "Room 11", "B4", "Kishore Kumar", "9876500150", "Dharwad, Karnataka"),
-        ("Kiran", "kiran.bcom@hostel.edu", "9876543151", "B.Com", 1, "Room 11", "B5", "Kumaraswamy", "9876500151", "Hassan, Karnataka"),
+        ("Veeresh Hiremath", "veeresh.hiremath@hostel.edu", "6363396053", "BE", 7, "Room 11", "B1", "Shantaveeraiah Hiremath", "9876500147", "Gadag, Karnataka"),
+        ("Punith S H", "punith.sh@hostel.edu", "7022496373", "B.Com", 3, "Room 11", "B2", "Halappa S", "9876500148", "Shivamogga, Karnataka"),
+        ("Aditya", "aditya@hostel.edu", "8310858479", "BA", 6, "Room 11", "B3", "Ashok", "9876500149", "Hubballi, Karnataka"),
+        ("Jayant JK", "jayant.jk@hostel.edu", "7975442176", "General", 3, "Room 11", "B4", "Kishore Kumar", "9876500150", "Dharwad, Karnataka"),
+        ("Kiran", "kiran.bcom@hostel.edu", "7899036843", "B.Com", 1, "Room 11", "B5", "Kumaraswamy", "9876500151", "Hassan, Karnataka"),
 
         # Room 12
-        ("Nikhil N R", "nikhil.nr@hostel.edu", "9876543152", "BE", 7, "Room 12", "B1", "Ramachandra N", "9876500152", "Bengaluru, Karnataka"),
-        ("K M Vasishta", "km.vasishta@hostel.edu", "9876543153", "BE", 7, "Room 12", "B2", "Manjunath K", "9876500153", "Mysuru, Karnataka"),
-        ("Mohan J K", "mohan.jk@hostel.edu", "9876543154", "BE", 7, "Room 12", "B3", "Krishnegowda J", "9876500154", "Mandya, Karnataka"),
-        ("Praveen", "praveen@hostel.edu", "9876543155", "BE", 3, "Room 12", "B4", "Prakash", "9876500155", "Belagavi, Karnataka"),
-        ("Yashwant Gowda Patil", "yashwant.gowda@hostel.edu", "9876543156", "MSc", 3, "Room 12", "B5", "Basanagouda Patil", "9876500156", "Vijayapura, Karnataka"),
-        ("Rakesh", "rakesh@hostel.edu", "9876543157", "BE", 1, "Room 12", "B6", "Ranganath", "9876500157", "Tumakuru, Karnataka"),
+        ("Nikhil N R", "nikhil.nr@hostel.edu", "6361224398", "BE", 7, "Room 12", "B1", "Ramachandra N", "9876500152", "Bengaluru, Karnataka"),
+        ("K M Vasishta", "km.vasishta@hostel.edu", "7337672627", "BE", 7, "Room 12", "B2", "Manjunath K", "9876500153", "Mysuru, Karnataka"),
+        ("Mohan J K", "mohan.jk@hostel.edu", "9008766858", "BE", 7, "Room 12", "B3", "Krishnegowda J", "9876500154", "Mandya, Karnataka"),
+        ("Praveen", "praveen@hostel.edu", "7892907207", "BE", 3, "Room 12", "B4", "Prakash", "9876500155", "Belagavi, Karnataka"),
+        ("Yashwant Gowda Patil", "yashwant.gowda@hostel.edu", "7026158509", "MSc", 3, "Room 12", "B5", "Basanagouda Patil", "9876500156", "Vijayapura, Karnataka"),
+        ("Rakesh", "rakesh@hostel.edu", "7975410859", "BE", 1, "Room 12", "B6", "Ranganath", "9876500157", "Tumakuru, Karnataka"),
 
         # Room 13
-        ("Yashwanth P M", "yashwanth.pm@hostel.edu", "9876543158", "BE", 3, "Room 13", "B1", "Mallikarjun P", "9876500158", "Davanagere, Karnataka"),
-        ("Prajwal", "prajwal@hostel.edu", "9876543159", "BE", 3, "Room 13", "B2", "Prabhulinga", "9876500159", "Shivamogga, Karnataka"),
-        ("Samartha", "samartha@hostel.edu", "9876543160", "B.Com", 3, "Room 13", "B3", "Somashekar", "9876500160", "Udupi, Karnataka"),
-        ("Shashank", "shashank@hostel.edu", "9876543161", "BE", 1, "Room 13", "B4", "Sharanu", "9876500161", "Chitradurga, Karnataka"),
-        ("Kiran", "kiran.bse@hostel.edu", "9876543162", "BSE", 1, "Room 13", "B5", "Kalleshappa", "9876500162", "Haveri, Karnataka"),
-        ("Shivaraj", "shivaraj.r13@hostel.edu", "9876543163", "B.Com", 1, "Room 13", "B6", "Shivalingappa", "9876500163", "Kalaburagi, Karnataka"),
+        ("Yashwanth P M", "yashwanth.pm@hostel.edu", "7795068278", "BE", 3, "Room 13", "B1", "Mallikarjun P", "9876500158", "Davanagere, Karnataka"),
+        ("Prajwal", "prajwal@hostel.edu", "7676408885", "BE", 3, "Room 13", "B2", "Prabhulinga", "9876500159", "Shivamogga, Karnataka"),
+        ("Samartha", "samartha@hostel.edu", "9620344715", "B.Com", 3, "Room 13", "B3", "Somashekar", "9876500160", "Udupi, Karnataka"),
+        ("Shashank", "shashank@hostel.edu", "9972935921", "BE", 1, "Room 13", "B4", "Sharanu", "9876500161", "Chitradurga, Karnataka"),
+        ("Kiran", "kiran.bse@hostel.edu", "6364463398", "BSE", 1, "Room 13", "B5", "Kalleshappa", "9876500162", "Haveri, Karnataka"),
+        ("Shivaraj", "shivaraj.r13@hostel.edu", "9187010430", "B.Com", 1, "Room 13", "B6", "Shivalingappa", "9876500163", "Kalaburagi, Karnataka"),
         ("Amruth", "amruth@hostel.edu", "9876543164", "BSE", 3, "Room 13", "B7", "Amarnath", "9876500164", "Ballari, Karnataka"),
     ]
     
