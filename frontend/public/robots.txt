@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /login
+Disallow: /admin/
+Disallow: /student/
+
+Sitemap: https://veerashaivahostel.vercel.app/sitemap.xml
