@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Star,
   ShieldCheck,
-  Send,
   MessageSquare,
   Bed,
   Calendar,
@@ -19,11 +18,6 @@ import {
 const StudentCleaningPage = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [feedback, setFeedback] = useState('');
-  const [submittingRating, setSubmittingRating] = useState(false);
-  const [ratingSuccess, setRatingSuccess] = useState('');
 
   // Report issue modal
   const [showIssueModal, setShowIssueModal] = useState(false);
@@ -52,26 +46,6 @@ const StudentCleaningPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRatingSubmit = async (e) => {
-    e.preventDefault();
-    setSubmittingRating(true);
-    setRatingSuccess('');
-    try {
-      const payload = {
-        rating,
-        feedback,
-        task_id: data?.today_task?.id || null,
-      };
-      const res = await api.post('/cleaning/my-room/rating', payload);
-      setRatingSuccess(res.data.message || 'Rating submitted successfully!');
-      setFeedback('');
-      await fetchCleaningInfo(true);
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to submit rating.');
-    } finally {
-      setSubmittingRating(false);
-    }
-  };
 
   const handleReportIssue = async (e) => {
     e.preventDefault();
@@ -239,7 +213,7 @@ const StudentCleaningPage = () => {
         </div>
 
         {/* Task Details & Progress */}
-        <div className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="pt-6">
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Today's Cleaning Specification
@@ -261,62 +235,6 @@ const StudentCleaningPage = () => {
                 <div className="pt-2 border-t border-blue-100 text-slate-600">
                   <strong>Notes:</strong> {data.today_task.notes}
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Rating Section */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Rate Housekeeping & Cleanliness
-            </h3>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              {ratingSuccess ? (
-                <div className="text-center py-4 space-y-2">
-                  <CheckCircle className="w-8 h-8 text-emerald-600 mx-auto" />
-                  <p className="text-xs font-bold text-emerald-800">{ratingSuccess}</p>
-                </div>
-              ) : (
-                <form onSubmit={handleRatingSubmit} className="space-y-3">
-                  <div className="flex items-center justify-center space-x-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        className="p-1 text-slate-300 hover:scale-110 transition cursor-pointer"
-                      >
-                        <Star
-                          className={`w-6 h-6 ${
-                            (hoverRating || rating) >= star
-                              ? 'text-amber-400 fill-amber-400'
-                              : 'text-slate-300'
-                          }`}
-                        />
-                      </button>
-                    ))}
-                    <span className="ml-2 text-xs font-bold text-slate-700">{rating} / 5</span>
-                  </div>
-
-                  <input
-                    type="text"
-                    placeholder="Add feedback / cleanliness remarks (optional)..."
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-
-                  <button
-                    type="submit"
-                    disabled={submittingRating}
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    {submittingRating ? 'Submitting...' : 'Submit Room Rating'}
-                  </button>
-                </form>
               )}
             </div>
           </div>

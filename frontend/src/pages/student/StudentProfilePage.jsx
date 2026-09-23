@@ -6,6 +6,7 @@ import { formatDate } from '../../utils/dateUtils';
 const StudentProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [phone, setPhone] = useState('');
+  const [parentName, setParentName] = useState('');
   const [parentContact, setParentContact] = useState('');
   const [address, setAddress] = useState('');
   const [foodHistory, setFoodHistory] = useState([]);
@@ -28,6 +29,7 @@ const StudentProfilePage = () => {
       ]);
       setProfile(res.data);
       setPhone(res.data.phone || '');
+      setParentName(res.data.parent_name || '');
       setParentContact(res.data.parent_contact || '');
       setAddress(res.data.address || '');
       setFoodHistory(foodRes.data || []);
@@ -47,6 +49,7 @@ const StudentProfilePage = () => {
     try {
       const res = await api.put('/students/my/profile', {
         phone,
+        parent_name: parentName,
         parent_contact: parentContact,
         address,
       });
@@ -168,10 +171,6 @@ const StudentProfilePage = () => {
                 <span className="font-semibold text-slate-400 block">Joining Date</span>
                 <span className="font-bold text-slate-800">{formatDate(profile.joining_date)}</span>
               </div>
-              <div>
-                <span className="font-semibold text-slate-400 block">Guardian / Parent Name</span>
-                <span className="font-bold text-slate-800">{profile.parent_name}</span>
-              </div>
             </div>
           </div>
 
@@ -190,6 +189,18 @@ const StudentProfilePage = () => {
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Guardian / Parent Name</label>
+                <input
+                  type="text"
+                  required
+                  value={parentName}
+                  onChange={(e) => setParentName(e.target.value)}
+                  placeholder="Father / Guardian Name"
                   className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-hidden"
                 />
               </div>
