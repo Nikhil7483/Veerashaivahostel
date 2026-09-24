@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Core Layout & Authentication (eager for instant initial paint)
 import DashboardLayout from './layouts/DashboardLayout';
@@ -86,80 +87,82 @@ function App() {
     <AuthProvider>
       <NotificationProvider>
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/landing" element={<LandingPage />} />
-              <Route path="/login" element={<Login />} />
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/landing" element={<LandingPage />} />
+                <Route path="/login" element={<Login />} />
 
-              {/* Admin Protected Routes */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requiredRole="ADMIN">
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="profile" element={<AdminProfilePage />} />
-                <Route path="students" element={<StudentsPage />} />
-                <Route path="students/cleaning-room" element={<CleaningRoomPage />} />
-                <Route path="rooms" element={<RoomsPage />} />
-                <Route path="attendance" element={<AttendancePage />} />
-                <Route path="leaves" element={<LeavePage />} />
-                <Route path="cleaning" element={<CleaningPage />} />
-                <Route path="complaints" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="maintenance" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="food-allocation" element={<FoodAllocationPage />} />
-                <Route path="mess-menu" element={<WeeklyMessMenuPage />} />
-                <Route path="kitchen-order" element={<Navigate to="/admin/food-allocation" replace />} />
-                <Route path="mess" element={<Navigate to="/admin/mess-menu" replace />} />
-                <Route path="tiffin" element={<Navigate to="/admin/food-allocation" replace />} />
-                <Route path="food" element={<Navigate to="/admin/food-allocation" replace />} />
-                <Route path="visitors" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="lost-found" element={<LostFoundPage />} />
-                <Route path="emergency" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="announcements" element={<AnnouncementsPage />} />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="analytics" element={<AnalyticsPage />} />
-                <Route path="reports" element={<ReportsPage />} />
-                <Route path="audit-logs" element={<AuditLogsPage />} />
-              </Route>
+                {/* Admin Protected Routes */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requiredRole="ADMIN">
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="profile" element={<AdminProfilePage />} />
+                  <Route path="students" element={<StudentsPage />} />
+                  <Route path="students/cleaning-room" element={<CleaningRoomPage />} />
+                  <Route path="rooms" element={<RoomsPage />} />
+                  <Route path="attendance" element={<AttendancePage />} />
+                  <Route path="leaves" element={<LeavePage />} />
+                  <Route path="cleaning" element={<CleaningPage />} />
+                  <Route path="complaints" element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="maintenance" element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="food-allocation" element={<FoodAllocationPage />} />
+                  <Route path="mess-menu" element={<WeeklyMessMenuPage />} />
+                  <Route path="kitchen-order" element={<Navigate to="/admin/food-allocation" replace />} />
+                  <Route path="mess" element={<Navigate to="/admin/mess-menu" replace />} />
+                  <Route path="tiffin" element={<Navigate to="/admin/food-allocation" replace />} />
+                  <Route path="food" element={<Navigate to="/admin/food-allocation" replace />} />
+                  <Route path="visitors" element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="lost-found" element={<LostFoundPage />} />
+                  <Route path="emergency" element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="announcements" element={<AnnouncementsPage />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="analytics" element={<AnalyticsPage />} />
+                  <Route path="reports" element={<ReportsPage />} />
+                  <Route path="audit-logs" element={<AuditLogsPage />} />
+                </Route>
 
-              {/* Legacy Cleaning Redirects -> Redirect to Students Cleaning Room */}
-              <Route path="/cleaning/*" element={<Navigate to="/admin/students?tab=cleaning-room" replace />} />
+                {/* Legacy Cleaning Redirects -> Redirect to Students Cleaning Room */}
+                <Route path="/cleaning/*" element={<Navigate to="/admin/students?tab=cleaning-room" replace />} />
 
-              {/* Student Protected Routes */}
-              <Route
-                path="/student"
-                element={
-                  <ProtectedRoute requiredRole="STUDENT">
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Navigate to="/student/dashboard" replace />} />
-                <Route path="dashboard" element={<StudentDashboard />} />
-                <Route path="profile" element={<StudentProfilePage />} />
-                <Route path="room" element={<StudentRoomPage />} />
-                <Route path="attendance" element={<StudentAttendancePage />} />
-                <Route path="leave" element={<StudentLeavePage />} />
-                <Route path="cleaning" element={<StudentCleaningPage />} />
-                <Route path="cleaning-room" element={<CleaningRoomPage />} />
-                <Route path="complaints" element={<Navigate to="/student/dashboard" replace />} />
-                <Route path="mess-menu" element={<Navigate to="/student/dashboard" replace />} />
-                <Route path="kitchen-order" element={<Navigate to="/student/dashboard" replace />} />
-                <Route path="lost-found" element={<StudentLostFoundPage />} />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="announcements" element={<AnnouncementsPage />} />
-              </Route>
+                {/* Student Protected Routes */}
+                <Route
+                  path="/student"
+                  element={
+                    <ProtectedRoute requiredRole="STUDENT">
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Navigate to="/student/dashboard" replace />} />
+                  <Route path="dashboard" element={<StudentDashboard />} />
+                  <Route path="profile" element={<StudentProfilePage />} />
+                  <Route path="room" element={<StudentRoomPage />} />
+                  <Route path="attendance" element={<StudentAttendancePage />} />
+                  <Route path="leave" element={<StudentLeavePage />} />
+                  <Route path="cleaning" element={<StudentCleaningPage />} />
+                  <Route path="cleaning-room" element={<CleaningRoomPage />} />
+                  <Route path="complaints" element={<Navigate to="/student/dashboard" replace />} />
+                  <Route path="mess-menu" element={<Navigate to="/student/dashboard" replace />} />
+                  <Route path="kitchen-order" element={<Navigate to="/student/dashboard" replace />} />
+                  <Route path="lost-found" element={<StudentLostFoundPage />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="announcements" element={<AnnouncementsPage />} />
+                </Route>
 
-              {/* Fallback */}
-              <Route path="*" element={<RootRedirect />} />
-            </Routes>
-          </Suspense>
+                {/* Fallback */}
+                <Route path="*" element={<RootRedirect />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </BrowserRouter>
       </NotificationProvider>
     </AuthProvider>

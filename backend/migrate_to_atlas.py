@@ -8,6 +8,11 @@ import sys
 import os
 from pymongo import MongoClient, ReplaceOne
 
+# Ensure utf-8 encoding on Windows console
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
 LOCAL_URI = os.getenv("LOCAL_MONGO_URI", "mongodb://localhost:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "smart_hostel")
 
@@ -28,9 +33,9 @@ def migrate(atlas_uri: str):
     # Check connection
     try:
         local_client.admin.command('ping')
-        print("✓ Local MongoDB connected successfully.")
+        print("[OK] Local MongoDB connected successfully.")
     except Exception as e:
-        print(f"✗ Failed to connect to local MongoDB: {e}")
+        print(f"[FAIL] Failed to connect to local MongoDB: {e}")
         sys.exit(1)
         
     print(f"\nConnecting to MongoDB Atlas...")
@@ -39,9 +44,9 @@ def migrate(atlas_uri: str):
     
     try:
         atlas_client.admin.command('ping')
-        print("✓ MongoDB Atlas connected successfully.")
+        print("[OK] MongoDB Atlas connected successfully.")
     except Exception as e:
-        print(f"✗ Failed to connect to MongoDB Atlas: {e}")
+        print(f"[FAIL] Failed to connect to MongoDB Atlas: {e}")
         sys.exit(1)
         
     collections = local_db.list_collection_names()
@@ -78,7 +83,7 @@ def migrate(atlas_uri: str):
         ]
         
         result = atlas_col.bulk_write(operations)
-        print(f"  ✓ [{col_name}] Migrated {len(docs)} documents (Upserted: {result.upserted_count}, Modified: {result.modified_count})")
+        print(f"  [OK] [{col_name}] Migrated {len(docs)} documents (Upserted: {result.upserted_count}, Modified: {result.modified_count})")
         total_migrated += len(docs)
         
     print("\nVerifying migration counts:")
@@ -88,7 +93,7 @@ def migrate(atlas_uri: str):
             continue
         local_count = local_db[col_name].count_documents({})
         atlas_count = atlas_db[col_name].count_documents({})
-        status = "MATCH ✓" if local_count == atlas_count else "CHECK ⚠️"
+        status = "MATCH [OK]" if local_count == atlas_count else "DIFF [!]"
         if local_count != atlas_count:
             all_matched = False
         print(f"  {col_name:25}: Local={local_count:4} | Atlas={atlas_count:4} [{status}]")

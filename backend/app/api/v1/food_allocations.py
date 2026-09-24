@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
+import asyncio
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, time
@@ -1280,22 +1281,32 @@ async def build_warden_roster_data(date: str) -> dict:
     day_name = get_day_name(date)
     default_sch = OFFICIAL_WEEKLY_SCHEDULE.get(day_name, OFFICIAL_WEEKLY_SCHEDULE["Monday"])
 
-    alloc = await db.food_allocations.find_one({"date": date})
+    (
+        alloc,
+        m_session_doc,
+        n_session_doc,
+        students,
+        att_records,
+        box_assignment_docs
+    ) = await asyncio.gather(
+        db.food_allocations.find_one({"date": date}),
+        db.meal_counts.find_one({"date": date, "session": "morning"}),
+        db.meal_counts.find_one({"date": date, "session": "night"}),
+        db.students.find({"status": "ACTIVE"}).sort([("room_number", 1), ("bed_number", 1), ("student_id", 1)]).to_list(500),
+        db.attendance.find({"date": date}).to_list(500),
+        db.food_assignments.find({"food_type": "Tiffin Box"}).to_list(200),
+    )
+
     morning_dish = alloc.get("morning_dish", default_sch["breakfast"]) if alloc else default_sch["breakfast"]
     night_dish = alloc.get("night_dish", default_sch["dinner"]) if alloc else default_sch["dinner"]
 
-    m_session = await db.meal_counts.find_one({"date": date, "session": "morning"}) or {}
-    n_session = await db.meal_counts.find_one({"date": date, "session": "night"}) or {}
+    m_session = m_session_doc or {}
+    n_session = n_session_doc or {}
 
     m_records_map = {r["student_id"]: r for r in m_session.get("student_records", [])}
     n_records_map = {r["student_id"]: r for r in n_session.get("student_records", [])}
 
-    students = await db.students.find({"status": "ACTIVE"}).sort([("room_number", 1), ("bed_number", 1), ("student_id", 1)]).to_list(500)
-    att_records = await db.attendance.find({"date": date}).to_list(500)
     att_map = {a["student_id"]: a["status"] for a in att_records}
-
-    # Default box requests from food_assignments if not yet manually recorded
-    box_assignment_docs = await db.food_assignments.find({"food_type": "Tiffin Box"}).to_list(200)
     default_box_ids = {a["student_id"] for a in box_assignment_docs}
 
     roster = []

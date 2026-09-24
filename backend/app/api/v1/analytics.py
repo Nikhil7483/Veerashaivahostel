@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+import asyncio
 from app.database.connection import get_database
 from app.core.dependencies import require_admin
 from datetime import datetime, timedelta
@@ -9,38 +10,37 @@ router = APIRouter(prefix="/analytics", tags=["Analytics & Problem Intelligence"
 async def get_overview_analytics(current_user: dict = Depends(require_admin)):
     db = get_database()
     today_str = datetime.now().strftime("%Y-%m-%d")
-    
-    total_students = await db.students.count_documents({"status": "ACTIVE"})
-    
-    # 12 active rooms (Room 03 does not exist)
-    rooms = await db.rooms.find({}).to_list(20)
-    total_rooms = len(rooms)
-    total_beds = sum(r.get("total_beds", 4) for r in rooms)
-    occupied_beds = sum(r.get("occupied_beds", 0) for r in rooms)
-    available_beds = max(0, total_beds - occupied_beds)
-    occupancy_pct = round((occupied_beds / total_beds * 100), 1) if total_beds > 0 else 0
-    occupied_rooms_count = sum(1 for r in rooms if r.get("occupied_beds", 0) > 0)
-    
-    # Attendance today
-    present_today = await db.attendance.count_documents({"date": today_str, "status": "PRESENT"})
-    absent_today = await db.attendance.count_documents({"date": today_str, "status": "ABSENT"})
-    leave_today = await db.attendance.count_documents({"date": today_str, "status": "LEAVE"})
-    
-    # Complaints
-    pending_complaints = await db.complaints.count_documents({"status": {"$in": ["PENDING", "ASSIGNED", "IN_PROGRESS"]}})
-    
-    # Check overdue complaints (created > 48h ago and not resolved)
     cutoff = datetime.utcnow() - timedelta(hours=48)
-    overdue_complaints = await db.complaints.count_documents({
-        "status": {"$in": ["PENDING", "ASSIGNED", "IN_PROGRESS"]},
-        "created_at": {"$lt": cutoff}
-    })
     
-    # Pending items
-    pending_leaves = await db.leave_applications.count_documents({"status": "PENDING"})
-    pending_cleaning = await db.cleaning_requests.count_documents({"status": {"$in": ["REQUESTED", "PENDING", "IN_PROGRESS"]}})
-    pending_maintenance = await db.maintenance_requests.count_documents({"status": {"$in": ["PENDING", "IN_PROGRESS"]}})
-    active_emergencies = await db.emergency_alerts.count_documents({"status": "ACTIVE"})
+    # Run all independent overview metrics in parallel
+    (
+        total_students,
+        rooms,
+        present_today,
+        absent_today,
+        leave_today,
+        pending_complaints,
+        overdue_complaints,
+        pending_leaves,
+        pending_cleaning,
+        pending_maintenance,
+        active_emergencies,
+    ) = await asyncio.gather(
+        db.students.count_documents({"status": "ACTIVE"}),
+        db.rooms.find({}).to_list(20),
+        db.attendance.count_documents({"date": today_str, "status": "PRESENT"}),
+        db.attendance.count_documents({"date": today_str, "status": "ABSENT"}),
+        db.attendance.count_documents({"date": today_str, "status": "LEAVE"}),
+        db.complaints.count_documents({"status": {"$in": ["PENDING", "ASSIGNED", "IN_PROGRESS"]}}),
+        db.complaints.count_documents({
+            "status": {"$in": ["PENDING", "ASSIGNED", "IN_PROGRESS"]},
+            "created_at": {"$lt": cutoff}
+        }),
+        db.leave_applications.count_documents({"status": "PENDING"}),
+        db.cleaning_requests.count_documents({"status": {"$in": ["REQUESTED", "PENDING", "IN_PROGRESS"]}}),
+        db.maintenance_requests.count_documents({"status": {"$in": ["PENDING", "IN_PROGRESS"]}}),
+        db.emergency_alerts.count_documents({"status": "ACTIVE"}),
+    )
     
     return {
         "total_students": total_students,

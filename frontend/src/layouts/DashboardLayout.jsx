@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/common/Sidebar';
 import Navbar from '../components/common/Navbar';
+import ErrorBoundary from '../components/common/ErrorBoundary';
 
 const DashboardLayout = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -19,7 +20,9 @@ const DashboardLayout = () => {
         <Navbar onMobileToggle={() => setMobileSidebarOpen(true)} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
 
         <footer className="py-4 px-6 border-t border-slate-200 bg-white/80 text-center text-xs text-slate-500">

@@ -16,24 +16,31 @@ import {
   Moon,
   ChefHat,
   ClipboardCheck,
-  CheckCircle2
+  CheckCircle2,
+  Clock,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [overview, setOverview] = useState(null);
   const [todayFood, setTodayFood] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchDashboardData = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const [overRes, foodRes] = await Promise.all([
         api.get('/analytics/overview'),
         api.get('/food-allocation/today').catch(() => ({ data: null }))
       ]);
-      setOverview(overRes.data);
+      setOverview(overRes?.data || null);
       setTodayFood(foodRes?.data || null);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
+      setError('Could not load current statistics from server. Please check connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -45,8 +52,32 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <p className="text-xs font-semibold text-slate-400 animate-pulse">Loading Warden Dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error && !overview) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl p-6 border border-rose-200 text-center space-y-4 shadow-sm">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-800">Connection Error</h3>
+            <p className="text-xs text-slate-500 mt-1">{error}</p>
+          </div>
+          <button
+            onClick={fetchDashboardData}
+            className="inline-flex items-center space-x-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry Loading</span>
+          </button>
+        </div>
       </div>
     );
   }

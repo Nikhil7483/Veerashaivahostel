@@ -18,27 +18,44 @@ async def login(request: Request, login_data: LoginRequest):
     clean_user = raw_user.lower()
     
     # 1. Check for admin aliases
-    if clean_user in ["admin", "warden", "administrator", "admin@hostel.edu"]:
+    if clean_user in ["admin", "warden", "administrator", "admin@hostel.edu", "admin@smarthostel.com"]:
         user = await db.users.find_one({"email": "admin@smarthostel.com"})
     else:
-        # Try finding user by email first
-        user = await db.users.find_one({"email": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}})
+        # Try direct indexed lookups first (fast O(1) B-tree lookup)
+        user = await db.users.find_one({"email": clean_user})
+        if not user and raw_user != clean_user:
+            user = await db.users.find_one({"email": raw_user})
+        if not user:
+            user = await db.users.find_one({"email": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}})
     
     # 2. If not found, check student ID, USN, name, or phone
     if not user:
-        queries = [
-            {"student_id": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
-            {"usn": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
-            {"name": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
+        # Try exact indexed match first
+        student_queries = [
+            {"student_id": raw_user},
+            {"student_id": raw_user.upper()},
+            {"usn": raw_user.upper()},
+            {"usn": raw_user},
             {"phone": raw_user}
         ]
         if raw_user.isdigit():
             padded = raw_user.zfill(3)
-            queries.extend([
+            student_queries.extend([
                 {"student_id": padded},
                 {"usn": padded}
             ])
-        student = await db.students.find_one({"$or": queries})
+        student = await db.students.find_one({"$or": student_queries})
+        
+        # If not found by exact, fallback to regex search
+        if not student:
+            regex_queries = [
+                {"student_id": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
+                {"usn": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
+                {"name": {"$regex": f"^{re.escape(raw_user)}$", "$options": "i"}},
+                {"phone": raw_user}
+            ]
+            student = await db.students.find_one({"$or": regex_queries})
+            
         if student:
             user = await db.users.find_one({"email": student["email"]})
             

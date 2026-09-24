@@ -47,6 +47,10 @@ backend/uploads/*
 # Binaries and tools
 *.exe
 
+# Local scratch and backups
+scratch/
+backups/
+
 # IDE & OS
 .vscode/
 .idea/
