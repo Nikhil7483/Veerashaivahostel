@@ -2,9 +2,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
 import asyncio
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
-from datetime import datetime, time
+from datetime import datetime, time, timezone, timedelta
 from app.database.connection import get_database
+
+# India Standard Time (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
 from app.core.dependencies import get_current_user, require_admin, require_cleaning_team, require_cleaning_or_admin, log_audit
 from app.services.pdf_generator import generate_meal_count_pdf, format_date_ddmmyyyy
 
@@ -123,13 +125,11 @@ def get_day_name(date_str: str) -> str:
 
 def check_morning_tiffin_window(sim_time: Optional[str] = None, sim_day: Optional[str] = None, check_date: Optional[str] = None) -> Dict[str, Any]:
     """
-    Morning Tiffin Count Window:
-    - OPEN: 5:30 AM to before 7:00 AM
-    - Before 5:30 AM: CLOSED
-    - At/after 7:00 AM: CLOSED
+    Morning Tiffin Count Window (Indian Standard Time):
+    - OPEN: 5:00 AM to 8:30 AM IST (Mon–Sat)
     - SUNDAY EXCEPTION: Sunday morning has NO Tiffin count.
     """
-    now = datetime.now()
+    now = datetime.now(IST)
     day_name = sim_day or (get_day_name(check_date) if check_date else now.strftime("%A"))
     
     # 1. SUNDAY EXCEPTION: No Morning Tiffin session on Sundays
@@ -139,11 +139,11 @@ def check_morning_tiffin_window(sim_time: Optional[str] = None, sim_day: Optiona
             "is_open": False,
             "is_sunday": True,
             "reason": "Sunday Exception: No Morning Tiffin Count on Sundays. Breakfast (Idli, Chutney, Sambar) is served directly.",
-            "session": "5:30 AM – 7:00 AM",
+            "session": "5:30 AM – 8:30 AM",
             "day": day_name
         }
 
-    # 2. Time Window Check
+    # 2. Time Window Check (IST)
     if sim_time:
         try:
             parts = sim_time.split(":")
@@ -153,38 +153,39 @@ def check_morning_tiffin_window(sim_time: Optional[str] = None, sim_day: Optiona
     else:
         current_time = now.time()
 
-    open_time = time(5, 30)
-    close_time = time(7, 0)
+    open_time = time(5, 0)
+    close_time = time(8, 30)
 
-    if open_time <= current_time < close_time:
+    if open_time <= current_time <= close_time:
         return {
             "status": "OPEN",
             "is_open": True,
             "is_sunday": False,
-            "reason": "Morning Tiffin Count is currently active (5:30 AM – 7:00 AM).",
-            "session": "5:30 AM – 7:00 AM",
+            "reason": "Morning Tiffin Count is currently active.",
+            "session": "5:30 AM – 7:00 AM Routine (Active until 8:30 AM IST)",
             "current_time": current_time.strftime("%I:%M %p"),
             "day": day_name
         }
     else:
-        msg = "Morning Tiffin Count opens at 5:30 AM." if current_time < open_time else "Morning Tiffin Count closed at 7:00 AM."
+        msg = "Morning Tiffin Count opens at 5:00 AM IST." if current_time < open_time else "Morning Tiffin Count closed after 8:30 AM IST."
         return {
             "status": "CLOSED",
             "is_open": False,
             "is_sunday": False,
             "reason": msg,
-            "session": "5:30 AM – 7:00 AM",
+            "session": "5:30 AM – 7:00 AM Routine",
             "current_time": current_time.strftime("%I:%M %p"),
             "day": day_name
         }
 
 def check_night_meal_window(sim_time: Optional[str] = None, check_date: Optional[str] = None) -> Dict[str, Any]:
     """
-    Night Dinner Meal Count Window:
-    - OPEN: 5:00 PM to 6:30 PM (17:00 – 18:30)
+    Night Dinner Meal Count Window (Indian Standard Time):
+    - OPEN throughout the day: 5:30 AM morning to 8:30 PM evening (IST).
+    - Can be taken in the morning during rounds or during evening verification (5:00 PM – 6:30 PM).
     - Works normally on all days including Sunday.
     """
-    now = datetime.now()
+    now = datetime.now(IST)
     day_name = get_day_name(check_date) if check_date else now.strftime("%A")
 
     if sim_time:
@@ -196,24 +197,24 @@ def check_night_meal_window(sim_time: Optional[str] = None, check_date: Optional
     else:
         current_time = now.time()
 
-    open_time = time(17, 0)
-    close_time = time(18, 30)
+    # Open throughout the day from morning 5:30 AM until 8:30 PM IST
+    open_time = time(5, 30)
+    close_time = time(20, 30)
     if open_time <= current_time <= close_time:
         return {
             "status": "OPEN",
             "is_open": True,
-            "reason": "Night Dinner Meal Count is currently active (5:00 PM – 6:30 PM).",
-            "session": "5:00 PM – 6:30 PM",
+            "reason": "Night Dinner Meal Count is active (available all day from 5:30 AM to 8:30 PM IST).",
+            "session": "Morning & Evening Verification (5:00 PM – 6:30 PM)",
             "current_time": current_time.strftime("%I:%M %p"),
             "day": day_name
         }
     else:
-        msg = "Night Dinner Meal Count opens at 5:00 PM." if current_time < open_time else "Night Dinner Meal Count closed at 6:30 PM."
         return {
             "status": "CLOSED",
             "is_open": False,
-            "reason": msg,
-            "session": "5:00 PM – 6:30 PM",
+            "reason": "Night Dinner Meal Count closed after 8:30 PM dinner service. Opens at 5:30 AM IST.",
+            "session": "Morning & Evening Verification (5:00 PM – 6:30 PM)",
             "current_time": current_time.strftime("%I:%M %p"),
             "day": day_name
         }
@@ -618,10 +619,22 @@ async def save_morning_student_record(
     # Attendance reference
     att_status = await get_student_attendance_status(db, data.student_id, data.date)
     if att_status in ["ABSENT", "LEAVE"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Student {student.get('name')} is marked {att_status} in attendance and cannot be counted as Yes or No."
-        )
+        if data.tiffin_required or data.box_required:
+            await db.attendance.update_one(
+                {"date": data.date, "student_id": data.student_id},
+                {"$set": {
+                    "status": "PRESENT",
+                    "remarks": "Marked Present for Morning Tiffin/Box",
+                    "updated_at": datetime.utcnow()
+                }},
+                upsert=True
+            )
+            att_status = "PRESENT"
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Student {student.get('name')} is marked {att_status} in attendance and cannot be counted as Yes or No."
+            )
 
     alloc = await db.food_allocations.find_one({"date": data.date})
     day_name = get_day_name(data.date)
@@ -965,10 +978,22 @@ async def save_night_student_record(
 
     att_status = await get_student_attendance_status(db, data.student_id, data.date)
     if att_status in ["ABSENT", "LEAVE"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Student {student.get('name')} is marked {att_status} in attendance and cannot be counted as Yes or No."
-        )
+        if data.meal_required:
+            await db.attendance.update_one(
+                {"date": data.date, "student_id": data.student_id},
+                {"$set": {
+                    "status": "PRESENT",
+                    "remarks": "Updated to Present for Night Dinner Meal",
+                    "updated_at": datetime.utcnow()
+                }},
+                upsert=True
+            )
+            att_status = "PRESENT"
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Student {student.get('name')} is marked {att_status} in attendance and cannot be counted as Yes or No."
+            )
 
     alloc = await db.food_allocations.find_one({"date": data.date})
     day_name = get_day_name(data.date)

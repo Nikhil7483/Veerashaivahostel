@@ -172,17 +172,12 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
   };
 
   // 4. Toggle Night Meal
+  // 4. Toggle Night Meal
   const handleToggleNight = async (studentId, currentVal) => {
     if (!nightData || nightData.is_locked || (!isAdmin && nightData?.cleaning_duty && !nightData?.cleaning_duty?.has_duty)) return;
 
     const student = nightData.students.find(s => s.student_id === studentId);
     if (!student) return;
-
-    // Rule: Absent and leave students cannot be counted as Yes or No!
-    if (student.attendance_status !== 'PRESENT') {
-      setMessage(`Student ${student.name} is marked ${student.attendance_status} in attendance and cannot be counted as Yes or No.`);
-      return;
-    }
 
     const newRequired = !currentVal;
 
@@ -192,6 +187,7 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
         if (s.student_id === studentId) {
           return {
             ...s,
+            attendance_status: newRequired ? 'PRESENT' : s.attendance_status,
             meal_required: newRequired,
             is_checked: true
           };
@@ -221,6 +217,9 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
         student_id: studentId,
         meal_required: newRequired
       });
+      if (student.attendance_status !== 'PRESENT' && newRequired) {
+        setMessage(`Student ${student.name} marked Present & counted for Night Dinner!`);
+      }
     } catch (err) {
       console.error(err);
       fetchNight();
@@ -416,14 +415,14 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
                   <span className="font-extrabold text-slate-900 text-sm">
                     {currentData?.morning_dish || currentData?.food_item || 'Morning Breakfast'}
                   </span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Window: 5:30 AM – 7:00 AM</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Window: 5:00 AM – 8:30 AM IST</span>
                 </div>
                 <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-200">
                   <span className="text-[10px] font-bold text-purple-700 block mb-0.5">🌙 Night Dinner</span>
                   <span className="font-extrabold text-slate-900 text-sm">
                     {currentData?.night_dish || 'Rice / Ragi Mudde + Sambar'}
                   </span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Window: 5:00 PM – 6:30 PM</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Active All Day (Morning to 8:30 PM) • Final Count: 5:00–6:30 PM</span>
                 </div>
               </div>
             </div>
@@ -552,8 +551,8 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
               <Clock className="w-4 h-4 text-white/90" />
               <span>
                 {activeSession === 'morning'
-                  ? 'Count Window: 5:30 AM – 7:00 AM (Mon–Sat)'
-                  : 'Count Window: 5:00 PM – 6:30 PM (All Days)'}
+                  ? 'Count Window: 5:00 AM – 8:30 AM IST (Mon–Sat)'
+                  : 'Count Window: Open All Day (5:30 AM – 8:30 PM IST) • Evening Final: 5:00 PM – 6:30 PM'}
               </span>
               <span>•</span>
               <span>Date: {formatDate(selectedDate)} ({currentData?.day})</span>
