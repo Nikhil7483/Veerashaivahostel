@@ -11,7 +11,7 @@ from datetime import datetime
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/login", response_model=TokenResponse)
-@limiter.limit("120/minute")
+@limiter.limit("1000/minute")
 async def login(request: Request, login_data: LoginRequest):
     db = get_database()
     raw_user = login_data.username.strip()

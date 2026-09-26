@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { warmUpBackend } from './services/api';
 
 // Core Layout & Authentication (eager for instant initial paint)
 import DashboardLayout from './layouts/DashboardLayout';
@@ -83,6 +84,15 @@ const RootRedirect = () => {
 };
 
 function App() {
+  React.useEffect(() => {
+    // Periodic background keepalive so Render backend never sleeps while app is active
+    warmUpBackend();
+    const interval = setInterval(() => {
+      warmUpBackend();
+    }, 3.5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <AuthProvider>
       <NotificationProvider>

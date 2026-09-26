@@ -12,7 +12,15 @@ async def connect_to_mongo():
     import re
     masked = re.sub(r":([^:@]+)@", r":****@", settings.MONGODB_URI)
     print(f"Connecting to MongoDB at: {masked}")
-    db_instance.client = AsyncIOMotorClient(settings.MONGODB_URI)
+    db_instance.client = AsyncIOMotorClient(
+        settings.MONGODB_URI,
+        maxPoolSize=50,
+        minPoolSize=5,
+        maxIdleTimeMS=45000,
+        serverSelectionTimeoutMS=8000,
+        connectTimeoutMS=10000,
+        socketTimeoutMS=20000,
+    )
     db_instance.db = db_instance.client[settings.DATABASE_NAME]
     await init_db_indexes()
     print(f"Connected to MongoDB database: {settings.DATABASE_NAME}")
