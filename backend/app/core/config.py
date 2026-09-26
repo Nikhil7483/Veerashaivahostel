@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     UPLOAD_DIRECTORY: str = "backend/uploads"
     
     CORS_ORIGINS: Union[List[str], str] = [
+        "https://veerashaivaboyshostel.in",
+        "https://www.veerashaivaboyshostel.in",
         "https://veerashaivahostel.run.place",
         "https://veerashaivahostel.vercel.app",
         "http://localhost:5173",

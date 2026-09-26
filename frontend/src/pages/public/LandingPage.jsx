@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import basavannaImg from '../../assets/basavanna.png';
+import swamijiImg from '../../assets/swamiji.jpg';
+import shadakshariImg from '../../assets/shadakshari.jpg';
 
 /* ─────────────────────────────────────────────────────────
    LANDING PAGE — Veerashaiva Lingayath Boys Hostel
@@ -112,6 +114,174 @@ const STYLES = `
     background: rgba(251,191,36,.5); vertical-align: middle; margin: 0 8px;
   }
 
+  /* ── Hostel Leadership Section ── */
+  .lp-leadership-section {
+    position: relative;
+    z-index: 1;
+    padding: clamp(52px, 7vw, 84px) clamp(16px, 5vw, 60px);
+    border-top: 1px solid rgba(251, 191, 36, 0.12);
+    background: linear-gradient(180deg, rgba(2, 8, 23, 0.35) 0%, rgba(5, 12, 30, 0.6) 100%);
+  }
+
+  .lp-leadership-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .lp-leadership-header {
+    text-align: center;
+    margin-bottom: clamp(32px, 4.5vw, 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lp-leadership-sublabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    border-radius: 999px;
+    background: rgba(251, 191, 36, 0.09);
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    font-size: clamp(0.7rem, 1.5vw, 0.78rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fbbf24;
+    margin-bottom: 12px;
+  }
+
+  .lp-leadership-title {
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .lp-leadership-divider {
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #fbbf24 35%, #f59e0b 65%, transparent);
+    width: 80px;
+    margin: 0 auto;
+  }
+
+  .lp-leadership-cards {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(28px, 4vw, 42px);
+  }
+
+  .lp-leader-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fbbf24;
+    margin-bottom: 8px;
+  }
+
+  .lp-leader-card {
+    display: flex;
+    align-items: center;
+    gap: clamp(28px, 4.5vw, 48px);
+    padding: clamp(28px, 4.5vw, 44px);
+    border-radius: 22px;
+    background: rgba(8, 16, 36, 0.72);
+    border: 1px solid rgba(251, 191, 36, 0.22);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.55), 0 0 30px rgba(251, 191, 36, 0.06);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .lp-leader-card:hover {
+    border-color: rgba(251, 191, 36, 0.38);
+    box-shadow: 0 24px 56px -10px rgba(0, 0, 0, 0.65), 0 0 36px rgba(251, 191, 36, 0.1);
+  }
+
+  .lp-leader-photo-wrap {
+    flex: 0 0 clamp(220px, 26vw, 290px);
+    position: relative;
+    border-radius: 18px;
+    padding: 5px;
+    background: linear-gradient(145deg, rgba(251, 191, 36, 0.38) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(245, 158, 11, 0.25) 100%);
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), 0 0 24px rgba(251, 191, 36, 0.12);
+  }
+
+  .lp-leader-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 14px;
+    display: block;
+  }
+
+  .lp-leader-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .lp-leader-name {
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .lp-leader-designation {
+    font-size: clamp(0.92rem, 1.8vw, 1.05rem);
+    line-height: 1.45;
+    margin-bottom: 20px;
+    letter-spacing: 0.01em;
+  }
+
+  .lp-leader-designation-title {
+    color: #fbbf24;
+    font-weight: 800;
+  }
+
+  .lp-leader-designation-sep {
+    color: rgba(251, 191, 36, 0.6);
+    margin: 0 2px;
+  }
+
+  .lp-leader-designation-inst {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  .lp-leader-desc {
+    font-size: clamp(0.92rem, 1.6vw, 1.02rem);
+    line-height: 1.78;
+    color: #cbd5e1;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    border-left: 2.5px solid rgba(251, 191, 36, 0.45);
+    padding-left: 18px;
+    margin-top: 4px;
+  }
+
   @media (max-width: 767px) {
     .lp-hero-grid { flex-direction: column !important; align-items: center !important; }
     .lp-hero-img-col { order: -1 !important; width: 100% !important; max-width: 240px !important; margin: 0 auto !important; }
@@ -119,6 +289,34 @@ const STYLES = `
     .lp-feat-strip { flex-wrap: wrap !important; }
     .lp-feat { min-width: calc(50% - 8px) !important; }
     .lp-tagline { justify-content: center !important; }
+
+    .lp-leader-card {
+      flex-direction: column !important;
+      text-align: center !important;
+      padding: clamp(20px, 5vw, 32px) !important;
+      gap: 20px !important;
+    }
+    .lp-leader-photo-wrap {
+      flex: 0 0 auto !important;
+      width: 100% !important;
+      max-width: 240px !important;
+      margin: 0 auto 4px auto !important;
+    }
+    .lp-leader-content {
+      align-items: center !important;
+      text-align: center !important;
+    }
+    .lp-leader-designation {
+      text-align: center !important;
+      margin-bottom: 16px !important;
+    }
+    .lp-leader-desc {
+      border-left: none !important;
+      border-top: 1px solid rgba(251, 191, 36, 0.2) !important;
+      padding-left: 0 !important;
+      padding-top: 16px !important;
+      text-align: center !important;
+    }
   }
   @media (max-width: 480px) {
     .lp-feat { min-width: calc(50% - 6px) !important; }
@@ -345,12 +543,96 @@ const LandingPage = () => {
             </div>
           </div>{/* end hero grid */}
 
-          {/* ══ FEATURE STRIP ══ */}
+          {/* ══ HOSTEL LEADERSHIP SECTION ══ */}
+          <section
+            id="hostel-leadership"
+            className="lp-leadership-section"
+            aria-labelledby="hostel-leadership-heading"
+          >
+            <div className="lp-leadership-container">
+              {/* Subtle label above the profile & Section Title */}
+              <div className="lp-leadership-header">
+                <span className="lp-leadership-sublabel">HOSTEL LEADERSHIP</span>
+                <h2 id="hostel-leadership-heading" className="lp-leadership-title">
+                  Hostel Leadership
+                </h2>
+                <div className="lp-leadership-divider" />
+              </div>
+
+              <div className="lp-leadership-cards">
+                {/* ── 1ST PROFILE: Divine Inspiration & Blessings (First Pic) ── */}
+                <div className="lp-leader-card">
+                  <div className="lp-leader-photo-wrap">
+                    <img
+                      src={swamijiImg}
+                      alt="His Holiness Dr. Sri Sri Sri Shivakumara Mahaswamiji, Siddaganga Mutt"
+                      className="lp-leader-img"
+                      style={{ aspectRatio: '1 / 1' }}
+                    />
+                  </div>
+
+                  <div className="lp-leader-content">
+                    <span className="lp-leader-tag">DIVINE BLESSINGS &amp; INSPIRATION</span>
+                    <h3 style={{ fontFamily: "'Noto Sans Kannada',serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#fde68a', letterSpacing: '0.01em', lineHeight: 1.35, marginBottom: '6px' }}>
+                      ಪರಮಪೂಜ್ಯ ಡಾ. ಶ್ರೀ ಶ್ರೀ ಶ್ರೀ ಶಿವಕುಮಾರ ಮಹಾಸ್ವಾಮೀಜಿಗಳು
+                    </h3>
+                    <p style={{ fontFamily: "'Cinzel','Georgia',serif", fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em', marginBottom: '8px' }}>
+                      Dr. Sri Sri Sri Shivakumara Mahaswamiji
+                    </p>
+                    <p className="lp-leader-designation">
+                      <span className="lp-leader-designation-title">Divine Inspiration</span>
+                      <span className="lp-leader-designation-sep"> — </span>
+                      <span className="lp-leader-designation-inst">Siddaganga Mutt, Tumakuru</span>
+                    </p>
+                    <p className="lp-leader-desc">
+                      Revered universally as "Trividha Dasohi" (provider of food, education, and shelter) and the "Walking God", His Holiness dedicated his life to selfless service and the empowerment of students. His divine blessings, spiritual wisdom, and ideals of "Kayakave Kailasa" remain the eternal guiding light for our hostel.
+                    </p>
+                  </div>
+                </div>
+
+                {/* ── 2ND PROFILE: Hostel President ── */}
+                <div className="lp-leader-card">
+                  <div className="lp-leader-photo-wrap">
+                    <img
+                      src={shadakshariImg}
+                      alt="C. S. Shadakshari, President of Veerashiva Lingayath Boys Hostel"
+                      className="lp-leader-img"
+                    />
+                  </div>
+
+                  <div className="lp-leader-content">
+                    <span className="lp-leader-tag">HOSTEL LEADERSHIP</span>
+                    <h3 style={{ fontFamily: "'Noto Sans Kannada',serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#fde68a', letterSpacing: '0.01em', lineHeight: 1.35, marginBottom: '6px' }}>
+                      ಶ್ರೀ ಸಿ. ಎಸ್. ಷಡಕ್ಷರಿ
+                    </h3>
+                    <p style={{ fontFamily: "'Cinzel','Georgia',serif", fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em', marginBottom: '12px' }}>
+                      Sri C. S. Shadakshari
+                    </p>
+
+                    <div style={{ marginBottom: '18px' }}>
+                      <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.08rem)', fontWeight: 800, color: '#fbbf24', letterSpacing: '0.02em', marginBottom: '6px' }}>
+                        Hostel President
+                      </p>
+                      <p style={{ fontFamily: "'Noto Sans Kannada',serif", fontSize: 'clamp(0.86rem, 1.7vw, 0.98rem)', color: '#cbd5e1', fontWeight: 600, lineHeight: 1.45 }}>
+                        ಅಧ್ಯಕ್ಷರು — ಶ್ರೀ ಶಿವಕುಮಾರ ಸ್ವಾಮೀಜಿಗಳ ನೌಕರರ ಸಂಘ, ಶಿವಮೊಗ್ಗ
+                      </p>
+                    </div>
+
+                    <p className="lp-leader-desc">
+                      Sri C. S. Shadakshari serves as the President of the Veerashiva Lingayath Boys Hostel, Shivamogga. Under his guidance, the hostel strives to provide students with a disciplined, supportive and respectful living environment, while encouraging education, community values and personal development.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ══ FEATURE STRIP (After Pics) ══ */}
           <div className="lp-6" style={{
             position: 'relative', zIndex: 1,
-            padding: 'clamp(16px,3vw,24px) clamp(16px,5vw,60px)',
-            borderTop: '1px solid rgba(255,255,255,.06)',
-            background: 'rgba(2,8,23,.45)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            padding: 'clamp(20px,3.5vw,28px) clamp(16px,5vw,60px)',
+            borderTop: '1px solid rgba(251,191,36,.12)',
+            background: 'rgba(2,8,23,.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
           }}>
             <div className="lp-feat-strip" style={{ display: 'flex', gap: 'clamp(8px,2vw,16px)', maxWidth: '1000px', margin: '0 auto', flexWrap: 'nowrap' }}>
               <FeaturePill icon="🎓" label="Student Services"       sub="Academic & Welfare" />

@@ -4,4 +4,4 @@ Allow: /login
 Disallow: /admin/
 Disallow: /student/
 
-Sitemap: https://veerashaivahostel.vercel.app/sitemap.xml
+Sitemap: https://veerashaivaboyshostel.in/sitemap.xml

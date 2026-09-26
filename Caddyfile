@@ -2,7 +2,7 @@
     admin off
 }
 
-veerashaivahostel.run.place, 127.0.0.1, localhost {
+veerashaivaboyshostel.in, www.veerashaivaboyshostel.in, veerashaivahostel.run.place, 127.0.0.1, localhost {
     tls internal
 
     root * C:/Users/Samsung/Desktop/finalhost/HOSTEL/frontend/dist
