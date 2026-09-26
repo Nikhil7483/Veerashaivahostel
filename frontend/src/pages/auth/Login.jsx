@@ -211,37 +211,6 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Quick Fill One-Click Credentials */}
-              <div className="pt-1">
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5 px-0.5">
-                  <span className="font-semibold text-slate-300">Quick Fill Demo:</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUsername('admin');
-                      setPassword('Admin@123');
-                      setError('');
-                    }}
-                    className="py-2 px-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 hover:border-amber-400/50 text-[11px] font-semibold text-amber-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm active:scale-95"
-                  >
-                    <span>👑 Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUsername('001');
-                      setPassword('Student@123');
-                      setError('');
-                    }}
-                    className="py-2 px-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 hover:border-blue-400/50 text-[11px] font-semibold text-blue-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm active:scale-95"
-                  >
-                    <span>🎓 Student (001)</span>
-                  </button>
-                </div>
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
