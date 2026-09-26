@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import basavannaImg from '../../assets/basavanna.png';
 import swamijiImg from '../../assets/swamiji.jpg';
 import shadakshariImg from '../../assets/shadakshari.jpg';
+import ranganathImg from '../../assets/ranganath.jpg';
 
 /* ─────────────────────────────────────────────────────────
    LANDING PAGE — Veerashaiva Lingayath Boys Hostel
@@ -620,6 +621,40 @@ const LandingPage = () => {
 
                     <p className="lp-leader-desc">
                       Sri C. S. Shadakshari serves as the President of the Veerashiva Lingayath Boys Hostel, Shivamogga. Under his guidance, the hostel strives to provide students with a disciplined, supportive and respectful living environment, while encouraging education, community values and personal development.
+                    </p>
+                  </div>
+                </div>
+
+                {/* ── 3RD PROFILE: Hostel Treasurer ── */}
+                <div className="lp-leader-card">
+                  <div className="lp-leader-photo-wrap">
+                    <img
+                      src={ranganathImg}
+                      alt="Ranganath N M, Treasurer of Veerashiva Lingayath Boys Hostel"
+                      className="lp-leader-img"
+                    />
+                  </div>
+
+                  <div className="lp-leader-content">
+                    <span className="lp-leader-tag">HOSTEL LEADERSHIP</span>
+                    <h3 style={{ fontFamily: "'Noto Sans Kannada',serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#fde68a', letterSpacing: '0.01em', lineHeight: 1.35, marginBottom: '6px' }}>
+                      ಶ್ರೀ ರಂಗನಾಥ್ ಎನ್. ಎಂ.
+                    </h3>
+                    <p style={{ fontFamily: "'Cinzel','Georgia',serif", fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em', marginBottom: '12px' }}>
+                      Ranganath N M
+                    </p>
+
+                    <div style={{ marginBottom: '18px' }}>
+                      <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.08rem)', fontWeight: 800, color: '#fbbf24', letterSpacing: '0.02em', marginBottom: '4px' }}>
+                        Treasurer
+                      </p>
+                      <p style={{ fontSize: 'clamp(0.86rem, 1.7vw, 0.98rem)', color: '#cbd5e1', fontWeight: 600, lineHeight: 1.45 }}>
+                        Veerashiva Lingayath Boys Hostel, Shivamogga
+                      </p>
+                    </div>
+
+                    <p className="lp-leader-desc">
+                      As the Treasurer of Veerashiva Lingayath Boys Hostel, Shivamogga, Ranganath N M supports the hostel's financial administration and contributes to transparent, responsible and effective management of hostel resources.
                     </p>
                   </div>
                 </div>
