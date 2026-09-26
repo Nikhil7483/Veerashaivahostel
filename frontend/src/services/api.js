@@ -1,11 +1,7 @@
 import axios from 'axios';
 
-// Direct production backend URL eliminates Vercel's 10s edge proxy timeout
-const DIRECT_BACKEND_URL = 'https://veerashaiva-hostel-api.onrender.com/api/v1';
-const PROXY_URL = '/api/v1';
-
-// In production, use DIRECT_BACKEND_URL to prevent Vercel 504 timeouts
-const defaultBaseURL = import.meta.env.PROD ? DIRECT_BACKEND_URL : (import.meta.env.VITE_API_URL || PROXY_URL);
+// Always use same-origin /api/v1 so browser never triggers CORS preflight errors
+const defaultBaseURL = import.meta.env.VITE_API_URL || '/api/v1';
 
 const api = axios.create({
   baseURL: defaultBaseURL,
@@ -54,17 +50,11 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Auto-retry once on network/gateway error (failover between direct and proxy)
+    // Auto-retry once on network or 502/503/504 gateway timeout (gives Render time to wake up)
     const isNetworkOrTimeout = !error.response || [502, 503, 504].includes(error.response.status);
     if (isNetworkOrTimeout && originalRequest && !originalRequest._retried) {
       originalRequest._retried = true;
-      // Flip between direct backend and proxy
-      if (originalRequest.baseURL === DIRECT_BACKEND_URL) {
-        originalRequest.baseURL = PROXY_URL;
-      } else {
-        originalRequest.baseURL = DIRECT_BACKEND_URL;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return api(originalRequest);
     }
 
