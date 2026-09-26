@@ -1,17 +1,21 @@
 import axios from 'axios';
 
-const PRIMARY_URL = import.meta.env.VITE_API_URL || '/api/v1';
+// Direct production backend URL eliminates Vercel's 10s edge proxy timeout
 const DIRECT_BACKEND_URL = 'https://veerashaiva-hostel-api.onrender.com/api/v1';
+const PROXY_URL = '/api/v1';
+
+// In production, use DIRECT_BACKEND_URL to prevent Vercel 504 timeouts
+const defaultBaseURL = import.meta.env.PROD ? DIRECT_BACKEND_URL : (import.meta.env.VITE_API_URL || PROXY_URL);
 
 const api = axios.create({
-  baseURL: PRIMARY_URL,
-  timeout: 30000, // 30s timeout so mobile networks never disconnect prematurely
+  baseURL: defaultBaseURL,
+  timeout: 35000, // 35s timeout to comfortably accommodate Render cold starts
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Warm up backend immediately in the background so it's awake before user clicks login
+// Warm up backend immediately in background
 export const warmUpBackend = () => {
   try {
     fetch('https://veerashaiva-hostel-api.onrender.com/health', { mode: 'no-cors' }).catch(() => {});
@@ -34,13 +38,13 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handle 401 and automatic retry on network/gateway errors
+// Response interceptor: handle 401 and auto-retry
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle 401 Unauthorized (session expired or invalid token)
+    // Handle 401 Unauthorized
     if (error.response && error.response.status === 401) {
       if (window.location.pathname !== '/login') {
         localStorage.removeItem('token');
@@ -50,18 +54,16 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Automatically retry if it was a network drop, 502 Bad Gateway, 503, or 504 Gateway Timeout
+    // Auto-retry once on network/gateway error (failover between direct and proxy)
     const isNetworkOrTimeout = !error.response || [502, 503, 504].includes(error.response.status);
-    
     if (isNetworkOrTimeout && originalRequest && !originalRequest._retried) {
       originalRequest._retried = true;
-      
-      // If Vercel proxy rewrite timed out, failover directly to Render backend
-      if (!originalRequest.baseURL || originalRequest.baseURL === '/api/v1') {
+      // Flip between direct backend and proxy
+      if (originalRequest.baseURL === DIRECT_BACKEND_URL) {
+        originalRequest.baseURL = PROXY_URL;
+      } else {
         originalRequest.baseURL = DIRECT_BACKEND_URL;
       }
-      
-      // Wait 1.5 seconds and retry transparently
       await new Promise((resolve) => setTimeout(resolve, 1500));
       return api(originalRequest);
     }
