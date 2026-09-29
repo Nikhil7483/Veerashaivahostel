@@ -1,11 +1,25 @@
 import axios from 'axios';
 
-// Always use same-origin /api/v1 so browser never triggers CORS preflight errors
-const defaultBaseURL = import.meta.env.VITE_API_URL || '/api/v1';
+// On production or custom domains (e.g. veerashaivaboyshostel.in, vercel.app),
+// ALWAYS use same-origin '/api/v1'.
+// This routes requests through the reverse proxy (vercel.json / caddy / vite proxy),
+// which completely prevents CORS preflight drops, 400 Bad Request, and cross-origin blocking,
+// even if VITE_API_URL is configured in Vercel project environment variables.
+const getBaseURL = () => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host && host !== 'localhost' && host !== '127.0.0.1') {
+      return '/api/v1';
+    }
+  }
+  return import.meta.env.VITE_API_URL || '/api/v1';
+};
+
+const defaultBaseURL = getBaseURL();
 
 const api = axios.create({
   baseURL: defaultBaseURL,
-  timeout: 35000, // 35s timeout to comfortably accommodate Render cold starts
+  timeout: 50000, // 50s timeout to comfortably accommodate Render cold starts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -54,6 +68,9 @@ api.interceptors.response.use(
     const isNetworkOrTimeout = !error.response || [502, 503, 504].includes(error.response.status);
     if (isNetworkOrTimeout && originalRequest && !originalRequest._retried) {
       originalRequest._retried = true;
+      if (originalRequest.baseURL && originalRequest.baseURL.includes('onrender.com')) {
+        originalRequest.baseURL = '/api/v1';
+      }
       await new Promise((resolve) => setTimeout(resolve, 2000));
       return api(originalRequest);
     }

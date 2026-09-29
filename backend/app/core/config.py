@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: Union[List[str], str] = [
         "https://veerashaivaboyshostel.in",
         "https://www.veerashaivaboyshostel.in",
+        "http://veerashaivaboyshostel.in",
+        "http://www.veerashaivaboyshostel.in",
         "https://veerashaivahostel.run.place",
         "https://veerashaivahostel.vercel.app",
         "http://localhost:5173",

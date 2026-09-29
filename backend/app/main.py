@@ -74,6 +74,8 @@ allowed_origins = list(settings.CORS_ORIGINS) if isinstance(settings.CORS_ORIGIN
 for o in [
     "https://veerashaivaboyshostel.in",
     "https://www.veerashaivaboyshostel.in",
+    "http://veerashaivaboyshostel.in",
+    "http://www.veerashaivaboyshostel.in",
     "https://veerashaivahostel.vercel.app",
     "https://veerashaivahostel.run.place",
     "http://localhost:5173",
