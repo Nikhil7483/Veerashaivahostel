@@ -139,7 +139,8 @@ const CleaningPage = () => {
 
   // Today Day Name & Designated Duty Rooms
   const todayDayName = dailyBoard[0]?.today_day_name || new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
-  const todayDutyRooms = dailyBoard[0]?.today_duty_rooms || ['Room 01'];
+  const todayMealDutyRoom = dailyBoard[0]?.meal_duty_room || dailyBoard[0]?.today_duty_rooms?.[0] || 'Room 01';
+  const todayDutyRooms = [todayMealDutyRoom];
   const firstDutyRoom = 'Room 01';
 
   // Metrics across all physical rooms
@@ -492,68 +493,6 @@ const CleaningPage = () => {
         </div>
       </div>
 
-      {/* TODAY'S ASSIGNED CLEANING ROOM SYNCHRONIZATION BANNER */}
-      <div className="p-5 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 rounded-3xl border-2 border-amber-300 shadow-xs">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center space-x-2">
-              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-amber-400 text-slate-950 shadow-2xs">
-                <span>🧹</span>
-                <span>Today's Assigned Cleaning Room</span>
-              </span>
-              <span className="text-xs text-slate-600 font-bold">&bull; Today: {todayDayName}</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-black uppercase">
-                1 Room Per Day Duty Synchronized
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl sm:text-3xl font-black text-amber-950 tracking-tight">
-                {todayDutyRooms[0] || 'None'}
-              </h2>
-              <button
-                onClick={() => {
-                  setSelectedDutyRoom(todayDutyRooms[0] || 'Room 01');
-                  setSelectedDutyDay(todayDayName);
-                  setShowAllocateDutyModal(true);
-                }}
-                className="py-1.5 px-3 bg-amber-200 hover:bg-amber-300 border border-amber-400/80 text-amber-950 font-black rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer shadow-2xs"
-                title="Change today's assigned cleaning room"
-              >
-                <span>⚙️</span>
-                <span>Change Duty Room</span>
-              </button>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-700 font-semibold">
-              Authorized on duty to record, verify, and submit hostel meal counts to the mess kitchen (1 room per day).
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <button
-              onClick={() => {
-                setSelectedDutyRoom(todayDutyRooms[0] || 'Room 01');
-                setSelectedDutyDay(todayDayName);
-                setShowAllocateDutyModal(true);
-              }}
-              className="py-2.5 px-4 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
-              title="Allocate or Change Today's Duty Room"
-            >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Allocate / Change Duty Room</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/admin/students?tab=cleaning-room')}
-              className="py-2.5 px-4 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
-              title="Open Cleaning Room for Resident Meal Counts (Tiffin & Box)"
-            >
-              <span>🍽️</span>
-              <span>Open Cleaning Room (Meal Counts) &rarr;</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Beautiful Notice Banner */}
       {notice && (
         <div className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-md transition-all animate-in fade-in slide-in-from-top-2 duration-200 ${
@@ -581,62 +520,63 @@ const CleaningPage = () => {
         </div>
       )}
 
-      {/* KPI STAT CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Hostel Rooms</span>
-            <Building2 className="w-4 h-4 text-purple-600" />
+      {/* ================================================== */}
+      {/* SECTION A: 🍽️ MEAL DUTY */}
+      {/* ================================================== */}
+      <div className="p-6 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 rounded-3xl border-2 border-amber-300 shadow-sm space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-2">
+              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-amber-400 text-slate-950 shadow-2xs">
+                <span>🍽️</span>
+                <span>SECTION A &bull; MEAL DUTY</span>
+              </span>
+              <span className="text-xs text-slate-600 font-bold">&bull; Today: {todayDayName}</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase border border-emerald-300">
+                Status: AUTHORIZED FOR MEAL COUNTS
+              </span>
+            </div>
+            <div>
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Today's Meal Duty:</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-amber-950 tracking-tight mt-0.5">
+                Today's Meal Duty Room — {todayMealDutyRoom}
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-700 font-medium max-w-3xl">
+              Only <strong>ONE</strong> hostel room is selected as the Daily Meal Duty Room. Authorized on duty to record, verify, and submit hostel meal counts (Tiffin Count, Tiffin Box Count, Night Lunch Count) to the mess kitchen. Completely independent from daily room cleaning.
+            </p>
           </div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{totalRoomsCount}</div>
-          <div className="text-[10px] text-slate-400 font-semibold mt-0.5">All {totalRoomsCount} Rooms in Duty</div>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Today's Duty</span>
-            <Sparkles className="w-4 h-4 text-amber-500" />
-          </div>
-          <div className="text-xl font-black text-amber-600 mt-1 truncate" title={todayDutyRooms.join(', ')}>
-            {todayDutyRooms.join(', ')}
-          </div>
-          <div className="text-[10px] text-slate-500 font-semibold mt-0.5">Authorized for Meals</div>
-        </div>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => {
+                setSelectedDutyRoom(todayMealDutyRoom);
+                setSelectedDutyDay(todayDayName);
+                setShowAllocateDutyModal(true);
+              }}
+              className="py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
+              title="Allocate or Change Today's Meal Duty Room"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>Allocate / Change Duty Room</span>
+            </button>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Active Now</span>
-            <Zap className="w-4 h-4 text-amber-500" />
+            <button
+              onClick={() => navigate('/admin/students?tab=cleaning-room')}
+              className="py-2.5 px-4 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
+              title="Open Meal Counts for Tiffin, Tiffin Box & Night Lunch"
+            >
+              <span>🍽️</span>
+              <span>Open Meal Counts &rarr;</span>
+            </button>
           </div>
-          <div className="text-2xl font-black text-slate-900 mt-1">
-            {inProgressRoom ? inProgressRoom.room_number : (isFloorFinished ? 'Done' : firstDutyRoom)}
-          </div>
-          <div className="text-[10px] text-slate-400 font-semibold mt-0.5">Housekeeping Focus</div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Cleaned Today</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-black text-emerald-600 mt-1">
-            {completedRooms.length} <span className="text-xs font-normal text-slate-400">/ {totalRoomsCount}</span>
-          </div>
-          <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">{progressPercent}% Sanitized</div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Absent / Skipped</span>
-            <UserX className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{skippedRooms.length}</div>
-          <div className="text-[10px] text-slate-400 font-semibold mt-0.5">Pending Re-check</div>
         </div>
       </div>
 
-      {/* LIVE ACTIVE OPERATIONAL CONSOLE */}
-      <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl text-white shadow-xl border border-indigo-500/30 relative overflow-hidden">
+      {/* ================================================== */}
+      {/* SECTION B: 🧹 DAILY SANITATION */}
+      {/* ================================================== */}
+      <div className="p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl text-white shadow-xl border border-indigo-500/30 relative overflow-hidden space-y-5">
         <div className="absolute top-0 right-0 p-8 opacity-5">
           <Sparkles className="w-48 h-48 text-white" />
         </div>
@@ -651,25 +591,31 @@ const CleaningPage = () => {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
                 <span className="text-xs font-black tracking-wider uppercase text-emerald-400">
-                  Daily Sanitation Management &bull; Today's Duty: {todayDutyRooms.join(', ')} &bull; {todayDayName}
+                  SECTION B &bull; 🧹 DAILY SANITATION &bull; {todayDayName}
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-purple-500/30 text-purple-200 text-[10px] font-black uppercase border border-purple-400/30">
+                  12 Valid Rooms Rotation
                 </span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
                 {isFloorFinished ? (
-                  <span className="text-emerald-400">🎉 All {totalRoomsCount} Hostel Rooms Fully Sanitised & Certified!</span>
-                ) : currentActiveRoom ? (
-                  <span>Currently Cleaning: <span className="text-yellow-400 underline decoration-yellow-400/50">{currentActiveRoom.room_number}</span> {todayDutyRooms.includes(currentActiveRoom.room_number) ? '(Today\'s Assigned Duty Room)' : ''} &bull; Whole Hostel Sanitation</span>
+                  <span className="text-emerald-400">🎉 12 / 12 Rooms Cleaned &bull; 100% Sanitized</span>
                 ) : (
-                  <span>Ready to Begin Shift ({firstDutyRoom})</span>
+                  <span>Currently Cleaning: <span className="text-yellow-400 underline decoration-yellow-400/50">{currentActiveRoom ? currentActiveRoom.room_number : 'Room 01'}</span> &bull; Daily Sanitation Progress — {completedRooms.length} / {totalRoomsCount} Rooms</span>
                 )}
               </h2>
             </div>
 
-            {/* Overall Progress Counter */}
+            {/* Metrics Counters */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 flex items-center space-x-4 shrink-0">
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-300">Sanitation Progress</div>
                 <div className="text-xl font-black text-white">{completedRooms.length} / {totalRoomsCount} Rooms</div>
+              </div>
+              <div className="h-10 w-px bg-white/20" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-slate-300">Remaining</div>
+                <div className="text-xl font-black text-amber-300">{Math.max(0, totalRoomsCount - completedRooms.length)} Rooms</div>
               </div>
               <div className="h-10 w-px bg-white/20" />
               <div className="text-right">
@@ -682,7 +628,7 @@ const CleaningPage = () => {
           {/* Progress Bar */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-              <span>Hostel-Wide Cleaning Progression &bull; Today's Duty: {todayDutyRooms.join(', ')}</span>
+              <span>Daily Sanitation Progress — {completedRooms.length} / {totalRoomsCount} Rooms</span>
               <span>{completedRooms.length} Cleaned &bull; {Math.max(0, totalRoomsCount - completedRooms.length)} Remaining</span>
             </div>
             <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
@@ -693,129 +639,74 @@ const CleaningPage = () => {
             </div>
           </div>
 
-          {/* Sequential Step Chips for All Hostel Rooms */}
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-[11px] text-slate-300 font-bold">
-              <span>All {totalRoomsCount} Hostel Rooms Sequence:</span>
-              <span className="text-emerald-400 font-medium text-[10px]">
-                {completedRooms.length === totalRoomsCount ? `All ${totalRoomsCount} Completed` : `${completedRooms.length} of ${totalRoomsCount} Finished`}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              {allRooms.map((r) => {
-                const rStatus = r.task?.status || r.cleaning_status || 'PENDING';
-                const isActive = currentActiveRoom?.room_number === r.room_number && !isFloorFinished;
-                const isDutyRoom = todayDutyRooms.includes(r.room_number);
-
-                return (
-                  <button
-                    key={r.room_number}
-                    onClick={() => {
-                      if (rStatus !== 'COMPLETED') {
-                        handleDirectClean(r.room_number);
-                      }
-                    }}
-                    title={`${r.room_number} (${rStatus})${isDutyRoom ? " - Today's Assigned Cleaning Room" : ''} - Click to clean`}
-                    className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl text-xs font-black flex items-center space-x-1.5 border transition shadow-sm cursor-pointer ${
-                      rStatus === 'COMPLETED'
-                        ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50'
-                        : isActive
-                        ? 'bg-yellow-400 text-slate-950 border-yellow-300 ring-2 ring-yellow-400/50 scale-105 shadow-md font-black'
-                        : isDutyRoom
-                        ? 'bg-amber-400/20 text-amber-300 border-amber-400/60 ring-1 ring-amber-400/40 font-black'
-                        : rStatus === 'SKIPPED_ABSENT'
-                        ? 'bg-amber-500/25 text-amber-300 border-amber-500/50'
-                        : 'bg-white/10 text-slate-200 border-white/20 hover:bg-white/20'
-                    }`}
-                  >
-                    <span>{r.room_number}</span>
-                    {isDutyRoom && <span className="text-[10px]" title="Today's Assigned Cleaning Room">🧹</span>}
-                    {rStatus === 'COMPLETED' ? (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    ) : isActive ? (
-                      <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping" />
-                    ) : rStatus === 'SKIPPED_ABSENT' ? (
-                      <UserX className="w-3 h-3 text-amber-400" />
-                    ) : (
-                      <span className="text-[9px] font-normal text-slate-400">P</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ACTIVE ROOM OPERATIONAL CONTROLS */}
+          {/* ACTIVE ROOM OPERATIONAL CARD */}
           {currentActiveRoom && !isFloorFinished && (
-            <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-2">
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-yellow-400 text-slate-950 text-xs font-black uppercase tracking-wide">
-                    ACTIVE NOW: {currentActiveRoom.room_number} &bull; Whole Hostel Routine
-                  </span>
-                  <span className="text-xs text-slate-300">
-                    &bull; {currentActiveRoom.residents_count} Residents Allocated &bull; Total {currentActiveRoom.total_beds} Beds
-                  </span>
+            <div className="p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 space-y-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center space-x-2">
+                    <span className="px-2.5 py-0.5 rounded-md bg-yellow-400 text-slate-950 text-xs font-black uppercase tracking-wide">
+                      {currentActiveRoom.room_number}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-purple-500/40 text-purple-200 text-xs font-bold">
+                      Floor {currentActiveRoom.floor}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-blue-500/40 text-blue-200 text-xs font-bold">
+                      Status: {currentActiveRoom.display_status || (currentActiveRoom.cleaning_status === 'IN_PROGRESS' ? 'CLEANING NOW' : 'PENDING')}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-200 font-medium flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span><strong>{currentActiveRoom.residents_count || currentActiveRoom.allocated_residents || 4} Residents Allocated</strong></span>
+                    <span>&bull;</span>
+                    <span><strong>{currentActiveRoom.total_beds || currentActiveRoom.bed_capacity || 6} Beds Capacity</strong></span>
+                    <span>&bull;</span>
+                    <span>
+                      Resident Status: <span className="font-bold text-amber-300">{currentActiveRoom.resident_status || (currentActiveRoom.members_absent ? `Member(s) Absent (${currentActiveRoom.absent_count})` : `All Present (${currentActiveRoom.residents_count})`)}</span>
+                    </span>
+                    <span>&bull;</span>
+                    <span>Staff: <strong className="text-white">{currentActiveRoom.assigned_staff || 'Housekeeping Staff'}</strong></span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 flex flex-wrap items-center gap-x-3">
+                    <span>Start Time: {currentActiveRoom.start_time || 'Just started'}</span>
+                    <span>Completion Time: {currentActiveRoom.completion_time || 'In Progress'}</span>
+                    <span>Verification: <strong className="text-emerald-400">{currentActiveRoom.verification_status || 'PENDING'}</strong></span>
+                  </div>
                 </div>
-                <p className="text-xs text-slate-200">
-                  {currentActiveRoom.is_vacant ? (
-                    <span className="text-sky-300 font-semibold flex items-center space-x-1 mt-0.5">
-                      <ShieldCheck className="w-3.5 h-3.5 inline" />
-                      <span>Vacant Room &bull; General sanitation, pest control & dusting routine.</span>
-                    </span>
-                  ) : currentActiveRoom.members_absent ? (
-                    <span className="text-amber-300 font-bold flex items-center space-x-1 mt-0.5">
-                      <UserX className="w-3.5 h-3.5 inline" />
-                      <span>Member(s) absent: {currentActiveRoom.absent_residents.join(', ')}</span>
-                    </span>
-                  ) : (
-                    <span className="text-emerald-300 font-semibold flex items-center space-x-1 mt-0.5">
-                      <UserCheck className="w-3.5 h-3.5 inline" />
-                      <span>All room residents accounted for ({currentActiveRoom.residents_count} Present).</span>
-                    </span>
-                  )}
-                </p>
-                <div className="text-[10px] text-slate-400">
-                  Assigned Staff: {currentActiveRoom.task?.assigned_staff || 'Housekeeping Staff'} &bull; Status: {(currentActiveRoom.task?.status || currentActiveRoom.cleaning_status)}
-                </div>
-              </div>
 
-              {/* Action Buttons for Current Active Room */}
-              <div className="flex flex-wrap items-center gap-2">
-                {/* 1. Mark Cleaned & Advance */}
-                <button
-                  onClick={() => handleCompleteAndAdvance(currentActiveRoom.room_number)}
-                  disabled={actionLoading}
-                  className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black rounded-xl text-xs transition shadow-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50"
-                  title="Mark current room as cleaned, lock it, and proceed to next room in order"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Mark Cleaned & Advance &rarr;</span>
-                </button>
-
-                {/* 2. Member Absent -> Skip to Next Room */}
-                <button
-                  onClick={() => handleSkipToNextRoom(currentActiveRoom.room_number)}
-                  disabled={actionLoading}
-                  className="py-2.5 px-3 bg-amber-500/30 hover:bg-amber-500/50 active:scale-95 text-amber-200 border border-amber-400/40 font-bold rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
-                  title="Skip to next room because members are absent"
-                >
-                  <UserX className="w-3.5 h-3.5" />
-                  <span>Member Absent &rarr; Skip</span>
-                </button>
-
-                {/* 3. Move back to previous room */}
-                {currentActiveRoom.room_number !== 'Room 01' && (
+                {/* Actions: Mark Cleaned & Advance, Skip - Absent, Previous */}
+                <div className="flex flex-wrap items-center gap-2">
                   <button
-                    onClick={() => handleMoveToPreviousRoom(currentActiveRoom.room_number)}
+                    onClick={() => handleCompleteAndAdvance(currentActiveRoom.room_number)}
                     disabled={actionLoading}
-                    className="py-2.5 px-3 bg-white/10 hover:bg-white/20 active:scale-95 text-slate-200 border border-white/20 font-bold rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
-                    title="Move back to previous room"
+                    className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black rounded-xl text-xs transition shadow-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+                    title="Mark current room as cleaned, verify it, and automatically advance to next room"
                   >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Move Back</span>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Mark Cleaned & Advance &rarr;</span>
                   </button>
-                )}
+
+                  <button
+                    onClick={() => handleSkipToNextRoom(currentActiveRoom.room_number)}
+                    disabled={actionLoading}
+                    className="py-2.5 px-3 bg-amber-500/30 hover:bg-amber-500/50 active:scale-95 text-amber-200 border border-amber-400/40 font-bold rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                    title="Skip this room due to resident absence"
+                  >
+                    <UserX className="w-3.5 h-3.5" />
+                    <span>Skip — Absent &rarr;</span>
+                  </button>
+
+                  {currentActiveRoom.room_number !== 'Room 01' && (
+                    <button
+                      onClick={() => handleMoveToPreviousRoom(currentActiveRoom.room_number)}
+                      disabled={actionLoading}
+                      className="py-2.5 px-3 bg-white/10 hover:bg-white/20 active:scale-95 text-slate-200 border border-white/20 font-bold rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                      title="Move back to previous room"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Previous</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -824,10 +715,10 @@ const CleaningPage = () => {
             <div className="p-5 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-center space-y-2">
               <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto" />
               <h3 className="text-lg font-extrabold text-emerald-300">
-                🎉 All {totalRoomsCount} Hostel Rooms Sanitised & Completed!
+                🎉 12 / 12 Rooms Cleaned &bull; 100% Sanitized
               </h3>
               <p className="text-xs text-slate-300 max-w-xl mx-auto">
-                All {totalRoomsCount} rooms across the whole hostel have been sanitized, inspected, and locked for {todayDayName}. Resident leave applications across the entire hostel are now unlocked!
+                All 12 hostel rooms across the entire hostel have been sanitized, inspected, and verified for {todayDayName}.
               </p>
               <div className="pt-2">
                 <button
@@ -835,11 +726,87 @@ const CleaningPage = () => {
                   className="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs inline-flex items-center space-x-2 cursor-pointer shadow-md"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset Shift for Next Cycle</span>
+                  <span>Reset Shift (Room 01)</span>
                 </button>
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ================================================== */}
+      {/* SECTION C: 🏠 ALL HOSTEL ROOMS */}
+      {/* ================================================== */}
+      <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-200">
+                SECTION C &bull; 🏠 ALL HOSTEL ROOMS
+              </span>
+              <span className="text-xs text-slate-500 font-bold">&bull; 12 Valid Rooms (Room 03 strictly does not exist)</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1">
+              Daily Sequential Sanitation Rotation (All 12 Rooms)
+            </h3>
+          </div>
+          <div className="text-xs font-bold text-slate-600">
+            Sequence: Room 01 &rarr; 02 &rarr; 04 &rarr; 05 &rarr; 06 &rarr; 07 &rarr; 08 &rarr; 09 &rarr; 10 &rarr; 11 &rarr; 12 &rarr; 13
+          </div>
+        </div>
+
+        {/* 12-Room Live Status Display Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
+          {VALID_ROOMS.map((roomNo) => {
+            const r = allRooms.find((item) => item.room_number === roomNo);
+            const rStatus = r ? (r.task?.status || r.cleaning_status || 'PENDING') : 'PENDING';
+            const isActive = currentActiveRoom?.room_number === roomNo && !isFloorFinished;
+            const isCompleted = rStatus === 'COMPLETED';
+            const isSkipped = rStatus === 'SKIPPED_ABSENT';
+            const isMealDuty = (roomNo === todayMealDutyRoom);
+
+            let statusIcon = '⏳';
+            let statusText = 'PENDING';
+            let cardClass = 'bg-slate-50 text-slate-700 border-slate-200';
+
+            if (isCompleted) {
+              statusIcon = '✓';
+              statusText = 'CLEANED';
+              cardClass = 'bg-emerald-50 text-emerald-900 border-emerald-300 font-black';
+            } else if (isActive) {
+              statusIcon = '🔄';
+              statusText = 'CLEANING NOW';
+              cardClass = 'bg-yellow-100 text-slate-950 border-yellow-400 font-black shadow-xs ring-2 ring-yellow-400/40 animate-pulse';
+            } else if (isSkipped) {
+              statusIcon = '⚠️';
+              statusText = 'ABSENT / SKIPPED';
+              cardClass = 'bg-amber-50 text-amber-900 border-amber-300 font-bold';
+            }
+
+            return (
+              <div
+                key={roomNo}
+                onClick={() => {
+                  if (!isCompleted) handleSetActiveRoom(roomNo);
+                }}
+                className={`p-2.5 rounded-2xl border text-xs flex flex-col justify-between transition cursor-pointer hover:shadow-2xs ${cardClass}`}
+                title={`${roomNo} (${statusText})${isMealDuty ? ' • Today\'s Meal Duty Room' : ''}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-sm">{roomNo}</span>
+                  {isMealDuty && (
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-200 text-amber-900 font-black" title="Today's Meal Duty Room">
+                      🍽️ Duty
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-1.5 mt-1.5">
+                  <span className="text-xs">{statusIcon}</span>
+                  <span className="text-[11px] font-black uppercase tracking-tight">{statusText}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

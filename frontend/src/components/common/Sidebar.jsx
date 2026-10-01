@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/student/cleaning', label: 'Housekeeping & Sanitation', icon: Sparkles },
         { to: '/student/attendance', label: 'My Attendance', icon: CalendarCheck },
         { to: '/student/leave', label: 'Apply Leave', icon: PlaneTakeoff },
-        { to: '/student/cleaning-room', label: '🧹 Meal Duty Room', icon: ClipboardCheck },
+        { to: '/student/cleaning-room', label: '🍽️ Meal Duty Room', icon: ClipboardCheck },
       ]
     },
     {

@@ -38,6 +38,14 @@ const OFFICIAL_BREAKFAST_ITEMS = [
   'Idli, Chutney, Sambar'
 ];
 
+const OFFICIAL_LUNCH_ITEMS = [
+  'Regular Mess Lunch (College Tiffin Box Pack)',
+  'Anna Sambar (Rice & Vegetable Sambar)',
+  'Curd Rice + Pickle',
+  'Chapati + Dal + Rice',
+  'Special Sunday Feast (Rice, Sambar, Sweet Payasa)'
+];
+
 const OFFICIAL_DINNER_ITEMS = [
   'Rice / Ragi Mudde + Vegetable Sambar',
   'Rice / Chapati + Vegetable Sambar',
@@ -46,12 +54,12 @@ const OFFICIAL_DINNER_ITEMS = [
 ];
 
 const DEFAULT_SCHEDULE = {
-  Monday: { breakfast: 'Pulav (Tomato Bath)', lunch: '—', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
-  Tuesday: { breakfast: 'Chitranna (Lemon Rice)', lunch: '—', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
-  Wednesday: { breakfast: 'Upma', lunch: '—', dinner: 'Rice / Chapati + Vegetable Sambar' },
-  Thursday: { breakfast: 'Puliyogare (Tamarind Rice)', lunch: '—', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
-  Friday: { breakfast: 'Vangi Bath', lunch: '—', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
-  Saturday: { breakfast: 'Avalakki (Poha)', lunch: '—', dinner: 'Rice / Ragi Mudde + Soppina Sambar (Greens Sambar)' },
+  Monday: { breakfast: 'Pulav (Tomato Bath)', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
+  Tuesday: { breakfast: 'Chitranna (Lemon Rice)', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
+  Wednesday: { breakfast: 'Upma', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Chapati + Vegetable Sambar' },
+  Thursday: { breakfast: 'Puliyogare (Tamarind Rice)', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
+  Friday: { breakfast: 'Vangi Bath', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Ragi Mudde + Vegetable Sambar' },
+  Saturday: { breakfast: 'Avalakki (Poha)', lunch: 'Regular Mess Lunch (College Tiffin Box Pack)', dinner: 'Rice / Ragi Mudde + Soppina Sambar (Greens Sambar)' },
   Sunday: { breakfast: 'Idli, Chutney, Sambar', lunch: 'Anna Sambar (Rice & Sambar)', dinner: 'Shavige Payasa (Wheat Payasa) + Rice & Sambar' }
 };
 
@@ -69,6 +77,7 @@ const FoodAllocationPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dayName, setDayName] = useState(getDayOfWeek(new Date().toISOString().split('T')[0]));
   const [morningDish, setMorningDish] = useState(OFFICIAL_BREAKFAST_ITEMS[0]);
+  const [lunchDish, setLunchDish] = useState(OFFICIAL_LUNCH_ITEMS[0]);
   const [nightDish, setNightDish] = useState(OFFICIAL_DINNER_ITEMS[0]);
   const [allocationData, setAllocationData] = useState(null);
 
@@ -102,11 +111,13 @@ const FoodAllocationPage = () => {
       setAllocationData(res.data);
       if (res.data) {
         setMorningDish(res.data.morning_dish || defaultForDay.breakfast);
+        setLunchDish(res.data.lunch_dish || defaultForDay.lunch);
         setNightDish(res.data.night_dish || defaultForDay.dinner);
       }
     } catch (err) {
       console.error(err);
       setMorningDish(defaultForDay.breakfast);
+      setLunchDish(defaultForDay.lunch);
       setNightDish(defaultForDay.dinner);
     } finally {
       setLoading(false);
@@ -188,6 +199,7 @@ const FoodAllocationPage = () => {
       await api.post('/food-allocation/save', {
         date: selectedDate,
         morning_dish: morningDish,
+        lunch_dish: lunchDish,
         night_dish: nightDish
       });
       setSavedSuccess(true);
@@ -270,22 +282,22 @@ const FoodAllocationPage = () => {
         <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
           <div>
             <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-1">
-              Step 1: Warden Decision
+              Step 1: Warden Food Decision
             </span>
             <h2 className="text-lg font-black text-slate-900">
-              Decide What Food Is Served
+              Decide What Food Is Served (Breakfast, Lunch, Dinner)
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Select morning and night dishes for {formatDate(selectedDate)} ({dayName}).
+              Select dishes for {formatDate(selectedDate)} ({dayName}). Displays together with verified kitchen meal orders.
             </p>
           </div>
 
-          <form onSubmit={handleSaveAllocation} className="space-y-5">
-            {/* Breakfast Dropdown */}
-            <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-2">
+          <form onSubmit={handleSaveAllocation} className="space-y-4">
+            {/* 1. Breakfast Dropdown */}
+            <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-1.5">
               <div className="flex items-center space-x-2 text-amber-900 font-bold text-sm">
                 <Sun className="w-4 h-4 text-amber-600" />
-                <span>Morning Breakfast Dish</span>
+                <span>1. Morning Breakfast Dish</span>
               </div>
               <p className="text-[11px] text-amber-700">
                 Default for {dayName}: <strong>{DEFAULT_SCHEDULE[dayName]?.breakfast}</strong>
@@ -293,7 +305,7 @@ const FoodAllocationPage = () => {
               <select
                 value={morningDish}
                 onChange={(e) => setMorningDish(e.target.value)}
-                className="w-full text-sm font-semibold p-3 rounded-xl border border-amber-300 bg-white text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                className="w-full text-sm font-semibold p-2.5 rounded-xl border border-amber-300 bg-white text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
               >
                 {OFFICIAL_BREAKFAST_ITEMS.map((dish) => (
                   <option key={dish} value={dish}>{dish}</option>
@@ -301,11 +313,31 @@ const FoodAllocationPage = () => {
               </select>
             </div>
 
-            {/* Dinner Dropdown */}
-            <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-200 space-y-2">
+            {/* 2. Lunch Dropdown */}
+            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-1.5">
+              <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
+                <Package className="w-4 h-4 text-emerald-600" />
+                <span>2. Lunch Dish (Tiffin Box / Mess)</span>
+              </div>
+              <p className="text-[11px] text-emerald-700">
+                Default for {dayName}: <strong>{DEFAULT_SCHEDULE[dayName]?.lunch}</strong>
+              </p>
+              <select
+                value={lunchDish}
+                onChange={(e) => setLunchDish(e.target.value)}
+                className="w-full text-sm font-semibold p-2.5 rounded-xl border border-emerald-300 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              >
+                {OFFICIAL_LUNCH_ITEMS.map((dish) => (
+                  <option key={dish} value={dish}>{dish}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 3. Dinner Dropdown */}
+            <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-200 space-y-1.5">
               <div className="flex items-center space-x-2 text-indigo-900 font-bold text-sm">
                 <Moon className="w-4 h-4 text-indigo-600" />
-                <span>Night Dinner Dish</span>
+                <span>3. Night Dinner Dish</span>
               </div>
               <p className="text-[11px] text-indigo-700">
                 Default for {dayName}: <strong>{DEFAULT_SCHEDULE[dayName]?.dinner}</strong>
@@ -313,7 +345,7 @@ const FoodAllocationPage = () => {
               <select
                 value={nightDish}
                 onChange={(e) => setNightDish(e.target.value)}
-                className="w-full text-sm font-semibold p-3 rounded-xl border border-indigo-300 bg-white text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                className="w-full text-sm font-semibold p-2.5 rounded-xl border border-indigo-300 bg-white text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
               >
                 {OFFICIAL_DINNER_ITEMS.map((dish) => (
                   <option key={dish} value={dish}>{dish}</option>
@@ -324,7 +356,7 @@ const FoodAllocationPage = () => {
             {/* Sunday Special Notice */}
             {dayName === 'Sunday' && (
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800">
-                <strong>Sunday Routine:</strong> Breakfast is served directly (Idli, Chutney, Sambar). Sunday Lunch is <strong>Anna Sambar (Rice & Sambar)</strong>. Morning Tiffin Count is not required.
+                <strong>Sunday Routine:</strong> Breakfast is served directly (Idli, Chutney, Sambar). Sunday Lunch is <strong>Anna Sambar (Rice & Sambar)</strong>.
               </div>
             )}
 
@@ -334,41 +366,41 @@ const FoodAllocationPage = () => {
               className="w-full py-3.5 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
-              <span>{saving ? 'Saving Allocation...' : 'Save Food Allocation'}</span>
+              <span>{saving ? 'Saving Allocation...' : 'Save Food Allocation (Breakfast, Lunch, Dinner)'}</span>
             </button>
           </form>
         </div>
 
-        {/* Right: Warden View After Submission (Read-Only Verified Counts) */}
-        <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6 flex flex-col justify-between">
+        {/* Right: Kitchen Meal Orders & Verified Counts */}
+        <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">
-                  Step 2: Cleaning Team Verification
+                  Step 2: Duty Room Verification & Kitchen Orders
                 </span>
                 <h2 className="text-lg font-black text-slate-900">
-                  Verified Kitchen Meal Counts
+                  Kitchen Meal Orders (3 Count Types)
                 </h2>
               </div>
-              <span className="px-3 py-1 bg-slate-100 rounded-full text-[11px] font-bold text-slate-600">
-                Read-Only
+              <span className="px-3 py-1 bg-amber-100 border border-amber-300 rounded-full text-[11px] font-black text-amber-900">
+                Duty Room: {rosterData?.duty_room || mSession?.duty_room || 'Room 01'}
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Verified resident meal requirements submitted directly by the Cleaning Team.
+              Verified resident meal requirements submitted by Daily Meal Duty Room ({rosterData?.duty_room || mSession?.duty_room || 'Room 01'}) to the mess kitchen.
             </p>
           </div>
 
-          {/* Cards for Morning and Night Submitted Results */}
-          <div className="space-y-4">
-            {/* Morning Tiffin Result Card */}
-            <div className="p-5 rounded-2xl border border-amber-200 bg-gradient-to-br from-white to-amber-50/50 space-y-3">
+          {/* Cards for All 3 Meal Count Types */}
+          <div className="space-y-3.5">
+            {/* 1. Tiffin Count Result Card */}
+            <div className="p-4 rounded-2xl border border-amber-200 bg-gradient-to-br from-white to-amber-50/50 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-lg">🌅</span>
+                  <span className="text-base">🌅</span>
                   <span className="text-xs font-black uppercase tracking-wider text-amber-900">
-                    MORNING TIFFIN
+                    1. TIFFIN COUNT (BREAKFAST)
                   </span>
                 </div>
                 <span
@@ -382,51 +414,63 @@ const FoodAllocationPage = () => {
                 </span>
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Allocated Food:</p>
-                <p className="text-sm font-bold text-slate-900">{morningDish}</p>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Allocated Dish: <strong className="text-slate-900">{morningDish}</strong></span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-amber-200/60">
-                <div className="p-3 bg-white rounded-xl border border-amber-200/80">
-                  <p className="text-[10px] font-bold text-amber-700 uppercase">🍱 Tiffin Count</p>
-                  <p className="text-2xl font-black text-amber-900 mt-0.5">
-                    {mSession?.tiffin_count !== undefined ? mSession.tiffin_count : '—'}
-                  </p>
+              <div className="p-3 bg-white rounded-xl border border-amber-200 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-amber-700 uppercase">Tiffin Count</p>
+                  <p className="text-xs text-slate-400">Resident breakfast headcount</p>
                 </div>
-                <div className="p-3 bg-white rounded-xl border border-indigo-200/80">
-                  <p className="text-[10px] font-bold text-indigo-700 uppercase">📦 Box Count</p>
-                  <p className="text-2xl font-black text-indigo-900 mt-0.5">
-                    {mSession?.box_count !== undefined ? mSession.box_count : '—'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-500 flex justify-between pt-1 items-center">
-                <span>Submitted by: <strong>{mSession?.submitted_by || 'Cleaning Team'}</strong></span>
-                <span>
-                  {mSession?.submitted_at ? new Date(mSession.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-amber-200/50 flex justify-end">
-                <Link
-                  to="/admin/students?tab=cleaning-room"
-                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-amber-800 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-xl transition shadow-2xs"
-                >
-                  <span>Open Cleaning Room</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
+                <p className="text-2xl font-black text-amber-900">
+                  {mSession?.tiffin_count !== undefined ? mSession.tiffin_count : '—'}
+                </p>
               </div>
             </div>
 
-            {/* Night Meal Result Card */}
-            <div className="p-5 rounded-2xl border border-purple-200 bg-gradient-to-br from-white to-purple-50/50 space-y-3">
+            {/* 2. Tiffin Box Count Result Card */}
+            <div className="p-4 rounded-2xl border border-emerald-200 bg-gradient-to-br from-white to-emerald-50/50 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-lg">🌙</span>
+                  <span className="text-base">📦</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-900">
+                    2. TIFFIN BOX COUNT (LUNCH)
+                  </span>
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                    mSession?.is_locked
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {mSession?.is_locked ? '✅ Verified & Locked' : 'Pending Submission'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Allocated Lunch Dish: <strong className="text-slate-900">{lunchDish}</strong></span>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-emerald-200 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase">Tiffin Box Count</p>
+                  <p className="text-xs text-slate-400">College / packed lunch boxes</p>
+                </div>
+                <p className="text-2xl font-black text-emerald-900">
+                  {mSession?.box_count !== undefined ? mSession.box_count : '—'}
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Night Lunch Count Result Card */}
+            <div className="p-4 rounded-2xl border border-purple-200 bg-gradient-to-br from-white to-purple-50/50 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-base">🌙</span>
                   <span className="text-xs font-black uppercase tracking-wider text-purple-900">
-                    NIGHT MEAL
+                    3. NIGHT LUNCH COUNT (DINNER)
                   </span>
                 </div>
                 <span
@@ -440,39 +484,33 @@ const FoodAllocationPage = () => {
                 </span>
               </div>
 
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Allocated Food:</p>
-                <p className="text-sm font-bold text-slate-900">{nightDish}</p>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Allocated Dinner Dish: <strong className="text-slate-900">{nightDish}</strong></span>
               </div>
 
-              <div className="p-3 bg-white rounded-xl border border-purple-200/80">
-                <p className="text-[10px] font-bold text-purple-700 uppercase">🍽️ Dinner Meal Count</p>
-                <p className="text-2xl font-black text-purple-900 mt-0.5">
+              <div className="p-3 bg-white rounded-xl border border-purple-200 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-purple-700 uppercase">Night Lunch Count</p>
+                  <p className="text-xs text-slate-400">Night dinner headcount</p>
+                </div>
+                <p className="text-2xl font-black text-purple-900">
                   {nSession?.night_meal_count !== undefined ? nSession.night_meal_count : '—'}
                 </p>
-              </div>
-
-              <div className="text-[11px] text-slate-500 flex justify-between pt-1 items-center">
-                <span>Submitted by: <strong>{nSession?.submitted_by || 'Cleaning Team'}</strong></span>
-                <span>
-                  {nSession?.submitted_at ? new Date(nSession.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-purple-200/50 flex justify-end">
-                <Link
-                  to="/admin/students?tab=cleaning-room"
-                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-purple-800 hover:text-purple-900 bg-purple-100 hover:bg-purple-200 px-3 py-1.5 rounded-xl transition shadow-2xs"
-                >
-                  <span>Open Cleaning Room</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
               </div>
             </div>
           </div>
 
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] text-slate-500 text-center">
-            🔒 Warden view is read-only. The meal count is taken exclusively by the designated Cleaning Room on duty, not all rooms.
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-500">
+              Submitted by Duty Room: <strong>{mSession?.duty_room || rosterData?.duty_room || 'Room 01'}</strong>
+            </span>
+            <Link
+              to="/admin/students?tab=cleaning-room"
+              className="inline-flex items-center space-x-1.5 text-xs font-black text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition shadow-2xs"
+            >
+              <span>Open Meal Counts</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </div>

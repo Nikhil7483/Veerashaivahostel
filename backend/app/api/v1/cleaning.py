@@ -16,39 +16,79 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/cleaning", tags=["Room Cleaning"])
 
+VALID_HOSTEL_ROOMS = [
+    "Room 01", "Room 02", "Room 04", "Room 05", "Room 06", "Room 07",
+    "Room 08", "Room 09", "Room 10", "Room 11", "Room 12", "Room 13"
+]
+
 async def get_all_hostel_rooms(db) -> List[str]:
     """
-    Returns sorted list of all 13 hostel rooms from the database.
+    Returns sorted list of all 12 valid hostel rooms from the database.
+    Room 03 strictly DOES NOT EXIST (never display, create, assign, or count).
     """
-    rooms_cursor = db.rooms.find({}).sort("room_number", 1)
+    rooms_cursor = db.rooms.find({"room_number": {"$in": VALID_HOSTEL_ROOMS}}).sort("room_number", 1)
     rooms = []
     async for r in rooms_cursor:
-        rooms.append(r["room_number"])
+        if r["room_number"] != "Room 03" and r["room_number"] in VALID_HOSTEL_ROOMS:
+            rooms.append(r["room_number"])
     if not rooms:
-        rooms = [f"Room {i:02d}" for i in [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]]
-    return rooms
+        rooms = list(VALID_HOSTEL_ROOMS)
+    return sorted(rooms, key=lambda x: VALID_HOSTEL_ROOMS.index(x) if x in VALID_HOSTEL_ROOMS else 999)
 
 async def get_today_assigned_rooms(db):
     """
-    Returns (day_name, all_rooms_list). Daily housekeeping and sanitation covers all physical hostel rooms.
+    Returns (day_name, all_rooms_list). Daily housekeeping and sanitation covers all 12 physical hostel rooms.
     """
     day_name = datetime.now().strftime("%A")
     all_rooms = await get_all_hostel_rooms(db)
     return day_name, all_rooms
 
+async def get_today_meal_duty_room(db, date_str: Optional[str] = None) -> str:
+    """
+    Returns today's designated Daily Meal Duty Room.
+    Hostel rule: Strictly ONE room is selected as the Daily Meal Duty Room.
+    Warden/Admin can allocate or change it independently of cleaning.
+    """
+    if not date_str:
+        date_str = datetime.now().strftime("%Y-%m-%d")
+    try:
+        day_name = datetime.strptime(date_str, "%Y-%m-%d").strftime("%A")
+    except Exception:
+        day_name = datetime.now().strftime("%A")
+
+    # 1. Date-specific meal duty
+    doc = await db.meal_duty_schedule.find_one({"date": date_str})
+    if doc and doc.get("room_number") in VALID_HOSTEL_ROOMS:
+        return doc["room_number"]
+
+    # 2. Day-of-week meal duty
+    day_doc = await db.meal_duty_schedule.find_one({"day": day_name, "date": {"$exists": False}})
+    if day_doc and day_doc.get("room_number") in VALID_HOSTEL_ROOMS:
+        return day_doc["room_number"]
+
+    # 3. Fallback to cleaning_schedule
+    cs_doc = await db.cleaning_schedule.find_one({"day": day_name})
+    if cs_doc and cs_doc.get("room_numbers") and cs_doc["room_numbers"][0] in VALID_HOSTEL_ROOMS:
+        return cs_doc["room_numbers"][0]
+
+    default_map = {
+        "Monday": "Room 01",
+        "Tuesday": "Room 02",
+        "Wednesday": "Room 04",
+        "Thursday": "Room 05",
+        "Friday": "Room 06",
+        "Saturday": "Room 07",
+        "Sunday": "Room 08",
+    }
+    return default_map.get(day_name, "Room 01")
+
 async def get_today_duty_rooms(db, day_name: str = None) -> List[str]:
     """
-    Returns today's designated cleaning duty room from db.cleaning_schedule (e.g. ['Room 01'] on Monday).
-    Hostel rule: strictly ONE cleaning room is assigned per day.
+    Compatibility wrapper returning today's meal duty room as a list.
     """
-    if not day_name:
-        day_name = datetime.now().strftime("%A")
-    schedule_doc = await db.cleaning_schedule.find_one({"day": day_name})
-    if schedule_doc and schedule_doc.get("room_numbers"):
-        rooms = schedule_doc["room_numbers"]
-        if isinstance(rooms, list) and len(rooms) > 0:
-            return [rooms[0]]
-    return []
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    duty_room = await get_today_meal_duty_room(db, today_str)
+    return [duty_room]
 
 async def get_room_day_schedule_map(db):
     """
@@ -59,28 +99,30 @@ async def get_room_day_schedule_map(db):
     for s in schedules:
         d = s.get("day")
         for r_no in s.get("room_numbers", []):
-            if r_no not in room_map:
+            if r_no not in room_map and r_no in VALID_HOSTEL_ROOMS:
                 room_map[r_no] = d
     return room_map
 
 @router.get("/daily-board")
 async def get_daily_cleaning_board(current_user: dict = Depends(require_admin)):
     """
-    Returns the live daily cleaning status for all 13 rooms in the hostel.
+    Returns the live daily cleaning status for all 12 valid rooms in the hostel.
     Includes resident attendance, bed capacity, task details, and floor information.
+    Meal Duty Room and Cleaning status are completely separate.
     """
     db = get_database()
     today_str = datetime.now().strftime("%Y-%m-%d")
     day_name, scheduled_rooms = await get_today_assigned_rooms(db)
-    today_duty_rooms = await get_today_duty_rooms(db, day_name)
+    meal_duty_room = await get_today_meal_duty_room(db, today_str)
     room_day_map = await get_room_day_schedule_map(db)
     
-    rooms_cursor = db.rooms.find({}).sort("room_number", 1)
     board = []
     
-    async for r in rooms_cursor:
-        room_no = r["room_number"]
-        # Extract room integer for floor computation: 01-02 -> Floor 1, 04-07 -> Floor 2, 08-11 -> Floor 3, 12-13 -> Floor 4
+    for room_no in scheduled_rooms:
+        r = await db.rooms.find_one({"room_number": room_no})
+        if not r:
+            r = {"room_number": room_no, "total_beds": 6, "cleaning_status": "PENDING"}
+            
         try:
             r_int = int(room_no.split()[-1])
             floor_num = 1 if r_int <= 2 else (2 if r_int <= 7 else (3 if r_int <= 11 else 4))
@@ -112,24 +154,56 @@ async def get_daily_cleaning_board(current_user: dict = Depends(require_admin)):
             task_data = task
             
         cleaning_status = task.get("status") if task else r.get("cleaning_status", "PENDING")
-        is_today_duty = (room_no in today_duty_rooms)
+        is_meal_duty = (room_no == meal_duty_room)
+
+        if cleaning_status == "COMPLETED":
+            display_status = "CLEANED & VERIFIED"
+            verification_status = "CLEANED & VERIFIED"
+        elif cleaning_status == "IN_PROGRESS":
+            display_status = "CLEANING NOW"
+            verification_status = "IN PROGRESS"
+        elif cleaning_status == "SKIPPED_ABSENT":
+            display_status = "ABSENT / SKIPPED"
+            verification_status = "SKIPPED"
+        else:
+            display_status = "PENDING"
+            verification_status = "PENDING"
+
+        if is_vacant:
+            resident_status = "Vacant Room (0)"
+        elif len(absent_residents) == 0:
+            resident_status = f"All Present ({len(present_residents)})"
+        else:
+            resident_status = f"Present: {len(present_residents)}, Away/Leave: {len(absent_residents)}"
+
+        start_time = task_data.get("time") if task_data and task_data.get("time") else "09:00 AM"
+        completion_time = r.get("last_cleaned") if cleaning_status == "COMPLETED" else None
             
         board.append({
             "room_number": room_no,
             "floor": floor_num,
-            "is_excluded": False, # All hostel rooms included in daily sanitation!
+            "is_excluded": False,
             "is_vacant": is_vacant,
             "exclusion_reason": "Vacant Room (No residents)" if is_vacant else None,
-            "is_scheduled_today": is_today_duty,
-            "is_today_duty_room": is_today_duty,
+            "is_scheduled_today": is_meal_duty,
+            "is_today_duty_room": is_meal_duty,
+            "is_meal_duty_room": is_meal_duty,
+            "meal_duty_room": meal_duty_room,
             "assigned_day": assigned_day,
             "today_day_name": day_name,
-            "today_duty_rooms": today_duty_rooms,
-            "today_scheduled_rooms": today_duty_rooms, # Consistent with food_allocations, leaves, and rooms API!
+            "today_duty_rooms": [meal_duty_room],
+            "today_scheduled_rooms": [meal_duty_room],
             "all_hostel_rooms": scheduled_rooms,
             "total_beds": r.get("total_beds", 6),
             "occupied_beds": len(students),
+            "allocated_residents": len(students),
             "cleaning_status": cleaning_status,
+            "display_status": display_status,
+            "verification_status": verification_status,
+            "resident_status": resident_status,
+            "assigned_staff": task_data.get("assigned_staff", "Housekeeping Staff") if task_data else "Housekeeping Staff",
+            "start_time": start_time,
+            "completion_time": completion_time,
             "last_cleaned": r.get("last_cleaned"),
             "residents_count": len(students),
             "absent_residents": absent_residents,
@@ -207,14 +281,17 @@ async def assign_daily_cleaning(current_user: dict = Depends(require_admin)):
 @router.get("/live-status")
 async def get_cleaning_live_status(current_user: dict = Depends(get_current_user)):
     """
-    Returns real-time operational status of hostel housekeeping across all rooms.
+    Returns real-time operational status of hostel housekeeping across all 12 rooms.
+    Separates Meal Duty Room from Cleaning Room completely.
     """
     db = get_database()
     today_str = datetime.now().strftime("%Y-%m-%d")
     day_name, scheduled_rooms = await get_today_assigned_rooms(db)
-    today_duty_rooms = await get_today_duty_rooms(db, day_name)
+    today_meal_duty_room = await get_today_meal_duty_room(db, today_str)
+    today_duty_rooms = [today_meal_duty_room]
     
     completed_count = 0
+    skipped_count = 0
     active_room = None
     first_pending = None
     room_summaries = []
@@ -226,6 +303,8 @@ async def get_cleaning_live_status(current_user: dict = Depends(get_current_user
         
         if status == "COMPLETED":
             completed_count += 1
+        elif status == "SKIPPED_ABSENT":
+            skipped_count += 1
         elif status == "IN_PROGRESS" and not active_room:
             active_room = r_no
         elif status == "PENDING" and not first_pending:
@@ -235,22 +314,29 @@ async def get_cleaning_live_status(current_user: dict = Depends(get_current_user
             "room_number": r_no,
             "status": status,
             "is_excluded": False,
-            "is_today_duty": (r_no in today_duty_rooms),
+            "is_meal_duty": (r_no == today_meal_duty_room),
+            "is_today_duty": (r_no == today_meal_duty_room),
             "last_cleaned": r.get("last_cleaned") if r else None
         })
         
-    total_rooms = len(scheduled_rooms)
-    is_floor_finished = (completed_count >= total_rooms and total_rooms > 0)
-    current_active = active_room or first_pending or ("Finished" if is_floor_finished else (today_duty_rooms[0] if today_duty_rooms else (scheduled_rooms[0] if scheduled_rooms else "None")))
-    progress_percent = int((completed_count / total_rooms) * 100) if total_rooms > 0 else 100
+    total_rooms = len(scheduled_rooms) # 12 rooms
+    is_floor_finished = (completed_count + skipped_count >= total_rooms and total_rooms > 0)
+    current_active = active_room or first_pending or ("Finished" if is_floor_finished else (scheduled_rooms[0] if scheduled_rooms else "Room 01"))
+    progress_percent = int((completed_count / total_rooms) * 100) if total_rooms > 0 else 0
+    remaining_count = max(0, total_rooms - completed_count - skipped_count)
     
     return {
         "day_name": day_name,
+        "date": today_str,
+        "meal_duty_room": today_meal_duty_room,
         "today_duty_rooms": today_duty_rooms,
-        "today_scheduled_rooms": today_duty_rooms,
+        "today_scheduled_rooms": scheduled_rooms,
         "all_rooms": scheduled_rooms,
         "active_room": current_active,
+        "currently_cleaning": current_active,
         "completed_count": completed_count,
+        "skipped_count": skipped_count,
+        "remaining_count": remaining_count,
         "total_rooms": total_rooms,
         "progress_percent": progress_percent,
         "is_floor_finished": is_floor_finished,
@@ -260,20 +346,22 @@ async def get_cleaning_live_status(current_user: dict = Depends(get_current_user
 @router.post("/complete-and-advance/{room_number}")
 async def complete_and_advance(room_number: str, current_user: dict = Depends(require_admin)):
     """
-    Marks current room as COMPLETED (permanently locking it for the day),
-    and automatically advances the live cleaning pointer to the next assigned room in the 13-room roster.
+    Marks current room as CLEANED & VERIFIED,
+    and automatically advances the live cleaning pointer to the next valid room in the 12-room sequential rotation.
     """
     db = get_database()
     today_str = datetime.now().strftime("%Y-%m-%d")
     now_str = datetime.now().strftime("%I:%M %p")
     day_name, scheduled_rooms = await get_today_assigned_rooms(db)
     
-    # 1. Mark current room as COMPLETED
+    # 1. Mark current room as COMPLETED & VERIFIED
     await db.rooms.update_one(
         {"room_number": room_number},
         {"$set": {
             "cleaning_status": "COMPLETED",
-            "last_cleaned": f"Today at {now_str}"
+            "verification_status": "VERIFIED",
+            "last_cleaned": f"Today at {now_str}",
+            "completed_at": now_str
         }}
     )
     
@@ -281,7 +369,10 @@ async def complete_and_advance(room_number: str, current_user: dict = Depends(re
         {"room_number": room_number, "date": today_str},
         {"$set": {
             "status": "COMPLETED",
-            "notes": f"Cleaned & sanitized via housekeeping flow at {now_str}.",
+            "verification_status": "VERIFIED",
+            "verified_by": current_user.get("full_name") or current_user.get("email"),
+            "completion_time": now_str,
+            "notes": f"Cleaned & verified via daily sanitation at {now_str}.",
             "updated_at": datetime.utcnow()
         }},
         upsert=True
@@ -295,10 +386,10 @@ async def complete_and_advance(room_number: str, current_user: dict = Depends(re
             await create_notification(
                 str(u["_id"]),
                 "Room Cleaning Completed",
-                f"Room {room_number} daily sanitisation is COMPLETED at {now_str}. Leave applications unlocked."
+                f"Room {room_number} daily sanitisation is COMPLETED & VERIFIED at {now_str}. Leave applications unlocked."
             )
             
-    # 2. Advance sequentially across all 13 rooms to next non-completed room
+    # 2. Advance sequentially across all 12 rooms to next non-completed room
     next_room = None
     if room_number in scheduled_rooms:
         curr_idx = scheduled_rooms.index(room_number)
@@ -310,10 +401,10 @@ async def complete_and_advance(room_number: str, current_user: dict = Depends(re
                 break
     
     if next_room:
-        await db.rooms.update_one({"room_number": next_room}, {"$set": {"cleaning_status": "IN_PROGRESS"}})
+        await db.rooms.update_one({"room_number": next_room}, {"$set": {"cleaning_status": "IN_PROGRESS", "start_time": now_str}})
         await db.cleaning_requests.update_many(
             {"room_number": next_room, "date": today_str},
-            {"$set": {"status": "IN_PROGRESS", "updated_at": datetime.utcnow()}},
+            {"$set": {"status": "IN_PROGRESS", "start_time": now_str, "updated_at": datetime.utcnow()}},
             upsert=True
         )
         
@@ -322,11 +413,11 @@ async def complete_and_advance(room_number: str, current_user: dict = Depends(re
         "CLEANING_COMPLETED_AND_ADVANCED",
         "CLEANING",
         room_number,
-        f"{room_number} marked COMPLETED; advanced housekeeping to {next_room or 'All 13 Rooms Finished'}"
+        f"{room_number} marked CLEANED & VERIFIED; advanced housekeeping to {next_room or 'All 12 Rooms Finished'}"
     )
     
     return {
-        "message": f"✅ {room_number} Cleaned & Locked!" + (f" Advanced to {next_room}." if next_room else f" All {len(scheduled_rooms)} hostel rooms have been sanitized!"),
+        "message": f"✅ {room_number} Cleaned & Verified!" + (f" Advanced to {next_room}." if next_room else f" All {len(scheduled_rooms)} hostel rooms have been sanitized!"),
         "completed_room": room_number,
         "next_room": next_room,
         "is_floor_finished": next_room is None
@@ -520,28 +611,50 @@ class AssignDutyRoomRequest(BaseModel):
     day_name: Optional[str] = None
 
 @router.post("/assign-duty-room")
+@router.post("/assign-meal-duty-room")
 async def assign_duty_room(data: AssignDutyRoomRequest, current_user: dict = Depends(require_admin)):
     """
-    Admin assigns ANY room as the cleaning duty room for today (or a specific day).
-    Synchronizes immediately with mess meal counts and daily schedule.
+    Admin assigns ANY room as the Daily Meal Duty Room for today (or a specific day).
+    Meal Duty Room is completely separate from the sequential cleaning workflow.
     """
     db = get_database()
+    today_str = datetime.now().strftime("%Y-%m-%d")
     target_day = data.day_name or datetime.now().strftime("%A")
-    room_number = data.room_number
+    room_number = data.room_number.strip()
     
     valid_rooms = await get_all_hostel_rooms(db)
     if room_number not in valid_rooms:
-        raise HTTPException(status_code=400, detail=f"Invalid room number {room_number}. Valid rooms: {valid_rooms}")
+        raise HTTPException(status_code=400, detail=f"Invalid room number '{room_number}'. Valid hostel rooms (12 rooms, no Room 03): {valid_rooms}")
         
+    # 1. Update meal duty schedule for today's date
+    await db.meal_duty_schedule.update_one(
+        {"date": today_str},
+        {"$set": {
+            "room_number": room_number,
+            "day": target_day,
+            "allocated_by": current_user.get("email"),
+            "updated_at": datetime.utcnow()
+        }},
+        upsert=True
+    )
+    # 2. Update day-of-week schedule fallback
+    await db.meal_duty_schedule.update_one(
+        {"day": target_day, "date": {"$exists": False}},
+        {"$set": {"room_number": room_number, "updated_at": datetime.utcnow()}},
+        upsert=True
+    )
+    # 3. Synchronize legacy cleaning_schedule table
     await db.cleaning_schedule.update_one(
         {"day": target_day},
         {"$set": {"room_numbers": [room_number], "updated_at": datetime.utcnow()}},
         upsert=True
     )
     
-    await log_audit(current_user["email"], "DUTY_ROOM_ASSIGNED", "CLEANING", f"{room_number} assigned as duty room for {target_day}")
+    await log_audit(current_user["email"], "DUTY_ROOM_ASSIGNED", "MEAL_DUTY", f"{room_number} allocated as Daily Meal Duty Room for {today_str} ({target_day})")
     return {
-        "message": f"✅ {room_number} successfully allocated as {target_day}'s Cleaning Duty Room (Authorized for Meal Counts).",
+        "message": f"✅ {room_number} successfully allocated as Daily Meal Duty Room.",
+        "meal_duty_room": room_number,
+        "date": today_str,
         "day": target_day,
         "room_number": room_number
     }

@@ -51,7 +51,7 @@ const Login = () => {
       } else if (!err.response) {
         setError('Connecting to hostel server... Please retry in a few seconds.');
       } else {
-        setError('Invalid login credentials. Please use "admin" / "Admin@123" for Admin, or your Student ID / "Student@123".');
+        setError('Invalid username or password. Please verify your credentials and try again.');
       }
     } finally {
       setLoading(false);

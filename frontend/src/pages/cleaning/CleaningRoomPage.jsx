@@ -171,13 +171,18 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
     }
   };
 
-  // 4. Toggle Night Meal
-  // 4. Toggle Night Meal
+  // 4. Toggle Night Lunch / Dinner Count
   const handleToggleNight = async (studentId, currentVal) => {
     if (!nightData || nightData.is_locked || (!isAdmin && nightData?.cleaning_duty && !nightData?.cleaning_duty?.has_duty)) return;
 
     const student = nightData.students.find(s => s.student_id === studentId);
     if (!student) return;
+
+    // Rule: Absent and leave students cannot be counted in meal headcounts!
+    if (student.attendance_status !== 'PRESENT') {
+      setMessage(`Student ${student.name} is marked ${student.attendance_status} in hostel attendance and cannot be counted for meals.`);
+      return;
+    }
 
     const newRequired = !currentVal;
 
@@ -187,7 +192,6 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
         if (s.student_id === studentId) {
           return {
             ...s,
-            attendance_status: newRequired ? 'PRESENT' : s.attendance_status,
             meal_required: newRequired,
             is_checked: true
           };
@@ -217,9 +221,6 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
         student_id: studentId,
         meal_required: newRequired
       });
-      if (student.attendance_status !== 'PRESENT' && newRequired) {
-        setMessage(`Student ${student.name} marked Present & counted for Night Dinner!`);
-      }
     } catch (err) {
       console.error(err);
       fetchNight();
@@ -352,14 +353,14 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center space-x-3.5">
                 <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
-                  🧹
+                  🍽️
                 </div>
                 <div>
                   <span className="px-3 py-1 bg-amber-200 text-amber-900 rounded-full text-[11px] font-black uppercase tracking-wider">
-                    Institutional Meal Count Rule
+                    Institutional Meal Duty Rule
                   </span>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                    The Meal Count Is Only Taken by the Cleaning Room, Not All Rooms
+                    Meal Counts Are Recorded Exclusively by Today's Daily Meal Duty Room
                   </h2>
                 </div>
               </div>
@@ -370,19 +371,19 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-              In <strong>Veerashaiva Lingayath Boys Hostel</strong>, daily headcounts for <strong>Morning Breakfast / Tiffin</strong>, <strong>Lunch Box</strong>, and <strong>Night Dinner</strong> are recorded and submitted exclusively by the residents of the room assigned housekeeping duty for today ({currentData?.day}). 
-              Residents of other rooms do not take or submit meal counts.
+              In <strong>Veerashaiva Lingayath Boys Hostel</strong>, daily headcounts for <strong>Tiffin Count (Breakfast)</strong>, <strong>Tiffin Box Count (Lunch)</strong>, and <strong>Night Lunch Count (Dinner)</strong> are recorded and submitted exclusively by the room assigned <strong>Daily Meal Duty</strong> for today ({currentData?.day}). 
+              Only ONE room is selected as the Daily Meal Duty Room per day, and it operates completely independently from room cleaning.
             </p>
 
             {/* Authority Breakdown Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
               <div className="p-4 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-1.5">
                 <div className="flex items-center space-x-2 text-amber-800 text-xs font-bold uppercase">
-                  <span>📅</span>
-                  <span>Today's Assigned Cleaning Room</span>
+                  <span>🍽️</span>
+                  <span>Today's Daily Meal Duty Room</span>
                 </div>
                 <p className="text-xl font-black text-amber-950">
-                  {currentData?.cleaning_duty?.scheduled_rooms?.[0] || 'None'}
+                  {currentData?.duty_room || currentData?.cleaning_duty?.scheduled_rooms?.[0] || 'None'}
                 </p>
                 <p className="text-[11px] text-slate-500 font-medium">
                   Authorized on duty to record, verify, and submit hostel meal counts to the mess kitchen (1 room per day).
@@ -399,7 +400,7 @@ const CleaningRoomPage = ({ onBack, initialRoom = 'ALL' }) => {
                 </p>
                 <p className="text-[11px] text-emerald-700 font-semibold flex items-center space-x-1">
                   <span>✅</span>
-                  <span>No cleaning duty today. Meal counts are taken for you by the Cleaning Room.</span>
+                  <span>No meal duty today. Your meal counts are recorded by the Daily Meal Duty Room.</span>
                 </p>
               </div>
             </div>
