@@ -42,6 +42,13 @@ async def get_overview_analytics(current_user: dict = Depends(require_admin)):
         db.emergency_alerts.count_documents({"status": "ACTIVE"}),
     )
     
+    total_rooms = len(rooms)
+    total_beds = sum(r.get("total_beds", 4) for r in rooms)
+    occupied_beds = sum(r.get("occupied_beds", 0) for r in rooms)
+    available_beds = max(0, total_beds - occupied_beds)
+    occupancy_pct = round((occupied_beds / total_beds * 100), 1) if total_beds > 0 else 0
+    occupied_rooms_count = sum(1 for r in rooms if r.get("occupied_beds", 0) > 0)
+    
     return {
         "total_students": total_students,
         "total_rooms": total_rooms,
