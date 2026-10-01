@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import basavannaImg from '../../assets/basavanna.png';
 import swamijiImg from '../../assets/swamiji.jpg';
 import shadakshariImg from '../../assets/shadakshari.jpg';
+import yaliImg from '../../assets/dr_shivayogi_yali.jpg';
 import ranganathImg from '../../assets/ranganath.jpg';
 
 /* ─────────────────────────────────────────────────────────
@@ -625,7 +626,41 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* ── 3RD PROFILE: Hostel Treasurer ── */}
+                {/* ── 3RD PROFILE: Hostel Secretary ── */}
+                <div className="lp-leader-card">
+                  <div className="lp-leader-photo-wrap">
+                    <img
+                      src={yaliImg}
+                      alt="Dr. Shivayogi B. Yali, Secretary of Veerashiva Lingayath Boys Hostel"
+                      className="lp-leader-img"
+                    />
+                  </div>
+
+                  <div className="lp-leader-content">
+                    <span className="lp-leader-tag">HOSTEL LEADERSHIP</span>
+                    <h3 style={{ fontFamily: "'Noto Sans Kannada',serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)', fontWeight: 800, color: '#fde68a', letterSpacing: '0.01em', lineHeight: 1.35, marginBottom: '6px' }}>
+                      ಡಾ. ಶಿವಯೋಗಿ ಬಿ. ಯಲಿ
+                    </h3>
+                    <p style={{ fontFamily: "'Cinzel','Georgia',serif", fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em', marginBottom: '12px' }}>
+                      Dr. Shivayogi B. Yali
+                    </p>
+
+                    <div style={{ marginBottom: '18px' }}>
+                      <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.08rem)', fontWeight: 800, color: '#fbbf24', letterSpacing: '0.02em', marginBottom: '4px' }}>
+                        Secretary
+                      </p>
+                      <p style={{ fontSize: 'clamp(0.86rem, 1.7vw, 0.98rem)', color: '#cbd5e1', fontWeight: 600, lineHeight: 1.45 }}>
+                        Veerashiva Lingayath Boys Hostel, Shivamogga
+                      </p>
+                    </div>
+
+                    <p className="lp-leader-desc">
+                      As the Secretary of Veerashiva Lingayath Boys Hostel, Shivamogga, Dr. Shivayogi B. Yali supports the hostel's administration and contributes to the effective coordination and management of hostel activities.
+                    </p>
+                  </div>
+                </div>
+
+                {/* ── 4TH PROFILE: Hostel Treasurer ── */}
                 <div className="lp-leader-card">
                   <div className="lp-leader-photo-wrap">
                     <img
