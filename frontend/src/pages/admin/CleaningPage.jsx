@@ -44,6 +44,10 @@ const CleaningPage = () => {
   // Custom Beautiful Modals State
   const [showResetShiftModal, setShowResetShiftModal] = useState(false);
   const [showSanitizeAllModal, setShowSanitizeAllModal] = useState(false);
+  const [showAllocateDutyModal, setShowAllocateDutyModal] = useState(false);
+  const [selectedDutyRoom, setSelectedDutyRoom] = useState('Room 01');
+  const [selectedDutyDay, setSelectedDutyDay] = useState('');
+  const [selectedFocusRoom, setSelectedFocusRoom] = useState('Room 01');
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -260,6 +264,38 @@ const CleaningPage = () => {
     }
   };
 
+  // 7. Admin assigns ANY room as today's (or specific day's) Cleaning Duty Room
+  const handleAssignDutyRoom = async (roomNumber, dayName = selectedDutyDay || todayDayName) => {
+    setActionLoading(true);
+    try {
+      const res = await api.post('/cleaning/assign-duty-room', {
+        room_number: roomNumber,
+        day_name: dayName
+      });
+      setNotice(`✅ ${res.data.message || `${roomNumber} allocated as duty room for ${dayName}!`}`);
+      setShowAllocateDutyModal(false);
+      await loadCleaningData(true);
+    } catch (err) {
+      setNotice(`⚠️ ${err.response?.data?.detail || 'Failed to allocate duty room.'}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // 8. Admin chooses ANY room to clean right now (sets it to IN_PROGRESS)
+  const handleSetActiveRoom = async (roomNumber) => {
+    setActionLoading(true);
+    try {
+      const res = await api.post(`/cleaning/set-active-room/${roomNumber}`);
+      setNotice(`🧹 ${res.data.message || `${roomNumber} is now active for cleaning.`}`);
+      await loadCleaningData(true);
+    } catch (err) {
+      setNotice(`⚠️ ${err.response?.data?.detail || 'Failed to set active room.'}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // 7. Auto-Simulation Engine for all 13 rooms
   useEffect(() => {
     if (!autoSimulating) {
@@ -348,6 +384,32 @@ const CleaningPage = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Quick Admin Room Cleaner Picker */}
+          <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-purple-200 shadow-2xs">
+            <span className="text-[11px] font-black text-purple-700 px-2 flex items-center gap-1">
+              <span>🧹</span>
+              <span>Clean Room:</span>
+            </span>
+            <select
+              value={selectedFocusRoom}
+              onChange={(e) => setSelectedFocusRoom(e.target.value)}
+              className="text-xs font-black text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none cursor-pointer"
+            >
+              {VALID_ROOMS.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            <button
+              onClick={() => handleSetActiveRoom(selectedFocusRoom)}
+              disabled={actionLoading}
+              className="py-1.5 px-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-50 shadow-2xs"
+              title="Set selected room as the active room being cleaned right now"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-300" />
+              <span>Clean Now</span>
+            </button>
+          </div>
+
           <button
             onClick={() => navigate('/admin/dashboard')}
             className="py-2.5 px-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs cursor-pointer"
@@ -357,11 +419,24 @@ const CleaningPage = () => {
           </button>
 
           <button
+            onClick={() => {
+              setSelectedDutyRoom(todayDutyRooms[0] || 'Room 01');
+              setSelectedDutyDay(todayDayName);
+              setShowAllocateDutyModal(true);
+            }}
+            className="py-2.5 px-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shadow-xs cursor-pointer"
+            title="Choose which room is assigned for cleaning & meal counts duty"
+          >
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>Allocate Duty Room</span>
+          </button>
+
+          <button
             onClick={() => navigate('/admin/students?tab=cleaning-room')}
             className="py-2.5 px-3.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 rounded-xl text-xs font-black transition flex items-center space-x-1.5 shadow-xs cursor-pointer"
             title="Open Cleaning Room for Resident Meal Counts (Tiffin & Box)"
           >
-            <span>🧹</span>
+            <span>🍽️</span>
             <span>Cleaning Room (Meal Counts)</span>
           </button>
 
@@ -377,7 +452,7 @@ const CleaningPage = () => {
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="py-2.5 px-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shadow-xs cursor-pointer"
+            className="py-2.5 px-3.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shadow-xs cursor-pointer"
             title="Create and assign new cleaning task"
           >
             <Plus className="w-4 h-4" />
@@ -431,15 +506,42 @@ const CleaningPage = () => {
                 1 Room Per Day Duty Synchronized
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-amber-950 tracking-tight">
-              {todayDutyRooms[0] || 'None'}
-            </h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl font-black text-amber-950 tracking-tight">
+                {todayDutyRooms[0] || 'None'}
+              </h2>
+              <button
+                onClick={() => {
+                  setSelectedDutyRoom(todayDutyRooms[0] || 'Room 01');
+                  setSelectedDutyDay(todayDayName);
+                  setShowAllocateDutyModal(true);
+                }}
+                className="py-1.5 px-3 bg-amber-200 hover:bg-amber-300 border border-amber-400/80 text-amber-950 font-black rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+                title="Change today's assigned cleaning room"
+              >
+                <span>⚙️</span>
+                <span>Change Duty Room</span>
+              </button>
+            </div>
             <p className="text-xs sm:text-sm text-slate-700 font-semibold">
               Authorized on duty to record, verify, and submit hostel meal counts to the mess kitchen (1 room per day).
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              onClick={() => {
+                setSelectedDutyRoom(todayDutyRooms[0] || 'Room 01');
+                setSelectedDutyDay(todayDayName);
+                setShowAllocateDutyModal(true);
+              }}
+              className="py-2.5 px-4 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
+              title="Allocate or Change Today's Duty Room"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>Allocate / Change Duty Room</span>
+            </button>
+
             <button
               onClick={() => navigate('/admin/students?tab=cleaning-room')}
               className="py-2.5 px-4 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer"
@@ -567,7 +669,7 @@ const CleaningPage = () => {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 flex items-center space-x-4 shrink-0">
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-300">Sanitation Progress</div>
-                <div className="text-xl font-black text-white">{completedRooms.length} / 13 Rooms</div>
+                <div className="text-xl font-black text-white">{completedRooms.length} / {totalRoomsCount} Rooms</div>
               </div>
               <div className="h-10 w-px bg-white/20" />
               <div className="text-right">
@@ -722,10 +824,10 @@ const CleaningPage = () => {
             <div className="p-5 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-center space-y-2">
               <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto" />
               <h3 className="text-lg font-extrabold text-emerald-300">
-                🎉 All 13 Hostel Rooms Sanitised & Completed!
+                🎉 All {totalRoomsCount} Hostel Rooms Sanitised & Completed!
               </h3>
               <p className="text-xs text-slate-300 max-w-xl mx-auto">
-                All 13 rooms across the whole hostel have been sanitized, inspected, and locked for {todayDayName}. Resident leave applications across the entire hostel are now unlocked!
+                All {totalRoomsCount} rooms across the whole hostel have been sanitized, inspected, and locked for {todayDayName}. Resident leave applications across the entire hostel are now unlocked!
               </p>
               <div className="pt-2">
                 <button
@@ -1057,14 +1159,27 @@ const CleaningPage = () => {
                             )}
                           </span>
 
-                          <button
-                            onClick={() => handleDirectClean(room.room_number)}
-                            disabled={actionLoading}
-                            className="py-1.5 px-3 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-2xs cursor-pointer disabled:opacity-50"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Clean Now</span>
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => handleSetActiveRoom(room.room_number)}
+                              disabled={actionLoading}
+                              className="py-1.5 px-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                              title="Start cleaning this room now"
+                            >
+                              <Zap className="w-3.5 h-3.5 text-amber-500" />
+                              <span>Start Cleaning</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleDirectClean(room.room_number)}
+                              disabled={actionLoading}
+                              className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-2xs cursor-pointer disabled:opacity-50"
+                              title="Mark as cleaned and certified"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Clean Now</span>
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1722,6 +1837,153 @@ const CleaningPage = () => {
                 >
                   <CheckCheck className={`w-4 h-4 ${actionLoading ? 'animate-spin' : ''}`} />
                   <span>{actionLoading ? 'Sanitizing...' : `Sanitize All ${allRooms.length} Rooms`}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ BEAUTIFUL ALLOCATE DUTY ROOM MODAL ══ */}
+      {showAllocateDutyModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden transform animate-in zoom-in-95 duration-200">
+            {/* Top decorative gradient bar */}
+            <div className="h-2 w-full bg-gradient-to-r from-purple-500 via-indigo-600 to-amber-500" />
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowAllocateDutyModal(false)}
+              disabled={actionLoading}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              title="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-6 sm:p-7 space-y-5">
+              {/* Header with Icon */}
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 shrink-0">
+                  <Sparkles className="w-7 h-7 text-amber-300" />
+                </div>
+                <div className="flex-1 pr-6">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-200 mb-1.5">
+                    <span>🧹</span>
+                    <span>Hostel Duty Room Allocation</span>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 leading-snug">
+                    Allocate Cleaning Duty Room
+                  </h3>
+                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    Choose which room is authorized on duty for cleaning inspection & mess kitchen meal counts (1 room per day)
+                  </p>
+                </div>
+              </div>
+
+              {/* Day Selector Pills */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-black uppercase tracking-wider text-slate-500">
+                  Select Day of the Week
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                    const isToday = day === todayDayName;
+                    const isSelected = (selectedDutyDay || todayDayName) === day;
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setSelectedDutyDay(day)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-purple-600 text-white shadow-xs'
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        <span>{day}</span>
+                        {isToday && (
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase ${
+                            isSelected ? 'bg-amber-400 text-slate-950' : 'bg-purple-200 text-purple-900'
+                          }`}>
+                            Today
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Room Selection Grid (All 12 Valid Rooms) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-black uppercase tracking-wider text-slate-500">
+                    Select Duty Room (12 Physical Rooms)
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-semibold">
+                    Current Duty Room: <strong className="text-purple-700">{todayDutyRooms[0] || 'None'}</strong>
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 max-h-60 overflow-y-auto p-1 border border-slate-100 rounded-2xl">
+                  {allRooms.map((r) => {
+                    const isSelected = selectedDutyRoom === r.room_number;
+                    const isCurrentTodayDuty = todayDutyRooms.includes(r.room_number);
+
+                    return (
+                      <div
+                        key={r.room_number}
+                        onClick={() => setSelectedDutyRoom(r.room_number)}
+                        className={`p-3 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? 'bg-purple-50/90 border-purple-500 ring-2 ring-purple-500/30 shadow-xs'
+                            : 'bg-white hover:bg-slate-50 border-slate-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-sm font-black text-slate-900">{r.room_number}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-600">
+                            F{r.floor}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {r.residents_count} Residents &bull; {r.total_beds} Beds
+                        </div>
+                        {isCurrentTodayDuty && (
+                          <span className="mt-2 text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 inline-block text-center">
+                            ⭐ Today's Duty
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Information Note */}
+              <div className="p-3 bg-purple-50/80 rounded-xl border border-purple-200 text-xs text-purple-950 font-medium leading-relaxed">
+                Allocating <strong>{selectedDutyRoom}</strong> for <strong>{selectedDutyDay || todayDayName}</strong> designates its residents as the official duty committee. They will be authorized to verify morning & evening meal counts for the kitchen and oversee housekeeping coordination.
+              </div>
+
+              {/* Actions Footer */}
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAllocateDutyModal(false)}
+                  disabled={actionLoading}
+                  className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAssignDutyRoom(selectedDutyRoom, selectedDutyDay || todayDayName)}
+                  disabled={actionLoading}
+                  className="py-2.5 px-5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 active:scale-95 shadow-md shadow-purple-500/25 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <span>{actionLoading ? 'Allocating...' : `Confirm & Allocate ${selectedDutyRoom}`}</span>
                 </button>
               </div>
             </div>

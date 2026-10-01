@@ -12,6 +12,7 @@ from app.schemas.all_schemas import (
 from bson import ObjectId
 from datetime import datetime
 from typing import Optional, List
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/cleaning", tags=["Room Cleaning"])
 
@@ -514,26 +515,89 @@ async def complete_all_rooms(current_user: dict = Depends(require_admin)):
         "completed_count": len(scheduled_rooms)
     }
 
-@router.post("/reset-shift")
-async def reset_cleaning_shift(current_user: dict = Depends(require_admin)):
+class AssignDutyRoomRequest(BaseModel):
+    room_number: str
+    day_name: Optional[str] = None
+
+@router.post("/assign-duty-room")
+async def assign_duty_room(data: AssignDutyRoomRequest, current_user: dict = Depends(require_admin)):
     """
-    Resets the cleaning shift for all hostel rooms starting from the 1st room (Room 01 to IN_PROGRESS, others to PENDING).
-    Only one room is on cleaning duty per day and authorized for meal count.
+    Admin assigns ANY room as the cleaning duty room for today (or a specific day).
+    Synchronizes immediately with mess meal counts and daily schedule.
+    """
+    db = get_database()
+    target_day = data.day_name or datetime.now().strftime("%A")
+    room_number = data.room_number
+    
+    valid_rooms = await get_all_hostel_rooms(db)
+    if room_number not in valid_rooms:
+        raise HTTPException(status_code=400, detail=f"Invalid room number {room_number}. Valid rooms: {valid_rooms}")
+        
+    await db.cleaning_schedule.update_one(
+        {"day": target_day},
+        {"$set": {"room_numbers": [room_number], "updated_at": datetime.utcnow()}},
+        upsert=True
+    )
+    
+    await log_audit(current_user["email"], "DUTY_ROOM_ASSIGNED", "CLEANING", f"{room_number} assigned as duty room for {target_day}")
+    return {
+        "message": f"✅ {room_number} successfully allocated as {target_day}'s Cleaning Duty Room (Authorized for Meal Counts).",
+        "day": target_day,
+        "room_number": room_number
+    }
+
+@router.post("/set-active-room/{room_number}")
+async def set_active_cleaning_room(room_number: str, current_user: dict = Depends(require_admin)):
+    """
+    Allows admin to choose ANY room to start cleaning immediately (sets it to IN_PROGRESS).
+    Resets any other active non-completed room to PENDING.
+    """
+    db = get_database()
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    
+    valid_rooms = await get_all_hostel_rooms(db)
+    if room_number not in valid_rooms:
+        raise HTTPException(status_code=400, detail=f"Invalid room {room_number}")
+        
+    # Reset other rooms that were IN_PROGRESS back to PENDING (unless COMPLETED)
+    await db.rooms.update_many(
+        {"cleaning_status": "IN_PROGRESS", "room_number": {"$ne": room_number}},
+        {"$set": {"cleaning_status": "PENDING"}}
+    )
+    await db.cleaning_requests.update_many(
+        {"date": today_str, "status": "IN_PROGRESS", "room_number": {"$ne": room_number}},
+        {"$set": {"status": "PENDING", "updated_at": datetime.utcnow()}}
+    )
+    
+    # Set chosen room to IN_PROGRESS
+    await db.rooms.update_one(
+        {"room_number": room_number},
+        {"$set": {"cleaning_status": "IN_PROGRESS"}}
+    )
+    await db.cleaning_requests.update_many(
+        {"date": today_str, "room_number": room_number},
+        {"$set": {"status": "IN_PROGRESS", "updated_at": datetime.utcnow()}},
+        upsert=True
+    )
+    
+    await log_audit(current_user["email"], "ACTIVE_ROOM_SET", "CLEANING", f"{room_number} set to IN_PROGRESS")
+    return {
+        "message": f"🧹 {room_number} is now active and in-progress for cleaning.",
+        "active_room": room_number
+    }
+
+@router.post("/reset-shift")
+async def reset_cleaning_shift(start_room: Optional[str] = "Room 01", current_user: dict = Depends(require_admin)):
+    """
+    Resets the cleaning shift for all hostel rooms starting from the specified room (default Room 01 to IN_PROGRESS, others to PENDING).
+    Preserves today's scheduled duty room without overwriting cleaning_schedule.
     """
     db = get_database()
     today_str = datetime.now().strftime("%Y-%m-%d")
     day_name, scheduled_rooms = await get_today_assigned_rooms(db)
     today_duty_rooms = await get_today_duty_rooms(db, day_name)
     
-    first_room = "Room 01" # Strictly reset shift starting from the 1st room
-    
-    # Synchronize today's cleaning_schedule so today's scheduled cleaning room is exactly the 1st room (Room 01)
-    await db.cleaning_schedule.update_one(
-        {"day": day_name},
-        {"$set": {"room_numbers": [first_room], "updated_at": datetime.utcnow()}},
-        upsert=True
-    )
-    today_duty_rooms = [first_room]
+    first_room = start_room if start_room in scheduled_rooms else "Room 01"
     
     for r_no in scheduled_rooms:
         st = "IN_PROGRESS" if r_no == first_room else "PENDING"
@@ -542,15 +606,15 @@ async def reset_cleaning_shift(current_user: dict = Depends(require_admin)):
             {"room_number": r_no, "date": today_str},
             {"$set": {
                 "status": st,
-                "notes": f"Daily shift reset from 1st room ({first_room}) for {day_name} ({r_no}).",
+                "notes": f"Daily shift reset from {first_room} for {day_name} ({r_no}).",
                 "updated_at": datetime.utcnow()
             }},
             upsert=True
         )
         
-    await log_audit(current_user["email"], "CLEANING_SHIFT_RESET", "CLEANING", f"All {len(scheduled_rooms)} rooms reset starting from 1st room ({first_room})")
+    await log_audit(current_user["email"], "CLEANING_SHIFT_RESET", "CLEANING", f"All {len(scheduled_rooms)} rooms reset starting from {first_room}")
     return {
-        "message": f"Housekeeping shift reset from 1st room ({first_room}): {first_room} is now IN_PROGRESS, ready for cleaning.",
+        "message": f"Housekeeping shift reset starting from {first_room}: {first_room} is now IN_PROGRESS, ready for cleaning.",
         "first_room": first_room,
         "today_duty_rooms": today_duty_rooms,
         "today_scheduled_rooms": today_duty_rooms,
