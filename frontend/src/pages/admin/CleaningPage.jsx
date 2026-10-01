@@ -29,7 +29,8 @@ import {
   CheckCheck,
   Plus,
   Star,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 const CleaningPage = () => {
@@ -40,6 +41,10 @@ const CleaningPage = () => {
   const [notice, setNotice] = useState('');
   const [viewTab, setViewTab] = useState('daily'); // 'daily' | 'weekly' | 'tasks'
   
+  // Custom Beautiful Modals State
+  const [showResetShiftModal, setShowResetShiftModal] = useState(false);
+  const [showSanitizeAllModal, setShowSanitizeAllModal] = useState(false);
+
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [floorFilter, setFloorFilter] = useState('ALL'); // 'ALL' | 1 | 2 | 3 | 4
@@ -205,35 +210,51 @@ const CleaningPage = () => {
     }
   };
 
-  // 5. Mass Complete All Rooms
-  const handleCompleteAll = async () => {
-    if (!window.confirm(`Sanitize all ${allRooms.length} rooms at once? This will mark all rooms as COMPLETED and unlock leave applications for all hostel residents.`)) {
-      return;
+  // Auto-clear notice after 6 seconds
+  useEffect(() => {
+    if (notice) {
+      const timer = setTimeout(() => {
+        setNotice('');
+      }, 6000);
+      return () => clearTimeout(timer);
     }
+  }, [notice]);
+
+  // 5. Mass Complete All Rooms
+  const handleCompleteAll = () => {
+    setShowSanitizeAllModal(true);
+  };
+
+  const executeCompleteAll = async () => {
     setActionLoading(true);
     setAutoSimulating(false);
+    setShowSanitizeAllModal(false);
     try {
       const res = await api.post('/cleaning/complete-all');
-      setNotice(`🎉 ${res.data.message}`);
+      setNotice(`🎉 ${res.data.message || 'All rooms marked as completed successfully.'}`);
       await loadCleaningData(true);
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to complete all rooms.');
+      setNotice(`⚠️ ${err.response?.data?.detail || 'Failed to complete all rooms.'}`);
     } finally {
       setActionLoading(false);
     }
   };
 
   // 6. Reset today's shift starting from 1st room (Room 01)
-  const handleResetShift = async () => {
-    if (!window.confirm(`Restart today's cleaning shift (${todayDayName}) from 1st room (Room 01) for all ${allRooms.length} rooms?`)) return;
+  const handleResetShift = () => {
+    setShowResetShiftModal(true);
+  };
+
+  const executeResetShift = async () => {
     setActionLoading(true);
     setAutoSimulating(false);
+    setShowResetShiftModal(false);
     try {
       const res = await api.post('/cleaning/reset-shift');
-      setNotice(`🔄 ${res.data.message}`);
+      setNotice(`🔄 ${res.data.message || 'Cleaning shift restarted from Room 01 successfully.'}`);
       await loadCleaningData(true);
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to reset cleaning shift.');
+      setNotice(`⚠️ ${err.response?.data?.detail || 'Failed to reset cleaning shift.'}`);
     } finally {
       setActionLoading(false);
     }
@@ -431,15 +452,29 @@ const CleaningPage = () => {
         </div>
       </div>
 
-      {/* Notice Banner */}
+      {/* Beautiful Notice Banner */}
       {notice && (
-        <div className="p-3.5 bg-emerald-50 text-emerald-900 rounded-2xl border border-emerald-300 text-xs font-bold flex items-center justify-between shadow-2xs transition-all">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{notice}</span>
+        <div className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-md transition-all animate-in fade-in slide-in-from-top-2 duration-200 ${
+          notice.startsWith('⚠️') || notice.startsWith('❌')
+            ? 'bg-rose-50/95 text-rose-950 border-rose-300 ring-1 ring-rose-400/20'
+            : 'bg-emerald-50/95 text-emerald-950 border-emerald-300 ring-1 ring-emerald-400/20'
+        }`}>
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-xl shrink-0 ${
+              notice.startsWith('⚠️') || notice.startsWith('❌') ? 'bg-rose-100 text-rose-700 shadow-2xs' : 'bg-emerald-100 text-emerald-700 shadow-2xs'
+            }`}>
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-extrabold leading-snug">{notice}</p>
+            </div>
           </div>
-          <button onClick={() => setNotice('')} className="text-emerald-700 hover:text-emerald-950 font-black text-sm cursor-pointer">
-            &times;
+          <button
+            onClick={() => setNotice('')}
+            className="p-1.5 rounded-xl hover:bg-black/5 text-slate-400 hover:text-slate-700 transition cursor-pointer shrink-0"
+            title="Dismiss notification"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -1505,6 +1540,191 @@ const CleaningPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ BEAUTIFUL RESTART SHIFT MODAL ══ */}
+      {showResetShiftModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden transform animate-in zoom-in-95 duration-200">
+            {/* Top decorative gradient bar */}
+            <div className="h-2 w-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600" />
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowResetShiftModal(false)}
+              disabled={actionLoading}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              title="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-6 sm:p-7 space-y-5">
+              {/* Header with Icon */}
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
+                  <RotateCcw className="w-7 h-7" />
+                </div>
+                <div className="flex-1 pr-6">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 mb-1.5">
+                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <span>Hostel Housekeeping Rotation</span>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 leading-snug">
+                    Restart Today's Cleaning Shift?
+                  </h3>
+                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    Reset duty progress back to 1st room for all rooms
+                  </p>
+                </div>
+              </div>
+
+              {/* Scope & Details Card */}
+              <div className="bg-gradient-to-br from-amber-50/70 to-orange-50/50 rounded-2xl p-4 border border-amber-200/70 space-y-3">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="bg-white/90 backdrop-blur-xs rounded-xl p-2.5 border border-amber-100 shadow-2xs">
+                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Scheduled Day</p>
+                    <p className="text-sm font-black text-slate-800 flex items-center gap-1.5 mt-0.5">
+                      <Calendar className="w-3.5 h-3.5 text-amber-600" />
+                      <span>{todayDayName}</span>
+                    </p>
+                  </div>
+                  <div className="bg-white/90 backdrop-blur-xs rounded-xl p-2.5 border border-amber-100 shadow-2xs">
+                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Starting Point</p>
+                    <p className="text-sm font-black text-slate-800 flex items-center gap-1.5 mt-0.5">
+                      <Building2 className="w-3.5 h-3.5 text-orange-600" />
+                      <span>Room 01 (1st Room)</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white/95 backdrop-blur-xs rounded-xl p-3 border border-amber-100 flex items-center justify-between shadow-2xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center font-black text-xs">
+                      {allRooms.length}
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-800">Total Sequence Scope</p>
+                      <p className="text-[11px] font-semibold text-slate-500">All {allRooms.length} physical rooms in rotation</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Active Rotation
+                  </span>
+                </div>
+
+                <div className="p-3 bg-amber-100/60 rounded-xl border border-amber-200/60 text-xs text-amber-950 font-medium leading-relaxed">
+                  Restart today's cleaning shift (<strong>{todayDayName}</strong>) from 1st room (<strong>Room 01</strong>) for all <strong>{allRooms.length} rooms</strong>? This will set Room 01 to In-Progress and reset remaining rooms to Pending.
+                </div>
+              </div>
+
+              {/* Actions Footer */}
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowResetShiftModal(false)}
+                  disabled={actionLoading}
+                  className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={executeResetShift}
+                  disabled={actionLoading}
+                  className="py-2.5 px-5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 active:scale-95 shadow-md shadow-orange-500/25 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <RotateCcw className={`w-4 h-4 ${actionLoading ? 'animate-spin' : ''}`} />
+                  <span>{actionLoading ? 'Restarting Shift...' : 'Yes, Restart Shift'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ BEAUTIFUL SANITIZE ALL MODAL ══ */}
+      {showSanitizeAllModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden transform animate-in zoom-in-95 duration-200">
+            {/* Top decorative gradient bar */}
+            <div className="h-2 w-full bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowSanitizeAllModal(false)}
+              disabled={actionLoading}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              title="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-6 sm:p-7 space-y-5">
+              {/* Header with Icon */}
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0">
+                  <CheckCheck className="w-7 h-7" />
+                </div>
+                <div className="flex-1 pr-6">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-200 mb-1.5">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    <span>Hostel Mass Sanitation</span>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 leading-snug">
+                    Sanitize All {allRooms.length} Rooms at Once?
+                  </h3>
+                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    Mark full hostel rotation as completed
+                  </p>
+                </div>
+              </div>
+
+              {/* Scope & Details Card */}
+              <div className="bg-gradient-to-br from-emerald-50/70 to-teal-50/50 rounded-2xl p-4 border border-emerald-200/70 space-y-3">
+                <div className="bg-white/95 backdrop-blur-xs rounded-xl p-3 border border-emerald-100 flex items-center justify-between shadow-2xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center font-black text-xs">
+                      {allRooms.length}
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-800">All Rooms Completed</p>
+                      <p className="text-[11px] font-semibold text-slate-500">Unlocks leave permissions for all hostel residents</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Full Roster
+                  </span>
+                </div>
+
+                <div className="p-3 bg-emerald-100/60 rounded-xl border border-emerald-200/60 text-xs text-emerald-950 font-medium leading-relaxed">
+                  This will mark all <strong>{allRooms.length} rooms</strong> as <strong className="text-emerald-800">COMPLETED</strong> for today ({todayDayName}), fulfilling all daily sanitation duties and enabling residents to apply for leaves without hostel cleaning blocks.
+                </div>
+              </div>
+
+              {/* Actions Footer */}
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowSanitizeAllModal(false)}
+                  disabled={actionLoading}
+                  className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={executeCompleteAll}
+                  disabled={actionLoading}
+                  className="py-2.5 px-5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-95 shadow-md shadow-emerald-500/25 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <CheckCheck className={`w-4 h-4 ${actionLoading ? 'animate-spin' : ''}`} />
+                  <span>{actionLoading ? 'Sanitizing...' : `Sanitize All ${allRooms.length} Rooms`}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
