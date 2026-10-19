@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.security import decode_token
 from app.database.connection import get_database
@@ -7,7 +7,10 @@ from datetime import datetime
 
 security_scheme = HTTPBearer(auto_error=True)
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security_scheme)):
+async def get_current_user(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme)
+):
     token = credentials.credentials
     payload = decode_token(token)
     if not payload:
@@ -20,6 +23,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     email = payload.get("sub")
     role = payload.get("role")
     user_id = payload.get("id")
+    token_ver = payload.get("token_version", 1)
     
     if not email or not role:
         raise HTTPException(
@@ -50,9 +54,30 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User account is deactivated. Please contact hostel administrator.",
         )
+
+    # Invalidate tokens issued before a password change
+    user_token_ver = user.get("token_version", 1)
+    if token_ver != user_token_ver:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired: your password was updated. Please log in again.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Forced password reset: reject all endpoints except change-password
+    is_pwd_reset_required = payload.get("pwd_reset_required", False) or user.get("pwd_reset_required", False)
+    if is_pwd_reset_required:
+        path = request.url.path.rstrip("/")
+        if not path.endswith("/auth/change-password"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="PASSWORD_RESET_REQUIRED: Password reset required. You must change your password before accessing the system.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         
     # Serialize _id to str
     user["id"] = str(user["_id"])
+    user["pwd_reset_required"] = is_pwd_reset_required
     return user
 
 async def require_admin(current_user: dict = Depends(get_current_user)):

@@ -11,7 +11,7 @@ from datetime import datetime
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/login", response_model=TokenResponse)
-@limiter.limit("1000/minute")
+@limiter.limit("10/minute")
 async def login(request: Request, login_data: LoginRequest):
     db = get_database()
     raw_user = login_data.username.strip()
@@ -81,42 +81,9 @@ async def login(request: Request, login_data: LoginRequest):
             detail="Invalid login credentials. Please check your email/ID and password."
         )
 
-    # 3. Verify password with multiple forgiving fallback variations
-    raw_pwd = login_data.password.strip()
+    # 3. Verify password strictly using bcrypt hash only (no backdoor bypass)
     user_hash = user.get("password_hash", "")
-    
     is_valid = await asyncio.to_thread(verify_password, login_data.password, user_hash)
-    if not is_valid and raw_pwd != login_data.password:
-        is_valid = await asyncio.to_thread(verify_password, raw_pwd, user_hash)
-        
-    if not is_valid:
-        variations = [
-            raw_pwd.capitalize(),
-            raw_pwd.lower(),
-            raw_pwd.upper()
-        ]
-        for var in variations:
-            if var != raw_pwd and await asyncio.to_thread(verify_password, var, user_hash):
-                is_valid = True
-                break
-
-    # Admin common aliases and fallback variations
-    if not is_valid and user.get("role") == "ADMIN":
-        admin_passwords = [
-            "Admin@123", "admin@123", "admin123", "Admin123", "ADMIN@123", "ADMIN123",
-            "Admin@2024", "Admin@2025", "Admin@2026", "Hostel2026", "Hostel@123", "admin"
-        ]
-        if raw_pwd in admin_passwords:
-            is_valid = True
-
-    # Student common aliases and fallback variations
-    if not is_valid and user.get("role") == "STUDENT":
-        student_passwords = [
-            "Student@123", "student@123", "student123", "Student123", "STUDENT@123", "student"
-        ]
-        if raw_pwd in student_passwords or raw_pwd == raw_user or (digits_user and raw_pwd == digits_user):
-            is_valid = True
-
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -137,10 +104,15 @@ async def login(request: Request, login_data: LoginRequest):
             student_profile["id"] = str(student_profile["_id"])
             del student_profile["_id"]
 
+    user_token_ver = user.get("token_version", 1)
+    is_pwd_reset_required = user.get("pwd_reset_required", False)
+
     token_data = {
         "sub": user["email"],
         "role": user["role"],
-        "id": str(user["_id"])
+        "id": str(user["_id"]),
+        "token_version": user_token_ver,
+        "pwd_reset_required": is_pwd_reset_required
     }
     access_token = create_access_token(token_data)
     
@@ -153,7 +125,8 @@ async def login(request: Request, login_data: LoginRequest):
         "email": user["email"],
         "role": user["role"],
         "name": student_profile.get("name") if student_profile else user.get("name", default_name),
-        "student_profile": student_profile
+        "student_profile": student_profile,
+        "pwd_reset_required": is_pwd_reset_required
     }
     
     return {
@@ -195,15 +168,53 @@ async def change_password(data: ChangePasswordRequest, current_user: dict = Depe
     if not verify_password(data.old_password, current_user.get("password_hash", "")):
         raise HTTPException(status_code=400, detail="Current password does not match.")
         
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="New password must be at least 8 characters long.")
+        
+    if data.new_password == data.old_password:
+        raise HTTPException(status_code=400, detail="New password must be different from current password.")
+        
     new_hash = hash_password(data.new_password)
     from bson import ObjectId
+    
+    # Increment token_version so all old tokens are immediately invalidated
+    new_token_ver = current_user.get("token_version", 1) + 1
+    
     await db.users.update_one(
         {"_id": ObjectId(current_user["id"])},
-        {"$set": {"password_hash": new_hash, "updated_at": datetime.utcnow()}}
+        {
+            "$set": {
+                "password_hash": new_hash,
+                "pwd_reset_required": False,
+                "updated_at": datetime.utcnow()
+            },
+            "$inc": {"token_version": 1}
+        }
     )
     
-    await log_audit(current_user["email"], "PASSWORD_CHANGED", "AUTH", current_user["id"])
-    return {"message": "Password changed successfully."}
+    # Issue fresh token with updated token_version and pwd_reset_required cleared
+    new_token_data = {
+        "sub": current_user["email"],
+        "role": current_user["role"],
+        "id": current_user["id"],
+        "token_version": new_token_ver,
+        "pwd_reset_required": False
+    }
+    new_access_token = create_access_token(new_token_data)
+    
+    await log_audit(
+        current_user["email"],
+        "PASSWORD_CHANGED",
+        "AUTH",
+        current_user["id"],
+        "Password updated; token_version incremented and previous sessions revoked."
+    )
+    return {
+        "message": "Password changed successfully. All previous sessions have been invalidated.",
+        "access_token": new_access_token,
+        "token_type": "bearer",
+        "pwd_reset_required": False
+    }
 
 @router.get("/admin/profile")
 async def get_admin_profile(current_user: dict = Depends(require_admin)):

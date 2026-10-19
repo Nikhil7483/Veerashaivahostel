@@ -40,9 +40,22 @@ from app.api.v1.audit_logs import router as audit_logs_router
 from app.api.v1.food import router as food_router
 from app.api.v1.food_allocations import router as food_allocations_router
 
+OLD_DEFAULT_KEY = "smart_hostel_super_secure_jwt_secret_key_2026_production_grade"
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
+    # Startup Security Validation: Must refuse to start in production if JWT_SECRET_KEY is missing or default
+    if settings.ENVIRONMENT == "production":
+        jwt_key = settings.JWT_SECRET_KEY or ""
+        if not jwt_key or jwt_key == OLD_DEFAULT_KEY or len(jwt_key.strip()) < 32:
+            logger.critical(
+                "CRITICAL STARTUP FAILURE: In production, JWT_SECRET_KEY must be provided via environment variables, "
+                "cannot use the default fallback key, and must be at least 32 characters long."
+            )
+            raise RuntimeError(
+                "Production startup aborted: JWT_SECRET_KEY must be provided via environment variables and cannot be the default key."
+            )
+
     await connect_to_mongo()
     yield
     # Shutdown
