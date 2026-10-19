@@ -8,6 +8,7 @@ import { warmUpBackend } from './services/api';
 // Core Layout & Authentication (eager for instant initial paint)
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/auth/Login';
+import ForceChangePassword from './pages/auth/ForceChangePassword';
 import LandingPage from './pages/public/LandingPage';
 
 // Core Dashboards (eager for instant login transitions)
@@ -62,6 +63,11 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // Intercept and prevent navigation to ordinary protected pages when password reset is required
+  if (user.pwd_reset_required) {
+    return <Navigate to="/change-password" replace />;
+  }
+
   // Admin has super-user access
   if (user.role === 'ADMIN') {
     return children;
@@ -79,6 +85,7 @@ const RootRedirect = () => {
   const { user, loading } = useAuth();
   if (loading) return null;
   if (!user) return <Navigate to="/login" replace />;
+  if (user.pwd_reset_required) return <Navigate to="/change-password" replace />;
   if (user.role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
   return <Navigate to="/student/dashboard" replace />;
 };
@@ -103,6 +110,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/change-password" element={<ForceChangePassword />} />
 
                 {/* Admin Protected Routes */}
                 <Route

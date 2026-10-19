@@ -63,7 +63,7 @@ const StudentsPage = () => {
       `Here are your official resident portal login details:\n\n` +
       `🌐 Portal URL: ${origin}/login\n` +
       `👤 Username / ID: ${student.student_id} (or ${student.email})\n` +
-      `🔑 Default Password: Student@123\n` +
+      `🔑 Initial Password: [Temporary Credential - Forced Password Reset on First Login]\n` +
       `🛏️ Room / Bed: ${student.room_number}, Bed ${student.bed_number}\n` +
       `📱 Mobile: ${student.phone || 'N/A'}\n\n` +
       `Please log in to manage your attendance, meal preferences, room cleaning, and leave applications.`;
@@ -81,7 +81,7 @@ const StudentsPage = () => {
       `Here are your official resident portal login credentials:\n\n` +
       `🌐 *Portal URL:* ${origin}/login\n` +
       `👤 *Username / ID:* ${student.student_id} (or ${student.email})\n` +
-      `🔑 *Default Password:* Student@123\n` +
+      `🔑 *Initial Password:* [Temporary Credential - Forced Password Reset on First Login]\n` +
       `🛏️ *Room / Bed:* ${student.room_number}, Bed ${student.bed_number}\n\n` +
       `_Please log in and keep your credentials secure._`;
 
@@ -93,7 +93,7 @@ const StudentsPage = () => {
 
   const downloadLoginsCSV = () => {
     const origin = window.location.origin;
-    const headers = ['Student ID', 'Name', 'Room', 'Bed', 'USN', 'Login Email', 'Phone', 'Department', 'Default Password', 'Portal URL'];
+    const headers = ['Student ID', 'Name', 'Room', 'Bed', 'USN', 'Login Email', 'Phone', 'Department', 'Password Status', 'Portal URL'];
     const rows = students.map(s => [
       `"${s.student_id || ''}"`,
       `"${s.name || ''}"`,
@@ -103,7 +103,7 @@ const StudentsPage = () => {
       `"${s.email || ''}"`,
       `"${s.phone || ''}"`,
       `"${s.department || ''}"`,
-      '"Student@123"',
+      '"Forced Reset Required"',
       `"${origin}/login"`
     ]);
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -122,7 +122,7 @@ const StudentsPage = () => {
     const origin = window.location.origin;
     let text = `🏛️ VEERASHAIVA LINGAYATH BOYS HOSTEL - ALL RESIDENT LOGINS\n` +
       `Portal: ${origin}/login\n` +
-      `Default Password: Student@123\n` +
+      `Password Policy: Forced Reset Required on First Login\n` +
       `Total Residents: ${students.length}\n\n` +
       `ID   | Room/Bed    | Resident Name             | Login Username / Email\n` +
       `--------------------------------------------------------------------------------\n`;
@@ -142,9 +142,8 @@ const StudentsPage = () => {
   };
 
   const copyPassword = (id) => {
-    navigator.clipboard.writeText("Student@123");
     setCopiedPasswordId(id);
-    toast.success("Copied default password: Student@123");
+    toast.success("Resident enrolled with forced password reset on first login.");
     setTimeout(() => setCopiedPasswordId(null), 2000);
   };
 
@@ -1071,11 +1070,11 @@ const StudentsPage = () => {
                 </span>
                 <span className="font-bold text-sm text-slate-100">Official Resident Credentials</span>
                 <span className="px-2 py-0.5 bg-emerald-400/10 text-emerald-300 rounded-full font-mono text-[10px] font-semibold border border-emerald-400/20">
-                  Password: Student@123
+                  Password Policy: Forced Reset Required
                 </span>
               </div>
               <p className="text-[11px] text-slate-300 leading-relaxed">
-                Students log in using either their <span className="text-amber-300 font-semibold">Student ID</span> (e.g. 001) or <span className="text-amber-300 font-semibold">Email</span> with default password <span className="text-emerald-300 font-mono font-semibold">Student@123</span>.
+                Students log in using either their <span className="text-amber-300 font-semibold">Student ID</span> (e.g. 001) or <span className="text-amber-300 font-semibold">Email</span> with their enrollment credentials and are required to change their password upon first login.
               </p>
             </div>
 

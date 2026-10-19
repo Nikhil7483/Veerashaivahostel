@@ -56,6 +56,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const completePasswordReset = (newToken) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+    if (user) {
+      const updatedUser = { ...user, pwd_reset_required: false };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return updatedUser;
+    }
+  };
+
   const value = {
     user,
     token,
@@ -65,6 +76,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     reloadProfile,
+    completePasswordReset,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

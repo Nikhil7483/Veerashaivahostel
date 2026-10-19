@@ -40,7 +40,7 @@ class StudentCreate(BaseModel):
     address: str
     joining_date: str
     status: str = "ACTIVE"
-    password: Optional[str] = "Student@123"
+    password: Optional[str] = None
 
 class StudentUpdate(BaseModel):
     name: Optional[str] = None

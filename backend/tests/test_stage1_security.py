@@ -235,6 +235,7 @@ async def run_all_tests():
         user_a = {
             "_id": student_a_id,
             "email": email_a,
+            "password_hash": hash_password("TestPassword123!"),
             "role": "STUDENT",
             "status": "ACTIVE",
             "token_version": 1
@@ -253,6 +254,7 @@ async def run_all_tests():
         user_b = {
             "_id": student_b_id,
             "email": email_b,
+            "password_hash": hash_password("TestPassword123!"),
             "role": "STUDENT",
             "status": "ACTIVE",
             "token_version": 1
@@ -742,6 +744,111 @@ async def run_all_tests():
                 print("  [PASS] 41. Authorized Warden successfully inspected room configuration and roster (HTTP 200)")
             else:
                 print(f"  [FAIL] 41. Admin room inspection failed: {res_admin_room.status_code}")
+
+            # ------------------------------------------------------------------
+            # STAGE 2A: FORCED PASSWORD RESET UX, LEAST-PRIVILEGE ROLE REVIEWS
+            # ------------------------------------------------------------------
+
+            # Test 42: Forced password reset contract in login response
+            total += 1
+            # Temporarily flag student B with pwd_reset_required
+            await db.users.update_one({"_id": student_b_id}, {"$set": {"pwd_reset_required": True}})
+            res_login_reset = await client.post(
+                "/api/v1/auth/login",
+                json={"username": email_b, "password": "TestPassword123!"}
+            )
+            if res_login_reset.status_code == 200:
+                login_data = res_login_reset.json()
+                if login_data.get("user", {}).get("pwd_reset_required") is True:
+                    passed += 1
+                    print("  [PASS] 42. Login response explicitly provides pwd_reset_required=True for client redirection")
+                else:
+                    print("  [FAIL] 42. pwd_reset_required not present in user payload")
+            else:
+                print(f"  [FAIL] 42. Login failed: {res_login_reset.status_code}")
+
+            # Test 43: Least-privilege policy: ADMIN role permitted administrative actions
+            total += 1
+            res_adm_students = await client.get("/api/v1/students", headers={"Authorization": f"Bearer {token_adm}"})
+            res_adm_audit = await client.get("/api/v1/audit-logs", headers={"Authorization": f"Bearer {token_adm}"})
+            if res_adm_students.status_code == 200 and res_adm_audit.status_code == 200:
+                passed += 1
+                print("  [PASS] 43. ADMIN role permitted administrative actions (students & audit-logs: HTTP 200)")
+            else:
+                print(f"  [FAIL] 43. Admin permitted actions failed: {res_adm_students.status_code}, {res_adm_audit.status_code}")
+
+            # Test 44: Least-privilege policy: STUDENT role strictly denied administrative actions
+            total += 1
+            res_stu_students = await client.get("/api/v1/students", headers={"Authorization": f"Bearer {token_a}"})
+            res_stu_audit = await client.get("/api/v1/audit-logs", headers={"Authorization": f"Bearer {token_a}"})
+            if res_stu_students.status_code == 403 and res_stu_audit.status_code == 403:
+                passed += 1
+                print("  [PASS] 44. STUDENT role strictly denied administrative actions (HTTP 403)")
+            else:
+                print(f"  [FAIL] 44. Student denied actions allowed: {res_stu_students.status_code}, {res_stu_audit.status_code}")
+
+            # Test 45: Least-privilege policy: Hypothetical WARDEN role string strictly denied ADMIN privilege by default
+            total += 1
+            warden_id = ObjectId()
+            warden_email = f"warden_test_{warden_id}@hostel.test"
+            user_warden = {
+                "_id": warden_id,
+                "email": warden_email,
+                "role": "WARDEN",  # Unconfigured / non-admin role string
+                "status": "ACTIVE",
+                "token_version": 1
+            }
+            await db.users.insert_one(user_warden)
+            token_warden = create_access_token({"sub": warden_email, "role": "WARDEN", "id": str(warden_id), "token_version": 1})
+            
+            res_warden_admin_act = await client.get("/api/v1/students", headers={"Authorization": f"Bearer {token_warden}"})
+            await db.users.delete_one({"_id": warden_id})
+            if res_warden_admin_act.status_code == 403:
+                passed += 1
+                print("  [PASS] 45. Least-privilege verified: WARDEN role string alone denied administrative access (HTTP 403)")
+            else:
+                print(f"  [FAIL] 45. Arbitrary WARDEN role improperly granted admin privileges: {res_warden_admin_act.status_code}")
+
+            # Test 46: Student creation without password generates secure unique temporary credential with forced reset
+            total += 1
+            test_stu_id = f"TEST_NEW_{ObjectId()}"[:10]
+            new_stu_email = f"new_stu_{ObjectId()}@smarthostel.edu"
+            res_create_stu = await client.post(
+                "/api/v1/students",
+                headers={"Authorization": f"Bearer {token_adm}"},
+                json={
+                    "student_id": test_stu_id,
+                    "name": "Secure Onboarded Student",
+                    "usn": f"USN_{test_stu_id}",
+                    "phone": "9998887776",
+                    "email": new_stu_email,
+                    "department": "CSE",
+                    "semester": 1,
+                    "room_number": "Room 02",
+                    "bed_number": "Bed 3",
+                    "parent_name": "Parent Name",
+                    "parent_contact": "9998887770",
+                    "address": "Shivamogga",
+                    "joining_date": "2026-10-01",
+                    "status": "ACTIVE"
+                }
+            )
+            created_stu_data = res_create_stu.json() if res_create_stu.status_code == 201 else {}
+            created_user = await db.users.find_one({"email": new_stu_email})
+            
+            # Clean up immediately
+            await db.students.delete_one({"student_id": test_stu_id})
+            await db.users.delete_one({"email": new_stu_email})
+            
+            if (res_create_stu.status_code == 201 and 
+                created_user is not None and 
+                created_user.get("pwd_reset_required") is True and
+                created_stu_data.get("temporary_password") is not None and
+                created_stu_data.get("temporary_password") != "Student@123"):
+                passed += 1
+                print("  [PASS] 46. Student creation generates unique temporary password and enforces pwd_reset_required (HTTP 201)")
+            else:
+                print(f"  [FAIL] 46. Student creation security failed: {res_create_stu.status_code}, data={res_create_stu.text}")
 
         finally:
             # Clean up test files and records

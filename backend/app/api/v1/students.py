@@ -94,12 +94,16 @@ async def create_student(student_data: StudentCreate, current_user: dict = Depen
             detail=f"Bed {student_data.bed_number} in Room {student_data.room_number} is already occupied by {existing_bed.get('name')}."
         )
         
-    # Create user login
+    # Create user login with secure onboarding password
+    import secrets
+    initial_password = student_data.password if (student_data.password and student_data.password.strip()) else secrets.token_urlsafe(9)
     user_doc = {
         "email": student_data.email,
-        "password_hash": hash_password(student_data.password or "Student@123"),
+        "password_hash": hash_password(initial_password),
         "role": "STUDENT",
         "status": student_data.status,
+        "pwd_reset_required": True,
+        "token_version": 1,
         "created_at": datetime.utcnow()
     }
     user_insert = await db.users.insert_one(user_doc)
@@ -108,6 +112,8 @@ async def create_student(student_data: StudentCreate, current_user: dict = Depen
     s_dict = student_data.model_dump()
     s_dict.pop("password", None)
     s_dict["user_id"] = str(user_insert.inserted_id)
+    s_dict["temporary_password"] = initial_password
+    s_dict["pwd_reset_required"] = True
     s_dict["created_at"] = datetime.utcnow()
     
     s_insert = await db.students.insert_one(s_dict)

@@ -51,6 +51,10 @@ backend/uploads/*
 scratch/
 backups/
 
+# Sensitive credential exports (do not commit)
+STUDENT_LOGINS.csv
+STUDENT_LOGINS.md
+
 # IDE & OS
 .vscode/
 .idea/

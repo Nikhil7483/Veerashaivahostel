@@ -39,7 +39,9 @@ const Login = () => {
       const cleanUser = username.trim();
       const cleanPass = password.trim();
       const user = await login(cleanUser, cleanPass);
-      if (user.role === 'ADMIN') {
+      if (user.pwd_reset_required) {
+        navigate('/change-password');
+      } else if (user.role === 'ADMIN') {
         navigate('/admin/dashboard');
       } else {
         navigate('/student/dashboard');

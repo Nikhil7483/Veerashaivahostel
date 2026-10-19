@@ -31,7 +31,7 @@ async def export_student_logins():
         "Phone / WhatsApp",
         "Department",
         "Semester",
-        "Default Password",
+        "Password Policy",
         "Login Portal URL"
     ]
     
@@ -47,7 +47,7 @@ async def export_student_logins():
             s.get("phone", ""),
             s.get("department", ""),
             s.get("semester", ""),
-            "Student@123",
+            "Forced Reset Required",
             "http://localhost:5173/login"
         ])
         
@@ -62,7 +62,7 @@ async def export_student_logins():
         "# Veerashaiva Lingayath Boys Hostel - Resident Student Logins",
         "",
         "> **Portal Login URL**: `http://localhost:5173/login`  ",
-        "> **Default Password for All Students**: `Student@123`  ",
+        "> **Password Policy**: Forced password reset is required on first login for all accounts.  ",
         "> **Login Methods**: Students can log in using their **Student ID** (e.g. `001`), **Login Email** (e.g. `guru@hostel.edu`), **USN**, or **Phone Number**.",
         "",
         f"**Total Registered Residents**: {len(students)} students across 13 rooms",
@@ -71,7 +71,7 @@ async def export_student_logins():
         "",
         "## Quick Student Credentials Table",
         "",
-        "| ID | Name | Room | Bed | Login Email | USN / Login ID | Mobile Phone | Password |",
+        "| ID | Name | Room | Bed | Login Email | USN / Login ID | Mobile Phone | Password Status |",
         "|:---|:---|:---|:---|:---|:---|:---|:---|"
     ]
     
@@ -83,8 +83,8 @@ async def export_student_logins():
         email = s.get("email", "")
         usn = s.get("usn", sid)
         phone = s.get("phone", "")
-        pwd = "`Student@123`"
-        md_lines.append(f"| **{sid}** | {name} | {room} | {bed} | `{email}` | `{usn}` | {phone} | {pwd} |")
+        pwd_status = "Forced Reset Required"
+        md_lines.append(f"| **{sid}** | {name} | {room} | {bed} | `{email}` | `{usn}` | {phone} | {pwd_status} |")
         
     md_lines.extend([
         "",
@@ -112,7 +112,7 @@ Here are your official resident portal login credentials:
 
 🌐 Portal URL: http://localhost:5173/login
 👤 Username / ID: {sid} (or {email})
-🔑 Default Password: Student@123
+🔑 Initial Password: [Temporary Credential - Forced Password Reset on First Login]
 🛏️ Allocation: {room}, Bed {bed}
 📱 Registered Mobile: {phone}
 

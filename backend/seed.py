@@ -60,16 +60,19 @@ async def seed_database():
     print("Seeded cleaning schedule matrix (1 room per day).")
     
     # 4. Seed Admin & Cleaning Team Users
+    initial_admin_pwd = os.getenv("INITIAL_ADMIN_PASSWORD", "Admin@123")
     admin_user = {
         "email": "admin@smarthostel.com",
-        "password_hash": hash_pw("Admin@123"),
+        "password_hash": hash_pw(initial_admin_pwd),
         "role": "ADMIN",
         "name": "Hostel Warden",
         "status": "ACTIVE",
+        "pwd_reset_required": True,
+        "token_version": 1,
         "created_at": datetime.utcnow()
     }
     await db.users.insert_one(admin_user)
-    print(f"Seeded Admin Account: admin@smarthostel.com / Admin@123")
+    print("Seeded Admin Account: admin@smarthostel.com (Initial password configured, forced reset required)")
     
     # 5. Seed Real Students (64 Residents Across 13 Rooms)
     student_raw = [
@@ -164,14 +167,17 @@ async def seed_database():
     
     student_records = []
     
+    initial_student_pwd = os.getenv("INITIAL_STUDENT_PASSWORD", "Student@123")
     for idx, item in enumerate(student_raw, start=1):
         stu_id = f"{idx:03d}"
         usn = f"{idx:03d}"
         user_doc = {
             "email": item[1],
-            "password_hash": hash_pw("Student@123"),
+            "password_hash": hash_pw(initial_student_pwd),
             "role": "STUDENT",
             "status": "ACTIVE",
+            "pwd_reset_required": True,
+            "token_version": 1,
             "created_at": datetime.utcnow()
         }
         user_res = await db.users.insert_one(user_doc)

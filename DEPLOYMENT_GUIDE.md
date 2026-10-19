@@ -12,11 +12,11 @@ Your server is running locally and connected to a secure public Cloudflare Tunne
 ### 👉 [https://charges-enter-settle-ion.trycloudflare.com](https://charges-enter-settle-ion.trycloudflare.com)
 
 - **Admin / Warden Login:**  
-  - Username: `admin` (or `admin@smarthostel.com`)  
-  - Password: `Admin@123`
+  - Username: `admin` (or configured administrative email)  
+  - Password: `<CONFIGURED_ADMIN_PASSWORD>` (Set securely in production)
 - **Student Login (64 Students Pre-configured):**  
-  - Username: `001` (or any ID from `001` to `064`)  
-  - Password: `Student@123`
+  - Username: `001` (or assigned Student ID / Email)  
+  - Password: `<TEMPORARY_INITIAL_PASSWORD>` (Forced password reset required on first login)
 - **Cleaning Module:**  
   - Warden: `/cleaning` (Schedule cleaning, view logs, inspect ratings)  
   - Student: `/student/cleaning` (View scheduled cleaning for their assigned room, submit 1-5 star ratings, report issues)
@@ -31,7 +31,7 @@ Your server is running locally and connected to a secure public Cloudflare Tunne
 To keep your website online **24/7 forever** without needing your laptop turned on and without relying on your home Jio Wi-Fi connection, follow these 4 simple steps:
 
 ### STEP 1: Create a Free GitHub Repository
-1. Go to [https://github.com/new](https://github.com/new) and create a repository named `hostel-management` (keep it Private or Public).
+1. Go to [https://github.com/new](https://github.com/new) and create a repository named `hostel-management` (keep it Private).
 2. Run these two commands in your terminal here:
    ```bash
    git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/hostel-management.git
@@ -41,19 +41,19 @@ To keep your website online **24/7 forever** without needing your laptop turned 
 
 ---
 
-### 🗄️ Step 2: Cloud Database (COMPLETED! ✓)
-- **Status:** All 249 documents, 64 students, 12 rooms, users, mess menu, and cleaning records are **already migrated to your MongoDB Atlas cluster**!
-- **Your Working MongoDB Atlas URI:**
+### 🗄️ Step 2: Cloud Database (MongoDB Atlas)
+- **Status:** All 249 documents, 64 students, 12 rooms, users, mess menu, and cleaning records are migrated to MongoDB Atlas!
+- **Your MongoDB Atlas URI Format:**
   ```text
-  mongodb+srv://nikhilnikki74831_db_user:<YOUR_PASSWORD>@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+  mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<YOUR_CLUSTER>.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
   ```
 
 ---
 
-### ⚙️ Step 3: Deploy Backend API on Render (Free) — Takes 2 Minutes
-1. Open **[https://dashboard.render.com](https://dashboard.render.com)** and log in with your GitHub account (`Nikhil7483`).
+### ⚙️ Step 3: Deploy Backend API on Render — Takes 2 Minutes
+1. Open **[https://dashboard.render.com](https://dashboard.render.com)** and log in with your GitHub account.
 2. Click the blue button **New +** (top right) > Select **Web Service**.
-3. Choose **Build and deploy from a Git repository** > Select **`Nikhil7483/Veerashaivahostel`**.
+3. Choose **Build and deploy from a Git repository** > Select your repository.
 4. Configure these exact settings:
    - **Name:** `veerashaiva-hostel-api`
    - **Region:** `Singapore` (closest to India)
@@ -62,13 +62,13 @@ To keep your website online **24/7 forever** without needing your laptop turned 
    - **Runtime:** `Python 3`
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - **Instance Type:** `Free`
+   - **Instance Type:** `Free` (or `Starter` if persistent disk is attached)
 5. Scroll down to **Environment Variables** and add these 5 keys:
    - `ENVIRONMENT` = `production`
-   - `MONGODB_URI` = `mongodb+srv://nikhilnikki74831_db_user:<YOUR_PASSWORD>@cluster0.mpafhmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+   - `MONGODB_URI` = `mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<YOUR_CLUSTER>.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
    - `DATABASE_NAME` = `smart_hostel`
-   - `JWT_SECRET` = `smart_hostel_super_secure_jwt_secret_key_2026_production_grade`
-   - `CORS_ORIGINS` = `["https://veerashaivahostel.run.place", "https://*.vercel.app"]`
+   - `JWT_SECRET_KEY` = `<GENERATE_32_CHAR_RANDOM_SECRET>` (e.g. openssl rand -hex 32)
+   - `CORS_ORIGINS` = `["https://veerashaivahostel.run.place", "https://veerashaivahostel.vercel.app"]`
 6. Click **Create Web Service**.
 7. In ~2 minutes, Render will show **Live** and give your backend URL:  
    `https://veerashaiva-hostel-api.onrender.com`
