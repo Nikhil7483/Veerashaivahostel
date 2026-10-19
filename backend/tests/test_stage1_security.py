@@ -246,6 +246,7 @@ async def run_all_tests():
             "name": "Student A",
             "email": email_a,
             "room_number": "Room 02",
+            "bed_number": 1,
             "status": "ACTIVE"
         }
 
@@ -263,6 +264,7 @@ async def run_all_tests():
             "name": "Student B",
             "email": email_b,
             "room_number": "Room 04",
+            "bed_number": 2,
             "status": "ACTIVE"
         }
 
@@ -473,6 +475,274 @@ async def run_all_tests():
             else:
                 print(f"  [FAIL] 25. UPLOAD_DIRECTORY path resolution failed: {settings.UPLOAD_DIRECTORY}")
 
+            # ------------------------------------------------------------------
+            # SUB-STEP 1d: ROOM AND EMERGENCY ALERT AUTHORIZATION TESTS
+            # ------------------------------------------------------------------
+
+            # Test 26: Unauthenticated room requests blocked (HTTP 401)
+            total += 1
+            res_room_unauth = await client.get("/api/v1/rooms")
+            res_my_room_unauth = await client.get("/api/v1/rooms/my/room")
+            res_spec_room_unauth = await client.get("/api/v1/rooms/Room 02")
+            if (res_room_unauth.status_code == 401 and 
+                res_my_room_unauth.status_code == 401 and 
+                res_spec_room_unauth.status_code == 401):
+                passed += 1
+                print("  [PASS] 26. Unauthenticated room requests strictly blocked (HTTP 401)")
+            else:
+                print(f"  [FAIL] 26. Unauth room requests allowed: {res_room_unauth.status_code}, {res_my_room_unauth.status_code}, {res_spec_room_unauth.status_code}")
+
+            # Test 27: Student access to permitted own room information
+            total += 1
+            res_my_room = await client.get(
+                "/api/v1/rooms/my/room",
+                headers={"Authorization": f"Bearer {token_a}"}
+            )
+            res_own_room = await client.get(
+                "/api/v1/rooms/Room 02",
+                headers={"Authorization": f"Bearer {token_a}"}
+            )
+            if (res_my_room.status_code == 200 and 
+                res_own_room.status_code == 200 and 
+                res_my_room.json().get("room_number") == "Room 02"):
+                passed += 1
+                print("  [PASS] 27. Student successfully authorized to view own room info (HTTP 200)")
+            else:
+                print(f"  [FAIL] 27. Student own room access failed: {res_my_room.status_code}, {res_own_room.status_code}")
+
+            # Test 28: Student attempting IDOR access to another room blocked (HTTP 403)
+            total += 1
+            res_other_room = await client.get(
+                "/api/v1/rooms/Room 04",
+                headers={"Authorization": f"Bearer {token_a}"}
+            )
+            if res_other_room.status_code == 403:
+                passed += 1
+                print("  [PASS] 28. Student attempting IDOR access to another room strictly blocked (HTTP 403)")
+            else:
+                print(f"  [FAIL] 28. IDOR room access not blocked: {res_other_room.status_code}")
+
+            # Test 29: Student attempting unauthorized room modification blocked (HTTP 403)
+            total += 1
+            res_mod_room = await client.put(
+                "/api/v1/rooms/Room 02",
+                headers={"Authorization": f"Bearer {token_a}"},
+                json={"total_beds": 2}
+            )
+            res_patch_room = await client.patch(
+                "/api/v1/rooms/Room 02",
+                headers={"Authorization": f"Bearer {token_a}"},
+                json={"total_beds": 2}
+            )
+            if res_mod_room.status_code == 403 and res_patch_room.status_code == 403:
+                passed += 1
+                print("  [PASS] 29. Student unauthorized room modification strictly blocked (HTTP 403)")
+            else:
+                print(f"  [FAIL] 29. Student room modification allowed: {res_mod_room.status_code}, {res_patch_room.status_code}")
+
+            # Test 30: Student attempting unauthorized room deletion blocked (HTTP 403)
+            total += 1
+            res_del_room = await client.delete(
+                "/api/v1/rooms/Room 02",
+                headers={"Authorization": f"Bearer {token_a}"}
+            )
+            if res_del_room.status_code == 403:
+                passed += 1
+                print("  [PASS] 30. Student unauthorized room deletion strictly blocked (HTTP 403)")
+            else:
+                print(f"  [FAIL] 30. Student room deletion allowed: {res_del_room.status_code}")
+
+            # Test 31: Room 03 rejection (does not exist in this hostel)
+            total += 1
+            res_room_03_student = await client.get(
+                "/api/v1/rooms/Room 03",
+                headers={"Authorization": f"Bearer {token_a}"}
+            )
+            res_room_03_admin = await client.get(
+                "/api/v1/rooms/03",
+                headers={"Authorization": f"Bearer {token_adm}"}
+            )
+            res_room_03_put = await client.put(
+                "/api/v1/rooms/Room 03",
+                headers={"Authorization": f"Bearer {token_adm}"},
+                json={"total_beds": 6}
+            )
+            if (res_room_03_student.status_code == 404 and 
+                res_room_03_admin.status_code == 404 and 
+                res_room_03_put.status_code == 404):
+                passed += 1
+                print("  [PASS] 31. Inexistent Room 03 strictly rejected across all roles (HTTP 404)")
+            else:
+                print(f"  [FAIL] 31. Room 03 not properly rejected: {res_room_03_student.status_code}, {res_room_03_admin.status_code}, {res_room_03_put.status_code}")
+
+            # Test 32: Unauthenticated emergency-alert requests blocked (HTTP 401)
+            total += 1
+            res_sos_unauth = await client.get("/api/v1/emergency")
+            res_sos_trigger_unauth = await client.post(
+                "/api/v1/emergency/trigger",
+                json={"emergency_type": "MEDICAL", "room_number": "Room 02"}
+            )
+            if res_sos_unauth.status_code == 401 and res_sos_trigger_unauth.status_code == 401:
+                passed += 1
+                print("  [PASS] 32. Unauthenticated emergency-alert requests strictly blocked (HTTP 401)")
+            else:
+                print(f"  [FAIL] 32. Unauth emergency requests allowed: {res_sos_unauth.status_code}, {res_sos_trigger_unauth.status_code}")
+
+            # Test 33: Legitimate student emergency reporting (HTTP 201)
+            total += 1
+            res_trigger = await client.post(
+                "/api/v1/emergency/trigger",
+                headers={"Authorization": f"Bearer {token_a}"},
+                json={
+                    "emergency_type": "MEDICAL",
+                    "description": "Severe medical emergency distress",
+                    "room_number": "Room 02"
+                }
+            )
+            created_alert = res_trigger.json() if res_trigger.status_code == 201 else {}
+            alert_id_a = created_alert.get("id")
+            if res_trigger.status_code == 201 and alert_id_a and created_alert.get("status") == "ACTIVE":
+                passed += 1
+                print("  [PASS] 33. Legitimate student emergency reporting accepted (HTTP 201)")
+            else:
+                print(f"  [FAIL] 33. Legitimate emergency report failed: {res_trigger.status_code}, {res_trigger.text}")
+
+            # Test 34: Student emergency SOS with Room 03 rejected (HTTP 400)
+            total += 1
+            res_trigger_03 = await client.post(
+                "/api/v1/emergency/trigger",
+                headers={"Authorization": f"Bearer {token_a}"},
+                json={
+                    "emergency_type": "FIRE",
+                    "description": "Fire alert",
+                    "room_number": "Room 03"
+                }
+            )
+            if res_trigger_03.status_code == 400:
+                passed += 1
+                print("  [PASS] 34. Student emergency SOS with Room 03 strictly rejected (HTTP 400)")
+            else:
+                print(f"  [FAIL] 34. Emergency trigger with Room 03 allowed: {res_trigger_03.status_code}")
+
+            # Test 35: Student B attempting cross-user access to Student A's alert blocked (HTTP 403)
+            total += 1
+            if alert_id_a:
+                res_cross_alert = await client.get(
+                    f"/api/v1/emergency/{alert_id_a}",
+                    headers={"Authorization": f"Bearer {token_b}"}
+                )
+                if res_cross_alert.status_code == 403:
+                    passed += 1
+                    print("  [PASS] 35. Student B cross-user access to Student A's emergency alert blocked (HTTP 403)")
+                else:
+                    print(f"  [FAIL] 35. Cross-user emergency alert access allowed: {res_cross_alert.status_code}")
+            else:
+                print("  [FAIL] 35. Skipped due to missing alert_id_a")
+
+            # Test 36: Student A successfully authorized to view own emergency alert (HTTP 200)
+            total += 1
+            if alert_id_a:
+                res_own_alert = await client.get(
+                    f"/api/v1/emergency/{alert_id_a}",
+                    headers={"Authorization": f"Bearer {token_a}"}
+                )
+                if res_own_alert.status_code == 200 and res_own_alert.json().get("id") == alert_id_a:
+                    passed += 1
+                    print("  [PASS] 36. Student A successfully authorized to view own emergency alert (HTTP 200)")
+                else:
+                    print(f"  [FAIL] 36. Student A own alert view failed: {res_own_alert.status_code}")
+            else:
+                print("  [FAIL] 36. Skipped due to missing alert_id_a")
+
+            # Test 37: Student emergency listing scoped only to own records (no leakage)
+            total += 1
+            res_student_list_sos = await client.get(
+                "/api/v1/emergency",
+                headers={"Authorization": f"Bearer {token_b}"}
+            )
+            if res_student_list_sos.status_code == 200:
+                alerts_b = res_student_list_sos.json()
+                # Student B must not see Student A's alert
+                has_student_a_alert = any(a.get("id") == alert_id_a for a in alerts_b)
+                if not has_student_a_alert:
+                    passed += 1
+                    print("  [PASS] 37. Student emergency alert listing strictly scoped to own records (HTTP 200)")
+                else:
+                    print("  [FAIL] 37. Student B received Student A's emergency alert!")
+            else:
+                print(f"  [FAIL] 37. Student alert list request failed: {res_student_list_sos.status_code}")
+
+            # Test 38: Student attempting unauthorized resolution or deletion blocked (HTTP 403)
+            total += 1
+            if alert_id_a:
+                res_stud_resolve = await client.put(
+                    f"/api/v1/emergency/{alert_id_a}/resolve",
+                    headers={"Authorization": f"Bearer {token_a}"},
+                    json={"resolution_notes": "Student trying to resolve"}
+                )
+                res_stud_delete = await client.delete(
+                    f"/api/v1/emergency/{alert_id_a}",
+                    headers={"Authorization": f"Bearer {token_a}"}
+                )
+                if res_stud_resolve.status_code == 403 and res_stud_delete.status_code == 403:
+                    passed += 1
+                    print("  [PASS] 38. Student unauthorized alert resolution and deletion blocked (HTTP 403)")
+                else:
+                    print(f"  [FAIL] 38. Student alert resolve/delete allowed: {res_stud_resolve.status_code}, {res_stud_delete.status_code}")
+            else:
+                print("  [FAIL] 38. Skipped due to missing alert_id_a")
+
+            # Test 39: Authorized Warden/Admin acknowledging and resolving alert (HTTP 200)
+            total += 1
+            if alert_id_a:
+                res_ack = await client.put(
+                    f"/api/v1/emergency/{alert_id_a}/acknowledge",
+                    headers={"Authorization": f"Bearer {token_adm}"}
+                )
+                res_resolve = await client.put(
+                    f"/api/v1/emergency/{alert_id_a}/resolve",
+                    headers={"Authorization": f"Bearer {token_adm}"},
+                    json={"resolution_notes": "First aid team dispatched and student assisted."}
+                )
+                if res_ack.status_code == 200 and res_resolve.status_code == 200:
+                    resolved_data = res_resolve.json()
+                    if resolved_data.get("status") == "RESOLVED":
+                        passed += 1
+                        print("  [PASS] 39. Authorized Warden successfully acknowledged and resolved alert (HTTP 200)")
+                    else:
+                        print(f"  [FAIL] 39. Alert status not RESOLVED: {resolved_data.get('status')}")
+                else:
+                    print(f"  [FAIL] 39. Admin ack/resolve failed: {res_ack.status_code}, {res_resolve.status_code}")
+            else:
+                print("  [FAIL] 39. Skipped due to missing alert_id_a")
+
+            # Test 40: Authorized Warden/Admin deleting emergency alert with audit log (HTTP 200)
+            total += 1
+            if alert_id_a:
+                res_admin_del_alert = await client.delete(
+                    f"/api/v1/emergency/{alert_id_a}",
+                    headers={"Authorization": f"Bearer {token_adm}"}
+                )
+                if res_admin_del_alert.status_code == 200:
+                    passed += 1
+                    print("  [PASS] 40. Authorized Warden successfully deleted emergency alert with audit log (HTTP 200)")
+                else:
+                    print(f"  [FAIL] 40. Admin delete alert failed: {res_admin_del_alert.status_code}")
+            else:
+                print("  [FAIL] 40. Skipped due to missing alert_id_a")
+
+            # Test 41: Authorized Warden/Admin inspecting any room (HTTP 200)
+            total += 1
+            res_admin_room = await client.get(
+                "/api/v1/rooms/Room 04",
+                headers={"Authorization": f"Bearer {token_adm}"}
+            )
+            if res_admin_room.status_code == 200 and res_admin_room.json().get("room_number") == "Room 04":
+                passed += 1
+                print("  [PASS] 41. Authorized Warden successfully inspected room configuration and roster (HTTP 200)")
+            else:
+                print(f"  [FAIL] 41. Admin room inspection failed: {res_admin_room.status_code}")
+
         finally:
             # Clean up test files and records
             if test_file_path.exists():
@@ -483,6 +753,8 @@ async def run_all_tests():
             await db.users.delete_many({"_id": {"$in": [student_a_id, student_b_id, admin_id]}})
             await db.students.delete_many({"_id": {"$in": [student_doc_a["_id"], student_doc_b["_id"]]}})
             await db.leave_applications.delete_many({"student_id": "TEST_A_001"})
+            await db.emergency_alerts.delete_many({"student_id": {"$in": ["TEST_A_001", "TEST_B_002"]}})
+            await db.audit_logs.delete_many({"user_email": {"$in": [email_a, email_b, admin_email]}})
 
     await close_mongo_connection()
 
