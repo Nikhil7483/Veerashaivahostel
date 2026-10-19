@@ -48,11 +48,13 @@ async def lifespan(app: FastAPI):
     # Shutdown
     await close_mongo_connection()
 
+is_docs_enabled = (settings.ENVIRONMENT != "production") or getattr(settings, "ENABLE_DOCS", False)
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    docs_url=f"{settings.API_V1_STR}/docs",
-    redoc_url=f"{settings.API_V1_STR}/redoc",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json" if is_docs_enabled else None,
+    docs_url=f"{settings.API_V1_STR}/docs" if is_docs_enabled else None,
+    redoc_url=f"{settings.API_V1_STR}/redoc" if is_docs_enabled else None,
     lifespan=lifespan
 )
 
@@ -67,29 +69,32 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
     return response
 
-# Priority 1: Secure Configurable CORS Middleware
-allowed_origins = list(settings.CORS_ORIGINS) if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
-for o in [
+# Priority 1: Strict Configurable CORS Middleware (Whitelisted Domains Only - No Regex Wildcard)
+raw_origins = settings.CORS_ORIGINS
+if isinstance(raw_origins, list):
+    allowed_origins = [o.strip() for o in raw_origins if o and isinstance(o, str)]
+else:
+    allowed_origins = [str(raw_origins).strip()]
+
+trusted_defaults = [
+    "https://veerashaivahostel.vercel.app",
     "https://veerashaivaboyshostel.in",
     "https://www.veerashaivaboyshostel.in",
-    "http://veerashaivaboyshostel.in",
-    "http://www.veerashaivaboyshostel.in",
-    "https://veerashaivahostel.vercel.app",
-    "https://veerashaivahostel.run.place",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-]:
-    if o not in allowed_origins:
-        allowed_origins.append(o)
+]
+for origin in trusted_defaults:
+    if origin not in allowed_origins:
+        allowed_origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r".*",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

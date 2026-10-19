@@ -3,11 +3,17 @@ from typing import List, Union, Optional
 from pydantic_settings import BaseSettings
 from pydantic import field_validator
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DEFAULT_UPLOAD_DIR = str(BASE_DIR / "uploads")
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Smart Hostel Management & Problem Resolution System"
     API_V1_STR: str = "/api/v1"
     
     ENVIRONMENT: str = "production"
+    ENABLE_DOCS: bool = False
     
     MONGODB_URI: str = os.getenv(
         "MONGODB_URI",
@@ -21,7 +27,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
-    UPLOAD_DIRECTORY: str = "backend/uploads"
+    UPLOAD_DIRECTORY: str = DEFAULT_UPLOAD_DIR
     
     CORS_ORIGINS: Union[List[str], str] = [
         "https://veerashaivaboyshostel.in",
@@ -65,6 +71,16 @@ class Settings(BaseSettings):
         )
         if env_jwt:
             self.JWT_SECRET_KEY = env_jwt
+
+        env_upload = os.environ.get("UPLOAD_DIRECTORY")
+        if env_upload:
+            p = Path(env_upload)
+            if not p.is_absolute():
+                self.UPLOAD_DIRECTORY = str((BASE_DIR / p).resolve())
+            else:
+                self.UPLOAD_DIRECTORY = str(p)
+        else:
+            self.UPLOAD_DIRECTORY = str(Path(self.UPLOAD_DIRECTORY).resolve())
 
     class Config:
         case_sensitive = False
