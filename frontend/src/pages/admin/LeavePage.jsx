@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/common/Modal';
 import { formatDate } from '../../utils/dateUtils';
+import { getAuthenticatedDocUrl } from '../../utils/documentUtils';
 import { Check, X, FileText, Calendar, Filter } from 'lucide-react';
 
 const LeavePage = () => {
@@ -137,7 +138,7 @@ const LeavePage = () => {
 
                   {leave.document_url && (
                     <a
-                      href={leave.document_url}
+                      href={getAuthenticatedDocUrl(leave.document_url)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center space-x-1 text-xs text-blue-600 font-bold hover:underline"

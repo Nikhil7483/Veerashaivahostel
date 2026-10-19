@@ -72,13 +72,21 @@ class Settings(BaseSettings):
         if env_jwt:
             self.JWT_SECRET_KEY = env_jwt
 
-        env_upload = os.environ.get("UPLOAD_DIRECTORY")
-        if env_upload:
-            p = Path(env_upload)
-            if not p.is_absolute():
+        raw_upload = os.environ.get("UPLOAD_DIRECTORY") or self.UPLOAD_DIRECTORY
+        if raw_upload:
+            p = Path(raw_upload)
+            if p.is_absolute():
+                self.UPLOAD_DIRECTORY = str(p.resolve())
+            elif BASE_DIR.name == "backend" and p.parts and p.parts[0] == "backend":
+                # Handles UPLOAD_DIRECTORY=backend/uploads when run from backend or repo
+                sub_path = Path(*p.parts[1:]) if len(p.parts) > 1 else Path("uploads")
+                self.UPLOAD_DIRECTORY = str((BASE_DIR / sub_path).resolve())
+            elif (BASE_DIR / p).exists():
                 self.UPLOAD_DIRECTORY = str((BASE_DIR / p).resolve())
+            elif (BASE_DIR.parent / p).exists():
+                self.UPLOAD_DIRECTORY = str((BASE_DIR.parent / p).resolve())
             else:
-                self.UPLOAD_DIRECTORY = str(p)
+                self.UPLOAD_DIRECTORY = str((BASE_DIR / p).resolve())
         else:
             self.UPLOAD_DIRECTORY = str(Path(self.UPLOAD_DIRECTORY).resolve())
 

@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 import os
@@ -111,9 +110,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount uploads static directory for documents
+from app.api.v1.uploads import router as uploads_router
+
+# Secure Authenticated Uploads Router (replaces unauthenticated StaticFiles mount)
 os.makedirs(settings.UPLOAD_DIRECTORY, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIRECTORY), name="uploads")
+app.include_router(uploads_router)
 
 # Include API Routers
 v1 = settings.API_V1_STR

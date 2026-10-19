@@ -1,5 +1,6 @@
 import os
 import uuid
+from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Request
 from app.database.connection import get_database
 from app.core.dependencies import require_admin, require_student, log_audit, create_notification
@@ -100,21 +101,30 @@ async def submit_leave(
             
         # Strictly randomized storage filename without raw client filename
         filename = f"leave_{uuid.uuid4().hex}{ext}"
-        upload_dir = os.path.abspath(settings.UPLOAD_DIRECTORY)
-        filepath = os.path.abspath(os.path.join(upload_dir, filename))
+        upload_dir = Path(settings.UPLOAD_DIRECTORY).resolve()
+        filepath = (upload_dir / filename).resolve()
         
         # Enforce path traversal protection
-        if not filepath.startswith(upload_dir):
+        try:
+            filepath.relative_to(upload_dir)
+        except ValueError:
             raise HTTPException(status_code=400, detail="Invalid destination path for file upload.")
             
         contents = await document.read()
         if len(contents) > MAX_FILE_SIZE:
             raise HTTPException(status_code=400, detail="File exceeds maximum size limit of 5MB.")
             
+        from app.api.v1.uploads import verify_file_signature
+        if not verify_file_signature(contents, ext):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Uploaded file content does not match the valid format signature for '{ext}'. Upload rejected."
+            )
+            
         with open(filepath, "wb") as f:
             f.write(contents)
             
-        document_url = f"/uploads/{filename}"
+        document_url = f"/api/v1/uploads/{filename}"
         
     leave_doc = {
         "student_id": student["student_id"],

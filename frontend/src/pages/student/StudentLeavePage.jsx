@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/common/Modal';
 import { formatDate } from '../../utils/dateUtils';
+import { getAuthenticatedDocUrl } from '../../utils/documentUtils';
 import {
   PlaneTakeoff,
   Plus,
@@ -222,7 +223,7 @@ const StudentLeavePage = () => {
 
                 {l.document_url && (
                   <a
-                    href={l.document_url}
+                    href={getAuthenticatedDocUrl(l.document_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center space-x-1.5 text-xs text-blue-600 font-bold hover:underline"
