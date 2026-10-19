@@ -1140,7 +1140,7 @@ const StudentsPage = () => {
                 <div>👤 <strong>Resident:</strong> {selectedStudentForShare.name}</div>
                 <div>🌐 <strong>Portal:</strong> {window.location.origin}/login</div>
                 <div>🔑 <strong>Login Username:</strong> <span className="text-blue-700">{selectedStudentForShare.student_id}</span> (or {selectedStudentForShare.email})</div>
-                <div>🔒 <strong>Default Password:</strong> <span className="text-emerald-700 font-bold">Student@123</span></div>
+                <div>🔒 <strong>Password Policy:</strong> <span className="text-emerald-700 font-bold">Forced Reset on 1st Login</span></div>
                 <div>🛏️ <strong>Room / Bed:</strong> {selectedStudentForShare.room_number}, Bed {selectedStudentForShare.bed_number}</div>
                 <div>📱 <strong>Mobile:</strong> {selectedStudentForShare.phone || 'N/A'}</div>
               </div>
@@ -1252,14 +1252,14 @@ const StudentsPage = () => {
                         type="button"
                         onClick={() => copyPassword(s.id || s.student_id)}
                         className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[10px] font-semibold border border-slate-200 flex items-center space-x-1 cursor-pointer transition"
-                        title="Click to copy password"
+                        title="Password Policy: Forced Reset Required"
                       >
                         {isPwdCopied ? (
                           <Check className="w-3 h-3 text-emerald-600" />
                         ) : (
                           <Copy className="w-3 h-3 text-slate-400" />
                         )}
-                        <span>Student@123</span>
+                        <span>Forced Reset</span>
                       </button>
 
                       <button

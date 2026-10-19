@@ -79,38 +79,35 @@ npm run build
 
 ---
 
-## 5. Login Credentials
+## 5. Account Access & Password Policy
 
 ### 5.1 Administrator / Warden Account
-| Role | Email / Username | Password | Privileges |
+| Role | Email / Username | Password Policy | Privileges |
 | :--- | :--- | :--- | :--- |
-| **Admin / Warden** | `admin@smarthostel.com` | `Admin@123` | Full administrative control across all 12 rooms and modules |
-
-*(Click the **"Admin Warden"** button on the login screen for 1-click fill)*
+| **Admin / Warden** | `admin@smarthostel.com` | `<CONFIGURED_ADMIN_PASSWORD>` (Configured via `INITIAL_ADMIN_PASSWORD` or set during initial setup) | Full administrative control across all 12 rooms and modules |
 
 ---
 
-### 5.2 Student Accounts
-All 64 resident students share the default password: **`Student@123`**
+### 5.2 Student Accounts & Onboarding Policy
+All resident accounts are secured with a **Forced Password Reset Policy on First Login**:
+- When accounts are provisioned, students are assigned a temporary onboarding credential.
+- Upon first login, residents are automatically intercepted and routed to `/change-password`.
+- Residents can authenticate using their **USN / ID (e.g. `001`)** or their institutional email:
 
-You can log in as any student using their **USN / ID (e.g. `001`)** or their institutional email:
-
-| Student Name | Room & Bed | USN / ID | Email Login | Password | Course / Year |
+| Student Name | Room & Bed | USN / ID | Email Login | Password Status | Course / Year |
 | :--- | :--- | :---: | :--- | :--- | :--- |
-| **Guru** *(Quick Demo)* | Room 01 (Bed B1) | `001` | `guru@hostel.edu` | `Student@123` | Pharmacy &bull; 1st Year |
-| **Bharath B M** | Room 02 (Bed B1) | `006` | `bharath.bm@hostel.edu` | `Student@123` | M.Com &bull; 2nd Year |
-| **Mallikarjuna S.R** | Room 04 (Bed B1) | `009` | `mallikarjuna.sr@hostel.edu` | `Student@123` | BA Defence &bull; 1st Year |
-| **Vinay G. P** | Room 05 (Bed B1) | `014` | `vinay.gp@hostel.edu` | `Student@123` | ISG &bull; 4th Year |
-| **Manju M.N.** | Room 06 (Bed B1) | `020` | `manju.mn@hostel.edu` | `Student@123` | BE &bull; 3rd Year |
-| **Suraj** | Room 07 (Bed B1) | `025` | `suraj@hostel.edu` | `Student@123` | BE &bull; 3rd Year |
-| **Akash Biradar** | Room 08 (Bed B1) | `029` | `akash.biradar@hostel.edu` | `Student@123` | BE &bull; 3rd Year |
-| **Shivashakthi N S** | Room 09 (Bed B1) | `035` | `shivashakthi.ns@hostel.edu` | `Student@123` | BE &bull; 4th Year |
-| **Shreyas T S** | Room 10 (Bed B1) | `041` | `shreyas.ts@hostel.edu` | `Student@123` | BE &bull; 2nd Year |
-| **Veeresh Hiremath** | Room 11 (Bed B1) | `047` | `veeresh.hiremath@hostel.edu` | `Student@123` | BE &bull; 4th Year |
-| **Nikhil N R** | Room 12 (Bed B1) | `052` | `nikhil.nr@hostel.edu` | `Student@123` | BE &bull; 4th Year |
-| **Yashwanth P M** | Room 13 (Bed B1) | `058` | `yashwanth.pm@hostel.edu` | `Student@123` | BE &bull; 2nd Year |
-
-*(Click the **"Student Demo"** button on the login screen for 1-click fill with Guru)*
+| **Guru** | Room 01 (Bed B1) | `001` | `guru@hostel.edu` | Forced Reset on 1st Login | Pharmacy &bull; 1st Year |
+| **Bharath B M** | Room 02 (Bed B1) | `006` | `bharath.bm@hostel.edu` | Forced Reset on 1st Login | M.Com &bull; 2nd Year |
+| **Mallikarjuna S.R** | Room 04 (Bed B1) | `009` | `mallikarjuna.sr@hostel.edu` | Forced Reset on 1st Login | BA Defence &bull; 1st Year |
+| **Vinay G. P** | Room 05 (Bed B1) | `014` | `vinay.gp@hostel.edu` | Forced Reset on 1st Login | ISG &bull; 4th Year |
+| **Manju M.N.** | Room 06 (Bed B1) | `020` | `manju.mn@hostel.edu` | Forced Reset on 1st Login | BE &bull; 3rd Year |
+| **Suraj** | Room 07 (Bed B1) | `025` | `suraj@hostel.edu` | Forced Reset on 1st Login | BE &bull; 3rd Year |
+| **Akash Biradar** | Room 08 (Bed B1) | `029` | `akash.biradar@hostel.edu` | Forced Reset on 1st Login | BE &bull; 3rd Year |
+| **Shivashakthi N S** | Room 09 (Bed B1) | `035` | `shivashakthi.ns@hostel.edu` | Forced Reset on 1st Login | BE &bull; 4th Year |
+| **Shreyas T S** | Room 10 (Bed B1) | `041` | `shreyas.ts@hostel.edu` | Forced Reset on 1st Login | BE &bull; 2nd Year |
+| **Veeresh Hiremath** | Room 11 (Bed B1) | `047` | `veeresh.hiremath@hostel.edu` | Forced Reset on 1st Login | BE &bull; 4th Year |
+| **Nikhil N R** | Room 12 (Bed B1) | `052` | `nikhil.nr@hostel.edu` | Forced Reset on 1st Login | BE &bull; 4th Year |
+| **Yashwanth P M** | Room 13 (Bed B1) | `058` | `yashwanth.pm@hostel.edu` | Forced Reset on 1st Login | BE &bull; 2nd Year |
 
 ---
 

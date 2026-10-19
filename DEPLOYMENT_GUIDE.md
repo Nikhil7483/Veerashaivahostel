@@ -8,8 +8,8 @@
 
 Your server is running locally and connected to a secure public Cloudflare Tunnel. You and any student or staff member can open and use it **right now** from anywhere in the world:
 
-🔗 **Live URL:**  
-### 👉 [https://charges-enter-settle-ion.trycloudflare.com](https://charges-enter-settle-ion.trycloudflare.com)
+🔗 **Live Portal / Access URL:**
+### 👉 `<YOUR_PRODUCTION_OR_TUNNEL_URL>` (e.g. `https://veerashaivahostel.run.place`)
 
 - **Admin / Warden Login:**  
   - Username: `admin` (or configured administrative email)  

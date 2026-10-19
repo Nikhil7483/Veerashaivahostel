@@ -269,7 +269,7 @@ const StudentProfilePage = () => {
         <form onSubmit={handlePasswordChange} className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              Current Password <span className="text-[10px] text-slate-400 font-normal">(Default: Student@123)</span>
+              Current Password <span className="text-[10px] text-slate-400 font-normal">(Initial temporary password)</span>
             </label>
             <div className="relative">
               <input

@@ -387,13 +387,13 @@ python seed.py
 ```
 *Populates all 12 rooms, 64 real residents, authentic weekly menus, and baseline credentials while ensuring `Room 03` is strictly excluded.*
 
-### 9.4 Default Verified Credentials
+### 9.4 Role Access & Password Policy
 
-| Role | Login Identifier | Default Password | Notes |
+| Role | Login Identifier | Password Policy | Notes |
 | :--- | :--- | :--- | :--- |
-| **Admin / Warden** | `admin@smarthostel.com` | `Admin@123` | Full governance access across all rooms |
-| **Student (Demo)** | `guru@hostel.edu` (or `001`) | `Student@123` | Room 01 (Bed B1), Pharmacy, 1st Year |
-| **All Other Students** | Individual institutional email or 3-digit USN | `Student@123` | All 64 residents configured |
+| **Admin / Warden** | `admin@smarthostel.com` | `<CONFIGURED_ADMIN_PASSWORD>` | Full governance access across all rooms |
+| **Student (Resident)** | `guru@hostel.edu` (or `001`) | Forced Reset on 1st Login | Room 01 (Bed B1), Pharmacy, 1st Year |
+| **All Other Students** | Individual institutional email or 3-digit USN | Forced Reset on 1st Login | All 64 residents configured with individual onboarding credentials |
 
 ---
 

@@ -543,10 +543,10 @@ def build_pdf(output_path: str):
     story.append(Paragraph("8. Operational Run Commands & Access Credentials", h1_style))
     
     cred_data = [
-        [Paragraph("Role / Account", th_style), Paragraph("Username / Email", th_style), Paragraph("Password", th_style), Paragraph("Access Scope & Notes", th_style)],
-        [Paragraph("Hostel Warden (Admin)", td_bold), Paragraph("admin@smarthostel.com", td_code), Paragraph("Admin@123", td_code), Paragraph("Full institutional control across all 12 rooms, students, and exports", td_style)],
-        [Paragraph("Guru (Demo Resident)", td_bold), Paragraph("guru@hostel.edu (or 001)", td_code), Paragraph("Student@123", td_code), Paragraph("Room 01 (Bed B1), Pharmacy 1st Year. Quick 1-click login", td_style)],
-        [Paragraph("All 64 Students", td_bold), Paragraph("Institutional email / USN", td_code), Paragraph("Student@123", td_code), Paragraph("Isolated resident portal for room, attendance, leaves, and grievances", td_style)],
+        [Paragraph("Role / Account", th_style), Paragraph("Username / Email", th_style), Paragraph("Password Policy", th_style), Paragraph("Access Scope & Notes", th_style)],
+        [Paragraph("Hostel Warden (Admin)", td_bold), Paragraph("admin@smarthostel.com", td_code), Paragraph("Configured Admin Credential", td_code), Paragraph("Full institutional control across all 12 rooms, students, and exports", td_style)],
+        [Paragraph("Guru (Demo Resident)", td_bold), Paragraph("guru@hostel.edu (or 001)", td_code), Paragraph("Forced Reset on 1st Login", td_code), Paragraph("Room 01 (Bed B1), Pharmacy 1st Year. Individual onboarding credential", td_style)],
+        [Paragraph("All 64 Students", td_bold), Paragraph("Institutional email / USN", td_code), Paragraph("Forced Reset on 1st Login", td_code), Paragraph("Isolated resident portal for room, attendance, leaves, and grievances", td_style)],
     ]
     cred_table = Table(cred_data, colWidths=[usable_width * 0.25, usable_width * 0.30, usable_width * 0.18, usable_width * 0.27])
     cred_table.setStyle(TableStyle([

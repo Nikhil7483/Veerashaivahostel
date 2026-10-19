@@ -55,7 +55,7 @@ async def export_student_logins_report(
     students = await db.students.find({}).sort("student_id", 1).to_list(1000)
     
     headers = [
-        "Student ID", "Name", "Room", "Bed", "USN", "Login Email", "Phone", "Department", "Default Password"
+        "Student ID", "Name", "Room", "Bed", "USN", "Login Email", "Phone", "Department", "Password Policy"
     ]
     data = []
     for s in students:
@@ -68,7 +68,7 @@ async def export_student_logins_report(
             s.get("email", ""),
             s.get("phone", ""),
             s.get("department", ""),
-            "Student@123"
+            "Forced Reset Required"
         ])
         
     title = "Student Login Credentials"

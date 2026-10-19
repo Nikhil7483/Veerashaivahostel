@@ -23,7 +23,7 @@ def migrate(atlas_uri: str):
     
     if not atlas_uri or not atlas_uri.startswith("mongodb"):
         print("ERROR: Please provide a valid MongoDB Atlas connection string.")
-        print("Example: python migrate_to_atlas.py \"mongodb+srv://admin:password@cluster0.mongodb.net/?retryWrites=true&w=majority\"")
+        print("Example: python migrate_to_atlas.py \"mongodb+srv://<DB_USERNAME>:<DB_PASSWORD>@<YOUR_CLUSTER>.mongodb.net/?retryWrites=true&w=majority\"")
         sys.exit(1)
         
     print(f"Connecting to Local MongoDB: {LOCAL_URI}")
