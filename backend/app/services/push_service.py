@@ -1,6 +1,11 @@
 import json
 import logging
-from pywebpush import webpush, WebPushException
+try:
+    from pywebpush import webpush, WebPushException
+except ImportError:
+    webpush = None
+    WebPushException = Exception
+
 from app.core.config import settings
 from app.database.connection import get_database
 
@@ -11,6 +16,9 @@ async def send_web_push_to_user(user_id: str, title: str, message: str, link: st
     Sends a Web Push notification to all active devices/browsers subscribed for user_id.
     Deletes stale/expired endpoints automatically (HTTP 404/410).
     """
+    if not webpush:
+        logger.warning("pywebpush is not available in environment; skipping push dispatch.")
+        return 0
     try:
         db = get_database()
         subscriptions = await db.push_subscriptions.find({"user_id": str(user_id)}).to_list(100)
