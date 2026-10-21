@@ -39,8 +39,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Uploads & temporary test artifacts
-backend/backend/uploads/*
-!backend/backend/uploads/.gitkeep
 backend/uploads/*
 !backend/uploads/.gitkeep
 
