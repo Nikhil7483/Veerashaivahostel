@@ -5,6 +5,7 @@ from app.schemas.all_schemas import VisitorCreate, VisitorUpdate
 from bson import ObjectId
 from datetime import datetime
 from typing import Optional
+import re
 
 router = APIRouter(prefix="/visitors", tags=["Visitor Management"])
 
@@ -17,7 +18,7 @@ async def list_visitors(
     db = get_database()
     query = {}
     if student_name:
-        query["student_name"] = {"$regex": student_name, "$options": "i"}
+        query["student_name"] = {"$regex": re.escape(student_name.strip()), "$options": "i"}
     if room_number:
         query["room_number"] = room_number
         

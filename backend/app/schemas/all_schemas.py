@@ -135,17 +135,42 @@ class CleaningScheduleUpdate(BaseModel):
 
 class CleaningTaskCreate(BaseModel):
     room_number: str
-    assigned_staff: str = "Housekeeping Staff"
+    assigned_staff: Optional[str] = None
     cleaning_type: str = "Daily Sanitation"  # Daily Sanitation, Deep Cleaning, Restroom Cleaning, Floor Mopping, Disinfection
     date: str  # YYYY-MM-DD
     time: str = "10:00 AM"
+    shift: str = "MORNING"  # MORNING, EVENING
     status: str = "Pending"  # Pending, In Progress, Completed, Overdue
     notes: Optional[str] = ""
 
 class CleaningTaskStatusUpdate(BaseModel):
-    status: str  # Pending, In Progress, Completed, Overdue
+    status: str  # Pending, In Progress, Cleaned, Completed, Overdue, Verified, Re-Cleaning
     assigned_staff: Optional[str] = None
     notes: Optional[str] = None
+
+class ChecklistItemUpdate(BaseModel):
+    key: str
+    completed: bool
+    notes: Optional[str] = None
+
+class CleaningChecklistUpdate(BaseModel):
+    items: List[ChecklistItemUpdate]
+    staff_notes: Optional[str] = None
+    submit_cleaned: bool = False
+
+class CleaningVerificationSubmit(BaseModel):
+    decision: str  # VERIFIED or REJECTED
+    remarks: Optional[str] = None
+    rejection_reason: Optional[str] = None
+
+class CleaningStaffAssign(BaseModel):
+    assigned_staff: Optional[str] = None
+    notes: Optional[str] = None
+
+class CleaningShiftGenerate(BaseModel):
+    date: Optional[str] = None
+    shift: str = "MORNING"  # MORNING, EVENING
+    assigned_staff: Optional[str] = None
 
 class CleaningRatingSubmit(BaseModel):
     task_id: Optional[str] = None
@@ -155,6 +180,15 @@ class CleaningRatingSubmit(BaseModel):
 class CleaningIssueReport(BaseModel):
     description: str
     priority: str = "NORMAL"  # NORMAL, URGENT
+
+class CleaningIssueSubmit(BaseModel):
+    issue_type: str = "DIRTY_FLOOR"  # DIRTY_FLOOR, WASHROOM_ISSUE, TRASH_OVERFLOW, DUST_COBWEBS, ODOR, MAINTENANCE, OTHER
+    description: str
+    priority: str = "NORMAL"  # NORMAL, HIGH, URGENT
+
+class CleaningIssueResolve(BaseModel):
+    status: str = "RESOLVED"  # RESOLVED, IN_REVIEW, DISMISSED
+    warden_response: str
 
 
 # --- COMPLAINT SCHEMAS ---

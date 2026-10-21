@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/admin/rooms', label: '12 Rooms', icon: Bed },
         { to: '/admin/attendance', label: 'Attendance Register', icon: CalendarCheck },
         { to: '/admin/leaves', label: 'Leave Review', icon: PlaneTakeoff },
-        { to: '/admin/cleaning', label: 'Cleaning Tasks', icon: Sparkles },
+        { to: '/admin/cleaning', label: 'Hostel Daily Duty', icon: Sparkles },
       ]
     },
     {
@@ -84,10 +84,9 @@ const Sidebar = ({ isOpen, onClose }) => {
       title: 'Hostel Living',
       links: [
         { to: '/student/room', label: 'My Room & Roommates', icon: Bed },
-        { to: '/student/cleaning', label: 'Housekeeping & Sanitation', icon: Sparkles },
+        { to: '/student/cleaning', label: "Today's Hostel Duty", icon: Sparkles },
         { to: '/student/attendance', label: 'My Attendance', icon: CalendarCheck },
         { to: '/student/leave', label: 'Apply Leave', icon: PlaneTakeoff },
-        { to: '/student/cleaning-room', label: '🍽️ Meal Duty Room', icon: ClipboardCheck },
       ]
     },
     {
@@ -106,8 +105,13 @@ const Sidebar = ({ isOpen, onClose }) => {
     <div className="flex flex-col h-full bg-slate-900 text-slate-300">
       {/* Brand & User Header */}
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold shadow-md">
+        <Link
+          to={isAdmin ? '/admin/dashboard' : '/student/dashboard'}
+          onClick={onClose}
+          className="flex items-center space-x-3 hover:opacity-90 transition group cursor-pointer"
+          title="Go to Dashboard"
+        >
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold shadow-md group-hover:scale-105 transition">
             SH
           </div>
           <div>
@@ -116,7 +120,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               {isAdmin ? 'Warden Admin Portal' : `${user?.student_profile?.room_number || 'Resident'} Student`}
             </p>
           </div>
-        </div>
+        </Link>
         {onClose && (
           <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white p-1">
             <X className="w-5 h-5" />

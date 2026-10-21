@@ -118,11 +118,11 @@ const AnalyticsPage = () => {
       {/* Visual Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* 13 Rooms Bed Occupancy Ratio */}
+        {/* 12 Rooms Bed Occupancy Ratio */}
         <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">13 Rooms Bed Allocation</h3>
+              <h3 className="text-sm font-bold text-slate-900">12 Rooms Bed Allocation</h3>
               <p className="text-xs text-slate-500">Total capacity: {overview?.total_beds} beds</p>
             </div>
             <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
@@ -182,7 +182,7 @@ const AnalyticsPage = () => {
         <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
           <div>
             <h3 className="text-sm font-bold text-slate-900">Today's Resident Attendance Mix</h3>
-            <p className="text-xs text-slate-500">Roll call representation across all 13 rooms</p>
+            <p className="text-xs text-slate-500">Roll call representation across all 12 rooms</p>
           </div>
 
           <div className="h-64 w-full flex items-center justify-center">

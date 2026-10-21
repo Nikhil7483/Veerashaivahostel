@@ -4,6 +4,7 @@ from app.core.dependencies import require_admin, require_student, log_audit
 from app.schemas.all_schemas import AttendanceBatchCreate
 from datetime import datetime
 from typing import Optional
+import re
 
 router = APIRouter(prefix="/attendance", tags=["Attendance"])
 
@@ -20,7 +21,7 @@ async def get_attendance(
     if date:
         query["date"] = date
     elif month:
-        query["date"] = {"$regex": f"^{month}"}
+        query["date"] = {"$regex": f"^{re.escape(month.strip())}"}
     if room_number:
         query["room_number"] = room_number
     if student_id:
@@ -104,7 +105,7 @@ async def get_my_attendance(
     student_id = student.get("student_id")
     query = {"student_id": student_id}
     if month:
-        query["date"] = {"$regex": f"^{month}"}
+        query["date"] = {"$regex": f"^{re.escape(month.strip())}"}
         
     cursor = db.attendance.find(query).sort("date", -1)
     records = []

@@ -6,6 +6,7 @@ from app.services.report_service import generate_pdf_table, generate_excel_sheet
 from app.services.daily_report_generator import generate_daily_warden_report_pdf
 from datetime import datetime
 from typing import Optional
+import re
 
 router = APIRouter(prefix="/reports", tags=["Reports & Exports"])
 
@@ -96,7 +97,7 @@ async def export_attendance_report(
     if date:
         query["date"] = date
     elif month:
-        query["date"] = {"$regex": f"^{month}"}
+        query["date"] = {"$regex": f"^{re.escape(month.strip())}"}
         
     records = await db.attendance.find(query).sort("date", -1).to_list(1000)
     headers = ["Date", "Student ID", "Student Name", "USN", "Room", "Status", "Remarks"]

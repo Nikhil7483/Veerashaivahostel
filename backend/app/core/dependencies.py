@@ -129,5 +129,13 @@ async def create_notification(user_id: str, title: str, message: str, notificati
             "link": link,
             "created_at": datetime.utcnow()
         })
+        
+        # Dispatch Web Push to student's phone / active browser subscriptions
+        try:
+            import asyncio
+            from app.services.push_service import send_web_push_to_user
+            asyncio.create_task(send_web_push_to_user(str(user_id), title, message, link))
+        except Exception as pe:
+            print(f"Error dispatching web push: {pe}")
     except Exception as e:
         print(f"Error creating notification: {e}")

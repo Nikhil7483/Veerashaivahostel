@@ -673,7 +673,7 @@ const TiffinManagementPage = () => {
                   onChange={(e) => setRoomFilter(e.target.value)}
                   className="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700"
                 >
-                  <option value="ALL">All Rooms (13 Rooms)</option>
+                  <option value="ALL">All Rooms (12 Rooms)</option>
                   {availableRooms.map((r) => (
                     <option key={r} value={r}>{r}</option>
                   ))}
@@ -1208,7 +1208,7 @@ const TiffinManagementPage = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-black text-slate-900">
-              Room-Wise Food Allocation & Collection Summary (13 Rooms)
+              Room-Wise Food Allocation & Collection Summary (12 Rooms)
             </h2>
             <span className="text-xs text-slate-400">
               Date: {formatDate(selectedDate)} &bull; {selectedSession}

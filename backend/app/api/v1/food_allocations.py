@@ -270,25 +270,29 @@ async def get_student_attendance_status(db, student_id: str, date_str: str) -> s
 
 async def get_meal_duty_room_for_date(db, date_str: str) -> str:
     """
-    Returns the designated Meal Duty Room for the specified date.
-    Hostel business rule: Exactly ONE hostel room is selected as the Daily Meal Duty Room.
-    Warden/Admin can allocate or change it.
-    Example: Today's Meal Duty Room: Room 01.
+    Returns the designated Shared Duty Room for the specified date.
+    Hostel business rule: Exactly ONE hostel room is selected as the Daily Duty Room (shared for Housekeeping & Meal Duty).
+    Warden/Admin can allocate or change it. Room 03 strictly does not exist and is never allocated.
     """
     day_name = get_day_name(date_str)
-    # Check date-specific allocation
+    # 0. Check authoritative daily_duty_records
+    duty_rec = await db.daily_duty_records.find_one({"date": date_str})
+    if duty_rec and duty_rec.get("room_number") in VALID_HOSTEL_ROOMS and duty_rec.get("room_number") != "Room 03":
+        return duty_rec["room_number"]
+
+    # 1. Check date-specific allocation in meal_duty_schedule
     doc = await db.meal_duty_schedule.find_one({"date": date_str})
-    if doc and doc.get("room_number") in VALID_HOSTEL_ROOMS:
+    if doc and doc.get("room_number") in VALID_HOSTEL_ROOMS and doc.get("room_number") != "Room 03":
         return doc["room_number"]
 
-    # Check day-of-week allocation in meal_duty_schedule
+    # 2. Check day-of-week allocation in meal_duty_schedule
     day_doc = await db.meal_duty_schedule.find_one({"day": day_name, "date": {"$exists": False}})
-    if day_doc and day_doc.get("room_number") in VALID_HOSTEL_ROOMS:
+    if day_doc and day_doc.get("room_number") in VALID_HOSTEL_ROOMS and day_doc.get("room_number") != "Room 03":
         return day_doc["room_number"]
 
-    # Fallback to cleaning_schedule
+    # 3. Fallback to cleaning_schedule
     cs_doc = await db.cleaning_schedule.find_one({"day": day_name})
-    if cs_doc and cs_doc.get("room_numbers") and cs_doc["room_numbers"][0] in VALID_HOSTEL_ROOMS:
+    if cs_doc and cs_doc.get("room_numbers") and cs_doc["room_numbers"][0] in VALID_HOSTEL_ROOMS and cs_doc["room_numbers"][0] != "Room 03":
         return cs_doc["room_numbers"][0]
 
     default_map = {
@@ -523,15 +527,16 @@ async def get_meal_duty_room_endpoint(date: Optional[str] = None, current_user: 
 @router.post("/duty-room")
 async def allocate_meal_duty_room_endpoint(data: MealDutyRoomAllocate, current_user: dict = Depends(require_admin)):
     """
-    Warden/Admin allocates or changes the Daily Meal Duty Room.
+    Warden/Admin allocates or changes the Shared Duty Room.
     Strictly ONE room selected per day.
+    Synchronizes across meal duty and cleaning schedules.
     """
     db = get_database()
     target_date = data.date or datetime.now().strftime("%Y-%m-%d")
     day_name = data.day_name or get_day_name(target_date)
-    room_number = data.room_number
+    room_number = data.room_number.strip()
     
-    if room_number not in VALID_HOSTEL_ROOMS:
+    if room_number not in VALID_HOSTEL_ROOMS or room_number == "Room 03":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid room number '{room_number}'. Valid rooms: {VALID_HOSTEL_ROOMS}. (Room 03 strictly does not exist)."
@@ -558,18 +563,39 @@ async def allocate_meal_duty_room_endpoint(data: MealDutyRoomAllocate, current_u
         }},
         upsert=True
     )
+    # Also synchronize cleaning_schedule
+    await db.cleaning_schedule.update_one(
+        {"day": day_name},
+        {"$set": {
+            "day": day_name,
+            "room_numbers": [room_number],
+            "updated_at": datetime.utcnow()
+        }},
+        upsert=True
+    )
+    # Also synchronize daily_duty_records
+    await db.daily_duty_records.update_one(
+        {"date": target_date},
+        {"$set": {
+            "room_number": room_number,
+            "updated_at": datetime.utcnow()
+        }},
+        upsert=True
+    )
     
     await log_audit(
         current_user["email"],
-        "MEAL_DUTY_ROOM_ALLOCATED",
+        "SHARED_DUTY_ROOM_ALLOCATED",
         "FOOD",
         target_date,
-        f"Today's Meal Duty Room allocated to {room_number}"
+        f"Shared Duty Room allocated to {room_number}"
     )
     
     return {
-        "message": f"✅ {room_number} allocated as Today's Meal Duty Room for {target_date} ({day_name}).",
+        "message": f"✅ {room_number} allocated as Shared Duty Room for {target_date} ({day_name}).",
         "duty_room": room_number,
+        "meal_duty_room": room_number,
+        "shared_duty_room": room_number,
         "date": target_date,
         "day": day_name,
         "status": "AUTHORIZED FOR MEAL COUNTS"
@@ -1559,6 +1585,7 @@ async def build_warden_roster_data(date: str) -> dict:
 
     (
         alloc,
+        duty_rec,
         m_session_doc,
         n_session_doc,
         students,
@@ -1567,6 +1594,7 @@ async def build_warden_roster_data(date: str) -> dict:
         approved_leaves
     ) = await asyncio.gather(
         db.food_allocations.find_one({"date": date}),
+        db.daily_duty_records.find_one({"date": date}),
         db.meal_counts.find_one({"date": date, "session": "morning"}),
         db.meal_counts.find_one({"date": date, "session": "night"}),
         db.students.find({"status": "ACTIVE"}).sort([("room_number", 1), ("bed_number", 1), ("student_id", 1)]).to_list(500),
@@ -1583,13 +1611,21 @@ async def build_warden_roster_data(date: str) -> dict:
     lunch_dish = alloc.get("lunch_dish") if (alloc and alloc.get("lunch_dish")) else default_sch["lunch"]
     night_dish = alloc.get("night_dish", default_sch["dinner"]) if alloc else default_sch["dinner"]
 
-    duty_room = await get_meal_duty_room_for_date(db, date)
+    duty_room = (duty_rec.get("room_number") if duty_rec and duty_rec.get("room_number") else None) or await get_meal_duty_room_for_date(db, date)
 
     m_session = m_session_doc or {}
     n_session = n_session_doc or {}
 
     m_records_map = {r["student_id"]: r for r in m_session.get("student_records", [])}
     n_records_map = {r["student_id"]: r for r in n_session.get("student_records", [])}
+    if duty_rec and "student_records" in duty_rec:
+        for r in duty_rec["student_records"]:
+            sid = r.get("student_id")
+            if sid:
+                if sid not in m_records_map:
+                    m_records_map[sid] = r
+                if sid not in n_records_map:
+                    n_records_map[sid] = r
 
     att_map = {a["student_id"]: a["status"] for a in att_records}
     leave_student_ids = {l["student_id"] for l in approved_leaves}
@@ -1615,7 +1651,7 @@ async def build_warden_roster_data(date: str) -> dict:
 
             # By default, every PRESENT resident in the hostel requires morning tiffin and night dinner unless explicitly opted out
             tiffin_req = bool(m_rec.get("tiffin_required", True)) if "tiffin_required" in m_rec else True
-            meal_req = bool(n_rec.get("meal_required", True)) if "meal_required" in n_rec else True
+            meal_req = bool(n_rec.get("meal_required", n_rec.get("night_required", True))) if ("meal_required" in n_rec or "night_required" in n_rec) else True
             box_req = bool(m_rec.get("box_required", sid in default_box_ids)) if "box_required" in m_rec else (sid in default_box_ids)
 
             roster.append({
@@ -1630,6 +1666,7 @@ async def build_warden_roster_data(date: str) -> dict:
                 "tiffin_required": tiffin_req,
                 "box_required": box_req,
                 "meal_required": meal_req,
+                "night_required": meal_req,
                 "morning_checked": bool(m_rec),
                 "night_checked": bool(n_rec),
             })
@@ -1638,22 +1675,27 @@ async def build_warden_roster_data(date: str) -> dict:
         else:
             total_absent += 1
 
-    # Accurate counts for eligible present residents
-    m_count = m_session.get("final_tiffin_count")
-    if m_count is None or m_count == 0:
+    # Accurate counts: Check authoritative daily_duty_records first, then sessions, then roster
+    if duty_rec and duty_rec.get("tiffin_count") is not None:
+        m_count = max(0, duty_rec["tiffin_count"])
+    elif m_session.get("final_tiffin_count") is not None:
+        m_count = max(0, m_session["final_tiffin_count"])
+    else:
         m_count = sum(1 for r in roster if r.get("tiffin_required"))
-    if m_count == 0 and total_present > 0:
-        m_count = total_present
 
-    b_count = m_session.get("final_box_count")
-    if b_count is None or b_count == 0:
+    if duty_rec and duty_rec.get("tiffin_box_count") is not None:
+        b_count = max(0, duty_rec["tiffin_box_count"])
+    elif m_session.get("final_box_count") is not None:
+        b_count = max(0, m_session["final_box_count"])
+    else:
         b_count = sum(1 for r in roster if r.get("box_required"))
 
-    din_count = n_session.get("final_night_meal_count")
-    if din_count is None or din_count == 0:
+    if duty_rec and duty_rec.get("night_dinner_count") is not None:
+        din_count = max(0, duty_rec["night_dinner_count"])
+    elif n_session.get("final_night_meal_count") is not None:
+        din_count = max(0, n_session["final_night_meal_count"])
+    else:
         din_count = sum(1 for r in roster if r.get("meal_required"))
-    if din_count == 0 and total_present > 0:
-        din_count = total_present
 
     m_sub_at = m_session.get("submitted_at")
     if isinstance(m_sub_at, datetime):

@@ -81,7 +81,7 @@ const EmergencyAlertsPage = () => {
 
         {activeAlerts.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-500 bg-white rounded-2xl border border-slate-200">
-            ✅ No active emergency distress signals at this time. All 13 rooms are safe.
+            ✅ No active emergency distress signals at this time. All 12 rooms are safe.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

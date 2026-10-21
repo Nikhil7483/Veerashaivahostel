@@ -25,9 +25,12 @@ const DashboardLayout = () => {
           </ErrorBoundary>
         </main>
 
-        <footer className="py-4 px-6 border-t border-slate-200 bg-white/80 text-center text-xs text-slate-500">
-          <p className="leading-relaxed">
-            © 2026 Veerashaiva Lingayath Boys Hostel, Shivamogga. All rights reserved. • Developed by Nikhilharsha <span className="text-rose-500 inline-block">❤️</span>
+        <footer className="py-4 px-6 border-t border-slate-200 bg-white/90 backdrop-blur-sm text-center">
+          <p className="text-xs text-slate-500 font-normal">
+            © 2026 Veerashaiva Lingayath Boys Hostel, Shivamogga. All rights reserved.
+          </p>
+          <p className="text-xs sm:text-sm font-semibold text-slate-800 mt-1">
+            Developed by Nikhilharsha | AIML, JNNCE
           </p>
         </footer>
       </div>

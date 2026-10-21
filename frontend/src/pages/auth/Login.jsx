@@ -246,11 +246,11 @@ const Login = () => {
 
       {/* ── Footer ── */}
       <footer className="relative z-10 py-4 px-4 text-center border-t border-slate-800/50 backdrop-blur-md bg-slate-950/30">
-        <p className="text-xs text-slate-400 font-medium">
+        <p className="text-xs text-slate-400 font-normal">
           © 2026 Veerashaiva Lingayath Boys Hostel, Shivamogga. All rights reserved.
         </p>
-        <p className="text-[11px] text-slate-500 mt-1">
-          Developed by Nikhilharsha <span className="text-rose-500">❤️</span>
+        <p className="text-xs sm:text-sm font-semibold text-slate-200 mt-1">
+          Developed by Nikhilharsha | AIML, JNNCE
         </p>
       </footer>
 

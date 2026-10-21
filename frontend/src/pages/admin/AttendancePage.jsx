@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../services/api';
 import { formatDate } from '../../utils/dateUtils';
 import { useNotification } from '../../context/NotificationContext';
@@ -25,6 +25,7 @@ const AttendancePage = () => {
   const [activeTab, setActiveTab] = useState('register'); // 'register' | 'report'
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedRoom, setSelectedRoom] = useState('');
+  const [attendanceFilter, setAttendanceFilter] = useState('ALL');
   const [students, setStudents] = useState([]);
   const [attendanceMap, setAttendanceMap] = useState({});
   const [summary, setSummary] = useState(null);
@@ -40,7 +41,7 @@ const AttendancePage = () => {
   const [reportData, setReportData] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
-  const roomsList = Array.from({ length: 13 }, (_, i) => `Room ${(i + 1).toString().padStart(2, '0')}`);
+  const roomsList = Array.from({ length: 13 }, (_, i) => `Room ${(i + 1).toString().padStart(2, '0')}`).filter((r) => r !== 'Room 03');
 
   const loadRegisterData = async () => {
     setLoading(true);
@@ -210,9 +211,29 @@ const AttendancePage = () => {
     document.body.removeChild(link);
   };
 
-  const filteredStudents = selectedRoom
-    ? students.filter((s) => s.room_number === selectedRoom)
-    : students;
+  const liveAttendanceCounts = useMemo(() => {
+    let present = 0;
+    let absent = 0;
+    let leave = 0;
+    students.forEach((s) => {
+      const st = attendanceMap[s.student_id] || 'PRESENT';
+      if (st === 'PRESENT') present++;
+      else if (st === 'ABSENT') absent++;
+      else if (st === 'LEAVE') leave++;
+    });
+    return { present, absent, leave, total: students.length };
+  }, [students, attendanceMap]);
+
+  const filteredStudents = useMemo(() => {
+    return students.filter((s) => {
+      if (selectedRoom && s.room_number !== selectedRoom) return false;
+      const st = attendanceMap[s.student_id] || 'PRESENT';
+      if (attendanceFilter === 'PRESENT' && st !== 'PRESENT') return false;
+      if (attendanceFilter === 'ABSENT' && st !== 'ABSENT') return false;
+      if (attendanceFilter === 'LEAVE' && st !== 'LEAVE') return false;
+      return true;
+    });
+  }, [students, selectedRoom, attendanceMap, attendanceFilter]);
 
   return (
     <div className="space-y-6">
@@ -285,18 +306,35 @@ const AttendancePage = () => {
               </div>
 
               {(!isSubmitted || isEditing) && (
-                <div className="flex items-center space-x-2">
-                  <Filter className="w-4 h-4 text-slate-400" />
-                  <select
-                    value={selectedRoom}
-                    onChange={(e) => setSelectedRoom(e.target.value)}
-                    className="text-xs font-semibold px-3 py-2 border border-slate-300 rounded-xl bg-white"
-                  >
-                    <option value="">All 13 Rooms ({students.length} Students)</option>
-                    {roomsList.map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center space-x-1.5">
+                    <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+                    <select
+                      value={selectedRoom}
+                      onChange={(e) => setSelectedRoom(e.target.value)}
+                      className="text-xs font-semibold px-3 py-2 border border-slate-300 rounded-xl bg-white shadow-2xs cursor-pointer"
+                    >
+                      <option value="">All 12 Rooms ({students.length} Students)</option>
+                      {roomsList.map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Select Option like Present Students Count */}
+                  <div className="flex items-center space-x-1.5">
+                    <select
+                      value={attendanceFilter}
+                      onChange={(e) => setAttendanceFilter(e.target.value)}
+                      className="text-xs font-semibold px-3 py-2 border border-slate-300 rounded-xl bg-white shadow-2xs cursor-pointer"
+                      title="Select option like present students count"
+                    >
+                      <option value="ALL">All Students ({liveAttendanceCounts.total})</option>
+                      <option value="PRESENT">Present Students Count ({liveAttendanceCounts.present})</option>
+                      <option value="ABSENT">Absent Students Count ({liveAttendanceCounts.absent})</option>
+                      <option value="LEAVE">On Leave ({liveAttendanceCounts.leave})</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
@@ -619,7 +657,7 @@ const AttendancePage = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-extrabold text-slate-900 flex items-center space-x-2">
                     <Building className="w-4 h-4 text-purple-600" />
-                    <span>Room-by-Room Daily Attendance Roster (13 Rooms)</span>
+                    <span>Room-by-Room Daily Attendance Roster (12 Rooms)</span>
                   </h3>
                   <span className="text-xs text-slate-400 font-medium">
                     {reportData.rooms?.filter((r) => r.has_absent).length || 0} Rooms with Absences

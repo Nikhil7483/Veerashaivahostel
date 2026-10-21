@@ -159,7 +159,8 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         "phone": current_user.get("phone", ""),
         "designation": current_user.get("designation", default_designation),
         "office": current_user.get("office", "Warden Office, Block A"),
-        "student_profile": student_profile
+        "student_profile": student_profile,
+        "pwd_reset_required": current_user.get("pwd_reset_required", False)
     }
 
 @router.post("/change-password")

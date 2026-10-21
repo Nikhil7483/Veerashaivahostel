@@ -65,12 +65,22 @@ async def create_maintenance(data: MaintenanceCreate, current_user: dict = Depen
     doc["id"] = str(res.inserted_id)
     del doc["_id"]
     
+    # 1. Notify student who reported the issue
+    if current_user.get("id"):
+        await create_notification(
+            str(current_user["id"]),
+            "Hostel Doctor Called! 🛠️",
+            f"Something in the hostel needs a doctor. Maintenance has been notified! 🛠️ (Room {data.room_number}: {data.category})",
+            "INFO"
+        )
+
+    # 2. Notify Admin
     admin = await db.users.find_one({"role": "ADMIN"})
     if admin:
         await create_notification(
             str(admin["_id"]),
-            f"Maintenance Issue Reported ({data.category})",
-            f"{student['name']} reported a maintenance problem in Room {data.room_number}: {data.category}"
+            "Hostel Doctor Needed! 🛠️",
+            f"Something in the hostel needs a doctor! {student['name']} reported {data.category} in Room {data.room_number}."
         )
         
     return doc

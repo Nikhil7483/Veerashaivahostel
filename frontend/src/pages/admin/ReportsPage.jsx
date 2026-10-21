@@ -92,8 +92,8 @@ const ReportsPage = () => {
     },
     {
       id: 'rooms',
-      title: '13 Rooms Occupancy Status',
-      description: 'Room 01 to Room 13 capacity, occupied/free beds, and sanitation schedule audit.',
+      title: '12 Rooms Occupancy Status',
+      description: '12-room occupancy (Room 01-02, 04-13), occupied/free beds, and sanitation schedule audit.',
       icon: Bed,
       color: 'indigo',
     },

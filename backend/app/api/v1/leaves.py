@@ -53,27 +53,40 @@ async def submit_leave(
     if not student:
         raise HTTPException(status_code=404, detail="Student record not found.")
         
-    # Check if student's room has cleaning duty today and if it is incomplete
+    # Check if student's room is on Daily Duty today
     room_number = student.get("room_number")
     today_dt = datetime.now()
     today_str = today_dt.strftime("%Y-%m-%d")
     day_name = today_dt.strftime("%A")
-    
-    schedule_doc = await db.cleaning_schedule.find_one({"day": day_name})
-    raw_rooms = schedule_doc.get("room_numbers", []) if schedule_doc else []
-    today_scheduled_rooms = [raw_rooms[0]] if raw_rooms else []
-    is_scheduled_today = (room_number in today_scheduled_rooms)
-    today_cleaning = await db.cleaning_requests.find_one({"room_number": room_number, "date": today_str})
-    has_cleaning = is_scheduled_today or (today_cleaning is not None)
-    
-    if has_cleaning:
-        room_doc = await db.rooms.find_one({"room_number": room_number})
-        current_cleaning_status = (today_cleaning.get("status") if today_cleaning else None) or (room_doc.get("cleaning_status") if room_doc else "PENDING")
-        # Only lock leave for rooms currently being cleaned (IN_PROGRESS), not all rooms
-        if current_cleaning_status == "IN_PROGRESS":
+
+    duty_rec = await db.daily_duty_records.find_one({"date": today_str})
+    if duty_rec:
+        duty_room = duty_rec.get("room_number")
+        duty_status = duty_rec.get("status", "PENDING")
+        skipped_rooms = duty_rec.get("skipped_rooms", [])
+    else:
+        m_doc = await db.meal_duty_schedule.find_one({"date": today_str})
+        duty_room = m_doc.get("room_number") if m_doc else None
+        duty_status = "PENDING"
+        skipped_rooms = []
+
+    if room_number in skipped_rooms:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"🔒 Leave applications are locked: Your room ({room_number}) was declared ABSENT for hostel duty today. Leave cannot be unlocked for absent or skipped rooms."
+        )
+
+    if room_number == duty_room:
+        if duty_status != "COMPLETED" or not (duty_rec and duty_rec.get("leave_unlocked", False)):
+            if duty_status == "PENDING_APPROVAL":
+                lock_detail = f"🔒 Leave applications are locked: Your room ({room_number}) duty has been submitted and is currently PENDING WARDEN APPROVAL. Leave facility unlocks automatically once approved by the warden."
+            elif duty_status == "RETURNED_FOR_CORRECTION":
+                lock_detail = f"🔒 Leave applications are locked: Your room ({room_number}) duty was returned by the warden for count/cleaning correction. Please update and re-submit to unlock leave."
+            else:
+                lock_detail = f"🔒 Leave applications are locked: Your room ({room_number}) is on Daily Duty today ({day_name}, {today_str}). Leave applications remain locked until complete hostel cleaning and all three meal counts are submitted and approved by the warden. Current duty status: {duty_status}."
             raise HTTPException(
-                status_code=400,
-                detail=f"🔒 Leave applications are locked: Your room ({room_number}) is currently being cleaned today ({day_name}). Leave applications are locked for the room actively being cleaned until sanitisation is verified COMPLETED. Status: {current_cleaning_status}"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=lock_detail
             )
 
     # Check if student already has a pending leave application
@@ -146,13 +159,24 @@ async def submit_leave(
     leave_doc["id"] = str(result.inserted_id)
     del leave_doc["_id"]
     
-    # Notify Admin / Warden
+    # 1. Notify Student with funny friendly notification
+    await create_notification(
+        str(current_user["id"]),
+        "Your mind is already at home 😂",
+        f"Your mind is already at home. Your leave application is now waiting! 😂 ({leave_type} leave from {from_date} to {to_date}).",
+        "INFO",
+        "/student/leave"
+    )
+
+    # 2. Notify Admin / Warden
     admin = await db.users.find_one({"role": "ADMIN"})
     if admin:
         await create_notification(
             str(admin["_id"]),
-            "New Leave Application",
-            f"{student['name']} ({student.get('room_number')}) submitted a {leave_type} leave request from {from_date} to {to_date}."
+            "New Leave Application 🏖️",
+            f"{student['name']} ({student.get('room_number')}) submitted a {leave_type} leave request from {from_date} to {to_date}.",
+            "INFO",
+            "/admin/attendance"
         )
         
     return leave_doc
@@ -206,12 +230,23 @@ async def update_leave_status(
             student_user = await db.users.find_one({"email": student["email"]})
             
     if student_user:
-        status_msg = "approved ✅" if update_data.status == "APPROVED" else "rejected ❌"
-        remarks_msg = f" Remarks: {update_data.admin_remarks}" if update_data.admin_remarks else ""
+        if update_data.status == "APPROVED":
+            notif_title = "Freedom loading! 🎉"
+            remarks_text = f" Warden note: {update_data.admin_remarks}" if update_data.admin_remarks else ""
+            notif_msg = f"Freedom loading! Your leave has officially been approved! 🎉 ({leave['from_date']} to {leave['to_date']}).{remarks_text}"
+            notif_type = "SUCCESS"
+        else:
+            notif_title = "Plot twist! ❌"
+            remarks_text = f" Warden reason: {update_data.admin_remarks}" if update_data.admin_remarks else " No specific reason provided."
+            notif_msg = f"Plot twist! Your leave was not approved. Check the warden's reason.{remarks_text}"
+            notif_type = "WARNING"
+
         await create_notification(
             str(student_user["_id"]),
-            f"Leave Application {update_data.status}",
-            f"Your leave request for {leave['from_date']} to {leave['to_date']} has been {status_msg}.{remarks_msg}"
+            notif_title,
+            notif_msg,
+            notif_type,
+            "/student/leave"
         )
         
     await log_audit(

@@ -165,11 +165,19 @@ const AdminProfilePage = () => {
               <div className="pt-4 border-t border-slate-100 space-y-2.5 text-xs">
                 <div className="flex items-center space-x-2 text-slate-600">
                   <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span className="truncate">{profile.email}</span>
+                  <a href={`mailto:${profile.email}`} className="truncate hover:text-purple-600 hover:underline">
+                    {profile.email}
+                  </a>
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600">
                   <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>{profile.phone || '+91 98800 12345'}</span>
+                  {profile.phone ? (
+                    <a href={`tel:${profile.phone}`} className="hover:text-purple-600 hover:underline">
+                      {profile.phone}
+                    </a>
+                  ) : (
+                    <span>Not Set</span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600">
                   <Building className="w-4 h-4 text-slate-400 shrink-0" />
@@ -187,7 +195,7 @@ const AdminProfilePage = () => {
               <div className="grid grid-cols-2 gap-3 pt-1 text-center">
                 <div className="p-3 bg-white/10 rounded-2xl">
                   <Bed className="w-4 h-4 text-blue-400 mx-auto mb-1" />
-                  <p className="text-lg font-black text-white">13</p>
+                  <p className="text-lg font-black text-white">12</p>
                   <p className="text-[10px] text-slate-300 font-medium">Hostel Rooms</p>
                 </div>
                 <div className="p-3 bg-white/10 rounded-2xl">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/common/Modal';
 import { formatDate } from '../../utils/dateUtils';
@@ -8,7 +8,11 @@ import {
   Plus,
   FileText,
   Lock,
-  CheckCircle2
+  CheckCircle2,
+  Camera,
+  Upload,
+  Trash2,
+  X
 } from 'lucide-react';
 
 const StudentLeavePage = () => {
@@ -23,8 +27,99 @@ const StudentLeavePage = () => {
   const [leaveType, setLeaveType] = useState('PERSONAL');
   const [reason, setReason] = useState('');
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraError, setCameraError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const nativeCameraInputRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const startCamera = async () => {
+    setShowCamera(true);
+    setCameraError('');
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API is not supported in this browser environment.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error('Camera access error:', err);
+      setCameraError(err.message || 'Camera permission denied or camera not available. You can also upload a photo.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setShowCamera(false);
+    setCameraError('');
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    if (!video.videoWidth || !video.videoHeight) {
+      setCameraError('Camera stream is still starting. Please wait a moment.');
+      return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const capturedFile = new File([blob], `leave_photo_${Date.now()}.jpg`, {
+          type: 'image/jpeg'
+        });
+        setFile(capturedFile);
+        setFilePreview(URL.createObjectURL(blob));
+        stopCamera();
+      }
+    }, 'image/jpeg', 0.88);
+  };
+
+  const handleFileChange = (e) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      if (selected.type.startsWith('image/')) {
+        setFilePreview(URL.createObjectURL(selected));
+      } else {
+        setFilePreview(null);
+      }
+    }
+  };
+
+  const clearSelectedFile = () => {
+    setFile(null);
+    if (filePreview) {
+      URL.revokeObjectURL(filePreview);
+      setFilePreview(null);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (nativeCameraInputRef.current) nativeCameraInputRef.current.value = '';
+  };
+
+  const handleCloseModal = () => {
+    stopCamera();
+    clearSelectedFile();
+    setApplyModalOpen(false);
+  };
 
   const fetchLeavesAndRoom = async (isSilent = false) => {
     if (!isSilent) setLoading(true);
@@ -49,7 +144,10 @@ const StudentLeavePage = () => {
       fetchLeavesAndRoom(true);
     }, 3000);
 
-    return () => clearInterval(pollInterval);
+    return () => {
+      clearInterval(pollInterval);
+      stopCamera();
+    };
   }, []);
 
   const isLeaveLocked = roomInfo?.is_leave_locked === true;
@@ -83,11 +181,10 @@ const StudentLeavePage = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setApplyModalOpen(false);
+      handleCloseModal();
       setFromDate('');
       setToDate('');
       setReason('');
-      setFile(null);
       fetchLeavesAndRoom(true);
     } catch (err) {
       setFormError(err.response?.data?.detail || 'Failed to submit leave application.');
@@ -252,7 +349,7 @@ const StudentLeavePage = () => {
       {/* Apply Leave Modal */}
       <Modal
         isOpen={applyModalOpen}
-        onClose={() => setApplyModalOpen(false)}
+        onClose={handleCloseModal}
         title={`Submit Leave Application (${roomNumber})`}
         maxWidth="max-w-md"
       >
@@ -313,22 +410,167 @@ const StudentLeavePage = () => {
             ></textarea>
           </div>
 
-          <div>
-            <label className="block font-bold text-slate-700 mb-1">
-              Upload Supporting Document (Optional: PDF, JPG, PNG &lt; 5MB)
+          {/* Supporting Document / Camera Photo Section */}
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <label className="block font-bold text-slate-700">
+              Supporting Document / Proof Photo (Optional)
             </label>
+
+            {/* Hidden Input for File Selector */}
             <input
+              ref={fileInputRef}
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              onChange={handleFileChange}
+              className="hidden"
             />
+
+            {/* Hidden Input for Native Mobile Camera */}
+            <input
+              ref={nativeCameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            {/* Action Buttons to Choose Upload or Camera */}
+            {!file && !showCamera && (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={startCamera}
+                  className="p-3 border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/50 hover:bg-blue-50 rounded-xl text-blue-700 font-bold flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition">
+                    <Camera className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <span className="text-[11px]">Take Photo with Camera 📸</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-3 border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 font-bold flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-slate-200 group-hover:bg-slate-300 flex items-center justify-center transition">
+                    <Upload className="w-4 h-4 text-slate-600" />
+                  </div>
+                  <span className="text-[11px]">Choose File / PDF 📁</span>
+                </button>
+              </div>
+            )}
+
+            {/* Live Camera Viewfinder */}
+            {showCamera && (
+              <div className="p-3 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between text-white">
+                  <span className="text-xs font-bold flex items-center gap-1.5">
+                    <Camera className="w-4 h-4 text-blue-400" />
+                    Live Camera Viewfinder
+                  </span>
+                  <button
+                    type="button"
+                    onClick={stopCamera}
+                    className="text-slate-400 hover:text-white p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {cameraError ? (
+                  <div className="p-3 bg-red-950/60 border border-red-800 text-red-200 rounded-xl text-xs space-y-2">
+                    <p>{cameraError}</p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => nativeCameraInputRef.current?.click()}
+                        className="py-1.5 px-3 bg-blue-600 text-white rounded-lg font-bold text-[11px]"
+                      >
+                        Open Mobile Camera
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="py-1.5 px-3 bg-slate-800 text-slate-300 rounded-lg font-bold text-[11px]"
+                      >
+                        Choose File Instead
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center">
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex items-center justify-center gap-3 pt-1">
+                      <button
+                        type="button"
+                        onClick={stopCamera}
+                        className="py-2 px-3 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={capturePhoto}
+                        className="py-2.5 px-5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-xl shadow-lg flex items-center gap-2 cursor-pointer transition hover:scale-105"
+                      >
+                        <Camera className="w-4 h-4" />
+                        <span>Snap Photo 📸</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Attached File Preview Card */}
+            {file && (
+              <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between gap-3">
+                <div className="flex items-center space-x-2.5 min-w-0">
+                  {filePreview ? (
+                    <img
+                      src={filePreview}
+                      alt="Leave Document Preview"
+                      className="w-12 h-12 rounded-lg object-cover border border-emerald-300 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-emerald-700" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-800 truncate text-xs">{file.name}</p>
+                    <p className="text-[10px] text-emerald-700 font-medium">
+                      {(file.size / 1024).toFixed(1)} KB &bull; Photo / Document Attached ✅
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={clearSelectedFile}
+                  className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition shrink-0"
+                  title="Remove attachment"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="pt-2 flex justify-end space-x-2">
             <button
               type="button"
-              onClick={() => setApplyModalOpen(false)}
+              onClick={handleCloseModal}
               className="py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100"
             >
               Cancel

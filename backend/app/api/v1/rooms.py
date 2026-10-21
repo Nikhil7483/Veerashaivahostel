@@ -121,30 +121,45 @@ async def get_my_room(current_user: dict = Depends(require_student)):
     today_str = today_dt.strftime("%Y-%m-%d")
     day_name = today_dt.strftime("%A")
     
-    schedule_doc = await db.cleaning_schedule.find_one({"day": day_name})
-    raw_rooms = schedule_doc.get("room_numbers", []) if schedule_doc else []
-    today_scheduled_rooms = [raw_rooms[0]] if raw_rooms else []
-    is_scheduled_today = (norm_room in today_scheduled_rooms)
-    
-    today_cleaning = await db.cleaning_requests.find_one({"room_number": norm_room, "date": today_str})
-    has_cleaning = is_scheduled_today or (today_cleaning is not None)
-    
-    if has_cleaning:
-        if today_cleaning:
-            room["cleaning_status"] = today_cleaning.get("status", room.get("cleaning_status", "PENDING"))
-        else:
-            room["cleaning_status"] = room.get("cleaning_status", "PENDING")
-        room["is_cleaning_completed"] = (room["cleaning_status"] == "COMPLETED")
-        room["is_leave_locked"] = (room["cleaning_status"] == "IN_PROGRESS")
+    valid_rooms = [
+        "Room 01", "Room 02", "Room 04", "Room 05", "Room 06", "Room 07",
+        "Room 08", "Room 09", "Room 10", "Room 11", "Room 12", "Room 13"
+    ]
+    duty_rec = await db.daily_duty_records.find_one({"date": today_str})
+    if duty_rec:
+        duty_room = duty_rec.get("room_number")
+        duty_status = duty_rec.get("status", "PENDING")
+        skipped_rooms = duty_rec.get("skipped_rooms", [])
+    else:
+        doc = await db.meal_duty_schedule.find_one({"date": today_str})
+        duty_room = doc.get("room_number") if (doc and doc.get("room_number") in valid_rooms) else "Room 01"
+        duty_status = "PENDING"
+        skipped_rooms = []
+
+    is_scheduled_today = (norm_room == duty_room)
+    is_absent_today = (norm_room in skipped_rooms)
+
+    room["duty_room"] = duty_room
+    room["duty_status"] = "ABSENT" if is_absent_today else (duty_status if is_scheduled_today else "NOT_SCHEDULED")
+    room["is_scheduled_today"] = is_scheduled_today
+    room["is_absent_today"] = is_absent_today
+    room["day_name"] = day_name
+    room["today_scheduled_rooms"] = [duty_room]
+
+    if is_scheduled_today:
+        room["cleaning_status"] = duty_status
+        room["is_cleaning_completed"] = (duty_status == "COMPLETED")
+        room["is_leave_locked"] = (duty_status != "COMPLETED")
+    elif is_absent_today:
+        room["cleaning_status"] = "ABSENT"
+        room["is_cleaning_completed"] = False
+        room["is_leave_locked"] = True
     else:
         room["cleaning_status"] = "NOT_SCHEDULED"
         room["is_cleaning_completed"] = True
         room["is_leave_locked"] = False
 
-    room["has_cleaning"] = has_cleaning
-    room["is_scheduled_today"] = is_scheduled_today
-    room["day_name"] = day_name
-    room["today_scheduled_rooms"] = today_scheduled_rooms
+    room["has_cleaning"] = is_scheduled_today
     
     # Fetch roommates
     students_cursor = db.students.find({"room_number": norm_room, "status": "ACTIVE"})

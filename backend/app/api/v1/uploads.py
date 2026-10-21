@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -107,7 +108,7 @@ async def authorize_document_access(user: dict, filename: str) -> bool:
     # 1. Check leave applications
     leave = await db.leave_applications.find_one({
         "student_id": student_id,
-        "document_url": {"$regex": f"{filename}$"}
+        "document_url": {"$regex": f"{re.escape(filename)}$"}
     })
     if leave:
         return True
@@ -115,7 +116,7 @@ async def authorize_document_access(user: dict, filename: str) -> bool:
     # 2. Check complaints
     complaint = await db.complaints.find_one({
         "student_id": student_id,
-        "attachment_url": {"$regex": f"{filename}$"}
+        "attachment_url": {"$regex": f"{re.escape(filename)}$"}
     })
     if complaint:
         return True

@@ -345,7 +345,7 @@ const KitchenMealOrderPage = () => {
           </div>
           <div className="mt-2">
             <span className="text-3xl font-black text-slate-900">{data?.total_students ?? 64}</span>
-            <p className="text-[11px] text-slate-400 font-medium mt-0.5">13 Rooms Total</p>
+            <p className="text-[11px] text-slate-400 font-medium mt-0.5">12 Rooms Total</p>
           </div>
         </div>
 

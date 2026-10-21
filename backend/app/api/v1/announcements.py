@@ -44,9 +44,10 @@ async def create_announcement(data: AnnouncementCreate, current_user: dict = Dep
         if u:
             await create_notification(
                 str(u["_id"]),
-                f"Announcement: {data.title}",
-                f"[{data.priority}] {data.description[:100]}...",
-                notification_type="ANNOUNCEMENT"
+                "Hostel breaking news! 📰",
+                f"Hostel breaking news! Something new has dropped: \"{data.title}\". Check it out! 📰",
+                notification_type="ANNOUNCEMENT",
+                link="/student/announcements"
             )
             
     await log_audit(current_user["email"], "ANNOUNCEMENT_POSTED", "ANNOUNCEMENTS", str(res.inserted_id), data.title)

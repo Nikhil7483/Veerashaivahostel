@@ -6,6 +6,7 @@ from app.schemas.all_schemas import StudentCreate, StudentUpdate
 from bson import ObjectId
 from datetime import datetime
 from typing import Optional
+import re
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -22,7 +23,7 @@ async def list_students(
     query = {}
     
     if search:
-        s = search.strip()
+        s = re.escape(search.strip())
         query["$or"] = [
             {"name": {"$regex": s, "$options": "i"}},
             {"usn": {"$regex": s, "$options": "i"}},
@@ -228,13 +229,29 @@ async def get_student_details(id: str, current_user: dict = Depends(require_admi
         del m["_id"]
         maintenance_history.append(m)
         
-    # 6. Check today's cleaning duty for this student's room
+    # 6. Check today's shared duty for this student's room
     today_dt = datetime.now()
     today_str = today_dt.strftime("%Y-%m-%d")
     day_name = today_dt.strftime("%A")
-    schedule_doc = await db.cleaning_schedule.find_one({"day": day_name})
-    raw_rooms = schedule_doc.get("room_numbers", []) if schedule_doc else []
-    today_scheduled_rooms = [raw_rooms[0]] if raw_rooms else []
+    valid_rooms = [f"Room {i:02d}" for i in range(1, 14) if i != 3]
+    duty_room = None
+    doc = await db.meal_duty_schedule.find_one({"date": today_str})
+    if doc and doc.get("room_number") in valid_rooms:
+        duty_room = doc["room_number"]
+    if not duty_room:
+        day_doc = await db.meal_duty_schedule.find_one({"day": day_name, "date": {"$exists": False}})
+        if day_doc and day_doc.get("room_number") in valid_rooms:
+            duty_room = day_doc["room_number"]
+    if not duty_room:
+        schedule_doc = await db.cleaning_schedule.find_one({"day": day_name})
+        raw_rooms = schedule_doc.get("room_numbers", []) if schedule_doc else []
+        if raw_rooms and raw_rooms[0] in valid_rooms:
+            duty_room = raw_rooms[0]
+    if not duty_room:
+        default_map = {"Monday": "Room 01", "Tuesday": "Room 02", "Wednesday": "Room 04", "Thursday": "Room 05", "Friday": "Room 06", "Saturday": "Room 07", "Sunday": "Room 08"}
+        duty_room = default_map.get(day_name, "Room 01")
+
+    today_scheduled_rooms = [duty_room]
     is_scheduled_today = bool(student.get("room_number") in today_scheduled_rooms)
     today_cleaning = await db.cleaning_requests.find_one({"room_number": student.get("room_number"), "date": today_str})
     has_cleaning = is_scheduled_today or (today_cleaning is not None)

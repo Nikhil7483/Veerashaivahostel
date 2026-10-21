@@ -29,6 +29,20 @@ class Settings(BaseSettings):
     
     UPLOAD_DIRECTORY: str = DEFAULT_UPLOAD_DIR
     
+    # Web Push VAPID Settings
+    VAPID_PUBLIC_KEY: str = os.getenv(
+        "VAPID_PUBLIC_KEY",
+        "BGHmkuock3dL4i02-efh5p7zdC7L45JYbYQD1U5CCaDCVV8QQvVlhOtBwEVl-DbjWOURs4NqV7MOO-ObX793ikU"
+    )
+    VAPID_PRIVATE_KEY: str = os.getenv(
+        "VAPID_PRIVATE_KEY",
+        "K0iPkmampHrVJmdtZ-zhfjO8US_0z-73PQwh1TMNiDQ"
+    )
+    VAPID_CLAIM_EMAIL: str = os.getenv(
+        "VAPID_CLAIM_EMAIL",
+        "mailto:admin@veerashaivaboyshostel.in"
+    )
+    
     CORS_ORIGINS: Union[List[str], str] = [
         "https://veerashaivaboyshostel.in",
         "https://www.veerashaivaboyshostel.in",

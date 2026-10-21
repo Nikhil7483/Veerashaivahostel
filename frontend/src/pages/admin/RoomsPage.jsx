@@ -195,9 +195,9 @@ const RoomsPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Hostel 13 Rooms Management</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Hostel 12 Rooms Management</h1>
           <p className="text-xs text-slate-500 font-medium">
-            Dedicated 13-room configuration &bull; Allocate students &bull; Live bed occupancy &bull; Sanitation control.
+            Dedicated 12-room configuration &bull; Allocate students &bull; Live bed occupancy &bull; Sanitation control.
           </p>
         </div>
 

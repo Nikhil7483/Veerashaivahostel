@@ -69,9 +69,20 @@ async def init_db_indexes():
         await db.complaints.create_index("status")
         await db.complaints.create_index("category")
         
-        # Cleaning requests
+        # Cleaning requests: Unique compound index on (room_number, date, shift) to strictly prevent duplicates
+        await db.cleaning_requests.update_many({"shift": {"$exists": False}}, {"$set": {"shift": "MORNING"}})
+        await db.cleaning_requests.create_index(
+            [("room_number", pymongo.ASCENDING), ("date", pymongo.ASCENDING), ("shift", pymongo.ASCENDING)],
+            unique=True
+        )
+        await db.cleaning_requests.create_index("date")
         await db.cleaning_requests.create_index("room_number")
         await db.cleaning_requests.create_index("status")
+        
+        # Cleaning issues: Unique index on issue_id and fast lookups
+        await db.cleaning_issues.create_index("issue_id", unique=True)
+        await db.cleaning_issues.create_index("room_number")
+        await db.cleaning_issues.create_index("status")
         
         # Maintenance requests
         await db.maintenance_requests.create_index("room_number")
@@ -80,6 +91,10 @@ async def init_db_indexes():
         # Notifications
         await db.notifications.create_index("user_id")
         await db.notifications.create_index("is_read")
+        
+        # Push subscriptions
+        await db.push_subscriptions.create_index("user_id")
+        await db.push_subscriptions.create_index("endpoint", unique=True)
         
         # Emergency alerts
         await db.emergency_alerts.create_index("status")

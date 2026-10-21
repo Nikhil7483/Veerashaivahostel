@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 import httpx
 from bson import ObjectId
+from datetime import datetime
 
 # Add backend directory to sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -281,6 +282,12 @@ async def run_all_tests():
         # Pre-cleanup to ensure clean state
         await db.students.delete_many({"student_id": {"$in": ["TEST_A_001", "TEST_B_002"]}})
         await db.users.delete_many({"email": {"$in": [email_a, email_b, admin_email]}})
+
+        # Temporarily ensure today's duty record is COMPLETED so leave upload tests are not blocked by duty lock
+        today_date_str = datetime.now().strftime("%Y-%m-%d")
+        saved_duty = await db.daily_duty_records.find_one({"date": today_date_str})
+        if saved_duty:
+            await db.daily_duty_records.update_one({"date": today_date_str}, {"$set": {"status": "COMPLETED"}})
 
         await db.users.insert_many([user_a, user_b, user_admin])
         await db.students.insert_many([student_doc_a, student_doc_b])
@@ -857,6 +864,8 @@ async def run_all_tests():
                     test_file_path.unlink()
                 except Exception:
                     pass
+            if saved_duty:
+                await db.daily_duty_records.replace_one({"_id": saved_duty["_id"]}, saved_duty)
             await db.users.delete_many({"_id": {"$in": [student_a_id, student_b_id, admin_id]}})
             await db.students.delete_many({"_id": {"$in": [student_doc_a["_id"], student_doc_b["_id"]]}})
             await db.leave_applications.delete_many({"student_id": "TEST_A_001"})

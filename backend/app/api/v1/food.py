@@ -5,6 +5,7 @@ from bson import ObjectId
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
+import re
 
 router = APIRouter(prefix="/food", tags=["Tiffin & Food Count Management"])
 
@@ -312,10 +313,11 @@ async def list_food_assignments(
     if collection_status and collection_status != "ALL":
         query["collection_status"] = collection_status
     if search:
+        s = re.escape(search.strip())
         query["$or"] = [
-            {"student_name": {"$regex": search, "$options": "i"}},
-            {"student_id": {"$regex": search, "$options": "i"}},
-            {"usn": {"$regex": search, "$options": "i"}}
+            {"student_name": {"$regex": s, "$options": "i"}},
+            {"student_id": {"$regex": s, "$options": "i"}},
+            {"usn": {"$regex": s, "$options": "i"}}
         ]
         
     cursor = db.food_assignments.find(query).sort("student_id", 1)

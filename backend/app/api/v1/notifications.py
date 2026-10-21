@@ -44,3 +44,73 @@ async def mark_all_read(current_user: dict = Depends(get_current_user)):
         {"$set": {"is_read": True}}
     )
     return {"message": "All notifications marked as read."}
+
+from pydantic import BaseModel
+from datetime import datetime
+
+class PushSubscriptionKeys(BaseModel):
+    p256dh: str
+    auth: str
+
+class PushSubscriptionRequest(BaseModel):
+    endpoint: str
+    keys: PushSubscriptionKeys
+
+@router.get("/vapid-public-key")
+async def get_vapid_public_key():
+    from app.core.config import settings
+    return {"public_key": settings.VAPID_PUBLIC_KEY}
+
+@router.post("/subscribe")
+async def subscribe_push_notifications(
+    data: PushSubscriptionRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    now = datetime.utcnow()
+    sub_doc = {
+        "user_id": str(current_user["id"]),
+        "endpoint": data.endpoint,
+        "keys": {
+            "p256dh": data.keys.p256dh,
+            "auth": data.keys.auth
+        },
+        "updated_at": now
+    }
+    
+    await db.push_subscriptions.update_one(
+        {"endpoint": data.endpoint},
+        {"$set": sub_doc, "$setOnInsert": {"created_at": now}},
+        upsert=True
+    )
+    return {"message": "Push notification subscription activated successfully."}
+
+@router.post("/unsubscribe")
+async def unsubscribe_push_notifications(
+    data: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    endpoint = data.get("endpoint")
+    if endpoint:
+        await db.push_subscriptions.delete_one({"endpoint": endpoint, "user_id": str(current_user["id"])})
+    return {"message": "Push subscription removed."}
+
+@router.post("/test-push")
+async def test_push_notification(current_user: dict = Depends(get_current_user)):
+    from app.services.push_service import send_web_push_to_user
+    sent = await send_web_push_to_user(
+        user_id=str(current_user["id"]),
+        title="Veerashaiva Hostel ❤️ Test Alert",
+        message="🎉 Web push notifications are working on your phone screen! You will receive daily duty, meal count, and leave updates right here.",
+        link="/student/dashboard"
+    )
+    if sent == 0:
+        return {
+            "status": "warning",
+            "message": "No active phone push subscription found for your account. Please enable push notifications on your device first."
+        }
+    return {
+        "status": "success",
+        "message": f"Test push alert sent to {sent} active device(s)! Check your phone screen."
+    }

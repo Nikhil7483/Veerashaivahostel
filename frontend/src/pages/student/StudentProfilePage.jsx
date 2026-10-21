@@ -165,7 +165,9 @@ const StudentProfilePage = () => {
               </div>
               <div>
                 <span className="font-semibold text-slate-400 block">Official College Email</span>
-                <span className="font-bold text-slate-800">{profile.email}</span>
+                <a href={`mailto:${profile.email}`} className="font-bold text-blue-600 hover:underline">
+                  {profile.email}
+                </a>
               </div>
               <div>
                 <span className="font-semibold text-slate-400 block">Joining Date</span>

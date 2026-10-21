@@ -317,8 +317,8 @@ const StudentsPage = () => {
     }
   };
 
-  // Rooms 01 to 13 list
-  const roomsList = Array.from({ length: 13 }, (_, i) => `Room ${(i + 1).toString().padStart(2, '0')}`);
+  // 12 Valid Hostel Rooms (Room 03 strictly excluded)
+  const roomsList = Array.from({ length: 13 }, (_, i) => `Room ${(i + 1).toString().padStart(2, '0')}`).filter(r => r !== 'Room 03');
 
   const defaultDepartments = [
     'BE', 'BCA', 'B.Com', 'M.Com', 'Diploma', 'Pharmacy', 'B.Pharm', 
@@ -343,7 +343,7 @@ const StudentsPage = () => {
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">Student Directory & Profiles</h1>
           <p className="text-xs text-slate-500 font-medium">
-            Manage student registrations, bed allocations across 13 rooms, and resident meal verification.
+            Manage student registrations, bed allocations across 12 rooms, and resident meal verification.
           </p>
         </div>
 
@@ -426,7 +426,7 @@ const StudentsPage = () => {
               onChange={(e) => setRoomFilter(e.target.value)}
               className="px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white text-slate-700 font-medium focus:outline-hidden"
             >
-              <option value="">All 13 Rooms</option>
+              <option value="">All 12 Rooms</option>
               {roomsList.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
@@ -641,7 +641,7 @@ const StudentsPage = () => {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Room Allocation (13 Rooms) *</label>
+              <label className="block font-bold text-slate-700 mb-1">Room Allocation (12 Rooms) *</label>
               <select
                 value={formData.room_number}
                 onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
@@ -818,7 +818,7 @@ const StudentsPage = () => {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Room Allocation (13 Rooms) *</label>
+              <label className="block font-bold text-slate-700 mb-1">Room Allocation (12 Rooms) *</label>
               <select
                 value={editFormData.room_number}
                 onChange={(e) => setEditFormData({ ...editFormData, room_number: e.target.value })}

@@ -25,6 +25,7 @@ import {
 const AdminDashboard = () => {
   const [overview, setOverview] = useState(null);
   const [todayFood, setTodayFood] = useState(null);
+  const [dutyData, setDutyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -32,12 +33,14 @@ const AdminDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const [overRes, foodRes] = await Promise.all([
+      const [overRes, foodRes, dutyRes] = await Promise.all([
         api.get('/analytics/overview'),
-        api.get('/food-allocation/today').catch(() => ({ data: null }))
+        api.get('/food-allocation/today').catch(() => ({ data: null })),
+        api.get('/cleaning/duty/today').catch(() => ({ data: null }))
       ]);
       setOverview(overRes?.data || null);
       setTodayFood(foodRes?.data || null);
+      setDutyData(dutyRes?.data || null);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
       setError('Could not load current statistics from server. Please check connection and try again.');
@@ -128,10 +131,10 @@ const AdminDashboard = () => {
           value={overview?.total_students || 0}
           icon={Users}
           color="blue"
-          subtitle="Resident in 13 Rooms"
+          subtitle="Resident in 12 Rooms"
         />
         <StatCard
-          title="13 Rooms Occupancy"
+          title="12 Rooms Occupancy"
           value={`${overview?.occupancy_percentage || 0}%`}
           icon={Bed}
           color="indigo"
@@ -176,10 +179,15 @@ const AdminDashboard = () => {
           className="p-3.5 bg-white rounded-xl border border-slate-200 hover:border-emerald-400 shadow-2xs hover:shadow-xs transition flex items-center justify-between group"
         >
           <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Housekeeping</p>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hostel Daily Duty</p>
             <p className="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition">
-              {overview?.pending_cleaning || 0}
-              <span className="text-xs font-normal text-slate-400 ml-1">In Progress</span>
+              {dutyData?.duty_room || 'Room 01'}
+              <span className="text-xs font-normal text-slate-400 ml-1">
+                ({dutyData?.status ? dutyData.status.replace(/_/g, ' ') : 'Today'})
+              </span>
+            </p>
+            <p className="text-[11px] font-bold text-indigo-700 mt-0.5">
+              🍱 {dutyData?.tiffin_count ?? todayFood?.morning_session?.tiffin_count ?? 0} &bull; 📦 {dutyData?.tiffin_box_count ?? todayFood?.morning_session?.box_count ?? 0} &bull; 🌙 {dutyData?.night_dinner_count ?? todayFood?.night_session?.night_meal_count ?? 0}
             </p>
           </div>
           <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
@@ -194,7 +202,7 @@ const AdminDashboard = () => {
           <div>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Kitchen Orders</p>
             <p className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition">
-              {todayFood?.morning_meal_order ?? overview?.attendance?.present ?? 0}
+              {(dutyData?.tiffin_count ?? todayFood?.morning_session?.tiffin_count ?? todayFood?.morning_meal_order ?? overview?.attendance?.present ?? 0)}
               <span className="text-xs font-normal text-slate-400 ml-1">Meals</span>
             </p>
           </div>
@@ -273,11 +281,11 @@ const AdminDashboard = () => {
             <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-300">
               <span>Verified Morning Count:</span>
               <div className="flex items-center space-x-1.5 font-mono text-xs">
-                <span className="font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-lg">
-                  🍱 {todayFood?.morning_session?.tiffin_count ?? 40}
+                <span className="font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-lg" title="Tiffin Count">
+                  🍱 {dutyData?.tiffin_count ?? todayFood?.morning_session?.tiffin_count ?? 0}
                 </span>
-                <span className="font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-lg">
-                  📦 {todayFood?.morning_session?.box_count ?? 35}
+                <span className="font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-lg" title="Box Count">
+                  📦 {dutyData?.tiffin_box_count ?? todayFood?.morning_session?.box_count ?? 0}
                 </span>
               </div>
             </div>
@@ -320,7 +328,7 @@ const AdminDashboard = () => {
             <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-300">
               <span>Verified Dinner Count:</span>
               <span className="font-mono font-black text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded-lg">
-                🍽️ {todayFood?.night_session?.night_meal_count ?? 45} Meals
+                🍽️ {dutyData?.night_dinner_count ?? todayFood?.night_session?.night_meal_count ?? 0} Meals
               </span>
             </div>
           </div>
@@ -333,14 +341,17 @@ const AdminDashboard = () => {
               👥 Total Residents: <strong className="text-white">64</strong>
             </span>
             <span className="text-emerald-400">
-              Cleaning Team Verified: <strong className="text-white font-mono">Completed</strong>
+              Hostel Daily Duty: <strong className="text-white font-mono">{dutyData?.duty_room || 'Room 01'}</strong> ({dutyData?.status ? dutyData.status.replace(/_/g, ' ') : 'Pending'})
+            </span>
+            <span className="text-slate-300 font-mono text-[11px]">
+              🍱 {dutyData?.tiffin_count ?? 0} &bull; 📦 {dutyData?.tiffin_box_count ?? 0} &bull; 🌙 {dutyData?.night_dinner_count ?? 0}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 text-[11px]">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              Verified by Hostel Cleaning Team
+              Verified by Duty Room & Warden
             </span>
           </div>
         </div>

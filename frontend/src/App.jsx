@@ -125,7 +125,7 @@ function App() {
                   <Route path="dashboard" element={<AdminDashboard />} />
                   <Route path="profile" element={<AdminProfilePage />} />
                   <Route path="students" element={<StudentsPage />} />
-                  <Route path="students/cleaning-room" element={<CleaningRoomPage />} />
+                  <Route path="students/cleaning-room" element={<Navigate to="/admin/cleaning" replace />} />
                   <Route path="rooms" element={<RoomsPage />} />
                   <Route path="attendance" element={<AttendancePage />} />
                   <Route path="leaves" element={<LeavePage />} />
@@ -148,8 +148,8 @@ function App() {
                   <Route path="audit-logs" element={<AuditLogsPage />} />
                 </Route>
 
-                {/* Legacy Cleaning Redirects -> Redirect to Students Cleaning Room */}
-                <Route path="/cleaning/*" element={<Navigate to="/admin/students?tab=cleaning-room" replace />} />
+                {/* Legacy Cleaning Redirects -> Redirect to Admin Cleaning */}
+                <Route path="/cleaning/*" element={<Navigate to="/admin/cleaning" replace />} />
 
                 {/* Student Protected Routes */}
                 <Route
@@ -167,7 +167,7 @@ function App() {
                   <Route path="attendance" element={<StudentAttendancePage />} />
                   <Route path="leave" element={<StudentLeavePage />} />
                   <Route path="cleaning" element={<StudentCleaningPage />} />
-                  <Route path="cleaning-room" element={<CleaningRoomPage />} />
+                  <Route path="cleaning-room" element={<Navigate to="/student/cleaning" replace />} />
                   <Route path="complaints" element={<Navigate to="/student/dashboard" replace />} />
                   <Route path="mess-menu" element={<Navigate to="/student/dashboard" replace />} />
                   <Route path="kitchen-order" element={<Navigate to="/student/dashboard" replace />} />

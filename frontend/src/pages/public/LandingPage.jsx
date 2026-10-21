@@ -388,14 +388,18 @@ const LandingPage = () => {
           background: 'rgba(2,8,23,.6)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
           borderBottom: '1px solid rgba(251,191,36,.1)',
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.35 }}>
+          <Link
+            to="/"
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1.35, cursor: 'pointer' }}
+            aria-label="Veerashaiva Lingayath Boys Hostel Home"
+          >
             <span style={{ fontWeight: 800, fontSize: 'clamp(.72rem,2vw,.9rem)', color: '#f1f5f9', letterSpacing: '-.01em' }}>
               Veerashaiva Lingayath Boys Hostel
             </span>
             <span style={{ fontSize: 'clamp(.58rem,1.4vw,.68rem)', color: '#fbbf24', fontWeight: 600, letterSpacing: '.03em' }}>
               📍 Krushi Nagar, Shivamogga, Karnataka
             </span>
-          </div>
+          </Link>
           <Link to="/login" className="lp-login-pill" id="top-nav-login-btn" aria-label="Login to Hostel Portal">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" />
@@ -718,14 +722,17 @@ const LandingPage = () => {
         <footer style={{
           position: 'relative', zIndex: 1,
           borderTop: '1px solid rgba(251,191,36,.08)',
-          background: 'rgba(2,8,23,.8)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-          padding: 'clamp(10px,2vw,14px) clamp(16px,4vw,40px)',
-          textAlign: 'center', fontSize: 'clamp(.58rem,1.4vw,.68rem)',
-          color: '#475569', letterSpacing: '.03em', fontWeight: 500,
+          background: 'rgba(2,8,23,.85)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
+          padding: 'clamp(12px,2.5vw,18px) clamp(16px,4vw,40px)',
+          textAlign: 'center',
+          color: '#64748b', letterSpacing: '.02em',
         }}>
-          © 2026 Veerashaiva Lingayath Boys Hostel, Shivamogga. All rights reserved.
-          &nbsp;•&nbsp;Developed by Nikhilharsha{' '}
-          <span style={{ color: '#f43f5e' }}>❤️</span>
+          <p style={{ fontSize: 'clamp(.65rem,1.4vw,.75rem)', fontWeight: 400, color: '#94a3b8', margin: 0 }}>
+            © 2026 Veerashaiva Lingayath Boys Hostel, Shivamogga. All rights reserved.
+          </p>
+          <p style={{ fontSize: 'clamp(.72rem,1.6vw,.85rem)', fontWeight: 600, color: '#f8fafc', margin: '4px 0 0 0' }}>
+            Developed by Nikhilharsha | AIML, JNNCE
+          </p>
         </footer>
 
       </div>
