@@ -64,11 +64,11 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Forced password reset: reject all endpoints except change-password
+    # Forced password reset: reject all endpoints except change-password and me
     is_pwd_reset_required = payload.get("pwd_reset_required", False) or user.get("pwd_reset_required", False)
     if is_pwd_reset_required:
         path = request.url.path.rstrip("/")
-        if not path.endswith("/auth/change-password"):
+        if not (path.endswith("/auth/change-password") or path.endswith("/auth/me")):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="PASSWORD_RESET_REQUIRED: Password reset required. You must change your password before accessing the system.",
