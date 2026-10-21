@@ -293,52 +293,60 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="p-6 bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-3xl text-white shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
-          <Bed className="w-48 h-48" />
+      <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-2xl sm:rounded-3xl text-white shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 sm:p-8 opacity-10 pointer-events-none">
+          <Bed className="w-32 h-32 sm:w-48 sm:h-48" />
         </div>
 
         <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 text-blue-100 text-xs font-semibold backdrop-blur-xs">
+          <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/20 text-blue-100 text-[11px] sm:text-xs font-semibold backdrop-blur-xs">
             <span>Resident Dashboard</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Welcome Back, {profile?.name || 'Student'}!
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight leading-tight">
+            Welcome Back, {profile?.name || user?.name || 'Student'}!
           </h1>
 
-          <p className="text-sm text-blue-100 font-semibold tracking-wide">
-            {profile?.room_number || 'Room 05'} | Bed {profile?.bed_number || 'B1'} | {profile?.department || 'AIML'} | {profile?.semester || 6}th Semester
-          </p>
+          <div className="text-xs sm:text-sm text-blue-100 font-medium tracking-wide flex flex-wrap items-center gap-1.5 sm:gap-2 pt-0.5">
+            <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded-md text-[11px] sm:text-xs">
+              {profile?.room_number || user?.room_number || roomDetails?.room_number || 'Room 05'}
+            </span>
+            <span className="opacity-60">•</span>
+            <span>Bed {profile?.bed_number || user?.bed_number || 'B1'}</span>
+            <span className="opacity-60">•</span>
+            <span>{profile?.department || 'AIML'}</span>
+            <span className="opacity-60">•</span>
+            <span>{profile?.semester || 6}th Sem</span>
+          </div>
         </div>
       </div>
 
       {/* TODAY'S HOSTEL DUTY SECTION */}
-      <div id="today-hostel-duty" className="p-6 sm:p-7 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 shrink-0">
-              <Sparkles className="w-6 h-6" />
+      <div id="today-hostel-duty" className="p-4 sm:p-6 lg:p-7 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm space-y-4 sm:space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-100">
+          <div className="flex items-center space-x-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-indigo-50 text-indigo-600 shrink-0">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight">
                   Today's Hostel Duty &bull; {dutyData?.day || 'Today'}
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700">
                   {dutyData?.date || ''}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-tight">
                 Hostel rotation: 1 Day = 1 Duty Room = 1 Cleaning Job + 3 Meal Counts
               </p>
             </div>
           </div>
 
           {/* Responsible Room Pill */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 shrink-0 self-start sm:self-auto">
             <span className="text-xs text-slate-400 font-bold">Duty Room:</span>
-            <span className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
+            <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
               {dutyData?.duty_room || 'Room 01'}
             </span>
           </div>
@@ -346,47 +354,47 @@ const StudentDashboard = () => {
 
         {/* Responsible Room Relationship Banner */}
         {dutyData?.is_my_room_duty ? (
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300 text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">🎯</span>
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300 text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center space-x-2.5 sm:space-x-3">
+              <span className="text-xl sm:text-2xl shrink-0 mt-0.5 sm:mt-0">🎯</span>
               <div>
-                <span className="font-extrabold text-sm text-amber-950 block">
-                  Your Room ({profile?.room_number}) is on Daily Duty Today!
+                <span className="font-extrabold text-xs sm:text-sm text-amber-950 block">
+                  Your Room ({profile?.room_number || user?.room_number || roomDetails?.room_number || 'Assigned'}) is on Daily Duty Today!
                 </span>
-                <span className="text-xs text-amber-900/90">
+                <span className="text-[11px] sm:text-xs text-amber-900/90 leading-normal block mt-0.5">
                   Residents of your room are responsible for completing the cleaning job and recording the 3 mess meal counts.
                 </span>
               </div>
             </div>
-            <span className="px-3 py-1 rounded-xl text-xs font-black uppercase bg-amber-500 text-slate-950 shrink-0">
+            <span className="px-2.5 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase bg-amber-500 text-slate-950 shrink-0 self-start sm:self-auto">
               Responsible Room
             </span>
           </div>
         ) : (
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 flex items-center justify-between gap-3">
-            <div className="flex items-center space-x-3">
-              <span className="text-xl">ℹ️</span>
+          <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+            <div className="flex items-start sm:items-center space-x-2.5 sm:space-x-3">
+              <span className="text-lg sm:text-xl shrink-0 mt-0.5 sm:mt-0">ℹ️</span>
               <div>
                 <span className="font-bold text-xs sm:text-sm text-slate-800 block">
                   {dutyData?.duty_room || 'Room 01'} is on duty today
                 </span>
-                <span className="text-xs text-slate-500">
-                  Your room ({profile?.room_number}) has standard resident privileges. Duty tasks are handled by the responsible room.
+                <span className="text-[11px] sm:text-xs text-slate-500 leading-normal block mt-0.5">
+                  Your room ({profile?.room_number || user?.room_number || roomDetails?.room_number || 'Resident'}) has standard resident privileges. Duty tasks are handled by the responsible room.
                 </span>
               </div>
             </div>
-            <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase bg-slate-200 text-slate-700 shrink-0">
+            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold uppercase bg-slate-200 text-slate-700 shrink-0 self-start sm:self-auto">
               Not Your Duty
             </span>
           </div>
         )}
 
         {/* 4 Status Badges Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           {/* 1. Overall Status */}
-          <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Overall Duty Status</span>
-            <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+          <div className="p-3 sm:p-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">Overall Duty Status</span>
+            <span className={`inline-block px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider ${
               dutyData?.status === 'COMPLETED'
                 ? 'bg-emerald-100 text-emerald-800'
                 : dutyData?.status === 'IN_PROGRESS'
@@ -400,37 +408,37 @@ const StudentDashboard = () => {
           </div>
 
           {/* 2. Cleaning Status */}
-          <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Hostel Cleaning Job</span>
-            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black uppercase ${
+          <div className="p-3 sm:p-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">Hostel Cleaning Job</span>
+            <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-black uppercase ${
               dutyData?.cleaning_completed
                 ? 'bg-emerald-100 text-emerald-800'
                 : 'bg-slate-200 text-slate-700'
             }`}>
-              {dutyData?.cleaning_completed ? <Check className="w-3.5 h-3.5" /> : null}
+              {dutyData?.cleaning_completed ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : null}
               {dutyData?.cleaning_completed ? 'Completed' : 'Pending'}
             </span>
           </div>
 
-          {/* 3. Daily Meal Duty (Counts only show on Warden page) */}
-          <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Daily Meal Duty</span>
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black uppercase ${
+          {/* 3. Daily Meal Duty */}
+          <div className="p-3 sm:p-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">Daily Meal Duty</span>
+            <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-black uppercase truncate max-w-full ${
               dutyData?.status === 'COMPLETED'
                 ? 'bg-emerald-100 text-emerald-800'
                 : dutyData?.status === 'PENDING_APPROVAL'
                 ? 'bg-amber-100 text-amber-800'
                 : 'bg-indigo-100 text-indigo-800'
             }`}>
-              <UtensilsCrossed className="w-3.5 h-3.5" />
-              <span>{dutyData?.status === 'COMPLETED' ? 'Verified' : `Duty: ${dutyData?.duty_room || 'Room 01'}`}</span>
+              <UtensilsCrossed className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">{dutyData?.status === 'COMPLETED' ? 'Verified' : `Duty: ${dutyData?.duty_room || 'Room 01'}`}</span>
             </span>
           </div>
 
           {/* 4. Leave Availability */}
-          <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Leave Availability</span>
-            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black ${
+          <div className="p-3 sm:p-3.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200 space-y-1">
+            <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate">Leave Availability</span>
+            <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-black ${
               dutyData?.is_my_room_duty
                 ? (dutyData?.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800')
                 : 'bg-emerald-100 text-emerald-800'
@@ -438,18 +446,18 @@ const StudentDashboard = () => {
               {dutyData?.is_my_room_duty ? (
                 dutyData?.status === 'COMPLETED' ? (
                   <>
-                    <Unlock className="w-3.5 h-3.5" />
+                    <Unlock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>Unlocked</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>Locked (Duty Pending)</span>
+                    <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span>Locked</span>
                   </>
                 )
               ) : (
                 <>
-                  <Unlock className="w-3.5 h-3.5" />
+                  <Unlock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>Available</span>
                 </>
               )}
