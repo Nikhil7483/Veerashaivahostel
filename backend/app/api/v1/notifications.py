@@ -5,10 +5,33 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
+from datetime import datetime, timedelta
+
 @router.get("")
 async def get_my_notifications(current_user: dict = Depends(get_current_user)):
     db = get_database()
-    cursor = db.notifications.find({"user_id": current_user["id"]}).sort("created_at", -1).limit(40)
+    cutoff_7d = datetime.utcnow() - timedelta(days=7)
+    cutoff_iso = cutoff_7d.isoformat()
+
+    # Automatically purge notifications older than 1 week
+    try:
+        await db.notifications.delete_many({
+            "$or": [
+                {"created_at": {"$lt": cutoff_7d}},
+                {"created_at": {"$lt": cutoff_iso}}
+            ]
+        })
+    except Exception as e:
+        print(f"Error purging old notifications: {e}")
+
+    cursor = db.notifications.find({
+        "user_id": current_user["id"],
+        "$or": [
+            {"created_at": {"$gte": cutoff_7d}},
+            {"created_at": {"$gte": cutoff_iso}},
+            {"created_at": {"$exists": False}}
+        ]
+    }).sort("created_at", -1).limit(40)
     notifications = []
     async for n in cursor:
         n["id"] = str(n["_id"])
@@ -19,7 +42,18 @@ async def get_my_notifications(current_user: dict = Depends(get_current_user)):
 @router.get("/unread-count")
 async def get_unread_count(current_user: dict = Depends(get_current_user)):
     db = get_database()
-    count = await db.notifications.count_documents({"user_id": current_user["id"], "is_read": False})
+    cutoff_7d = datetime.utcnow() - timedelta(days=7)
+    cutoff_iso = cutoff_7d.isoformat()
+
+    count = await db.notifications.count_documents({
+        "user_id": current_user["id"],
+        "is_read": False,
+        "$or": [
+            {"created_at": {"$gte": cutoff_7d}},
+            {"created_at": {"$gte": cutoff_iso}},
+            {"created_at": {"$exists": False}}
+        ]
+    })
     return {"unread_count": count}
 
 @router.put("/{id}/read")
@@ -44,6 +78,12 @@ async def mark_all_read(current_user: dict = Depends(get_current_user)):
         {"$set": {"is_read": True}}
     )
     return {"message": "All notifications marked as read."}
+
+@router.delete("/reset")
+async def reset_notifications(current_user: dict = Depends(get_current_user)):
+    db = get_database()
+    res = await db.notifications.delete_many({"user_id": current_user["id"]})
+    return {"message": "Notifications reset successfully.", "deleted_count": res.deleted_count}
 
 from pydantic import BaseModel
 from datetime import datetime

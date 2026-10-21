@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import Modal from '../../components/common/Modal';
 import { formatDate } from '../../utils/dateUtils';
@@ -12,10 +13,12 @@ import {
   Camera,
   Upload,
   Trash2,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 
 const StudentLeavePage = () => {
+  const navigate = useNavigate();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [roomInfo, setRoomInfo] = useState(null);
@@ -38,6 +41,17 @@ const StudentLeavePage = () => {
   const nativeCameraInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const handleTakePhoto = () => {
+    // On mobile devices, triggering nativeCameraInput launches phone's native camera app
+    // producing 12MP-50MP ultra-sharp photos with autofocus, flash, and macro document clarity!
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1);
+    if (isMobile && nativeCameraInputRef.current) {
+      nativeCameraInputRef.current.click();
+    } else {
+      startCamera();
+    }
+  };
+
   const startCamera = async () => {
     setShowCamera(true);
     setCameraError('');
@@ -45,8 +59,13 @@ const StudentLeavePage = () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Camera API is not supported in this browser environment.');
       }
+      // Request maximum High-Definition / 4K resolution constraints
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 3840, min: 1920 },
+          height: { ideal: 2160, min: 1080 }
+        },
         audio: false
       });
       streamRef.current = stream;
@@ -54,8 +73,19 @@ const StudentLeavePage = () => {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
-      console.error('Camera access error:', err);
-      setCameraError(err.message || 'Camera permission denied or camera not available. You can also upload a photo.');
+      console.error('HD Camera access error, falling back:', err);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+        streamRef.current = fallbackStream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+        }
+      } catch (fallbackErr) {
+        setCameraError('Camera permission denied or camera not available. You can also upload a photo from your gallery.');
+      }
     }
   };
 
@@ -79,6 +109,8 @@ const StudentLeavePage = () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob((blob) => {
@@ -90,7 +122,7 @@ const StudentLeavePage = () => {
         setFilePreview(URL.createObjectURL(blob));
         stopCamera();
       }
-    }, 'image/jpeg', 0.88);
+    }, 'image/jpeg', 0.95);
   };
 
   const handleFileChange = (e) => {
@@ -194,11 +226,24 @@ const StudentLeavePage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      {/* Back Button */}
+      <div className="flex items-center">
+        <button
+          type="button"
+          onClick={() => navigate('/student/dashboard')}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 transition shadow-2xs cursor-pointer group"
+          title="Return to Student Dashboard"
+        >
+          <ArrowLeft className="w-4 h-4 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to Dashboard</span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Leave Applications & Approvals</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Leave Applications & Approvals</h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
             Apply for sanctioned leaves, attach medical/parental certificates, and track Warden reviews.
           </p>
@@ -437,28 +482,42 @@ const StudentLeavePage = () => {
 
             {/* Action Buttons to Choose Upload or Camera */}
             {!file && !showCamera && (
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={startCamera}
-                  className="p-3 border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/50 hover:bg-blue-50 rounded-xl text-blue-700 font-bold flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer group"
-                >
-                  <div className="w-8 h-8 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition">
-                    <Camera className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <span className="text-[11px]">Take Photo with Camera 📸</span>
-                </button>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleTakePhoto}
+                    className="p-3 border-2 border-dashed border-blue-400 hover:border-blue-600 bg-blue-50/70 hover:bg-blue-50 rounded-xl text-blue-700 font-bold flex flex-col items-center justify-center space-y-1 transition cursor-pointer group shadow-2xs"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition">
+                      <Camera className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="text-xs font-black">HD Phone Camera 📸</span>
+                    <span className="text-[10px] text-blue-500 font-medium">Auto-focus document quality</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-3 border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 font-bold flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer group"
-                >
-                  <div className="w-8 h-8 rounded-full bg-slate-200 group-hover:bg-slate-300 flex items-center justify-center transition">
-                    <Upload className="w-4 h-4 text-slate-600" />
-                  </div>
-                  <span className="text-[11px]">Choose File / PDF 📁</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="p-3 border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-700 font-bold flex flex-col items-center justify-center space-y-1 transition cursor-pointer group shadow-2xs"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-slate-200 group-hover:bg-slate-300 flex items-center justify-center transition">
+                      <Upload className="w-4 h-4 text-slate-600" />
+                    </div>
+                    <span className="text-xs font-black">Gallery / File 📁</span>
+                    <span className="text-[10px] text-slate-500 font-medium">PDF, JPG, or PNG</span>
+                  </button>
+                </div>
+
+                <div className="text-center pt-0.5">
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    className="text-[11px] text-slate-400 hover:text-blue-600 underline font-medium cursor-pointer"
+                  >
+                    Or open live webcam viewfinder
+                  </button>
+                </div>
               </div>
             )}
 

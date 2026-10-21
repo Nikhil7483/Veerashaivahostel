@@ -92,6 +92,16 @@ const Navbar = ({ onMobileToggle }) => {
     }
   };
 
+  const handleResetNotifications = async () => {
+    try {
+      await api.delete('/notifications/reset');
+      setUnreadCount(0);
+      setNotifications([]);
+    } catch (err) {
+      console.error('Error resetting notifications:', err);
+    }
+  };
+
   const handleNotificationClick = async (n) => {
     if (!n.is_read) {
       try {
@@ -184,14 +194,29 @@ const Navbar = ({ onMobileToggle }) => {
                       </span>
                     )}
                   </div>
-                  {unreadCount > 0 && (
+                  <div className="flex items-center space-x-2.5">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllRead}
+                        className="text-xs text-blue-600 hover:underline font-medium cursor-pointer"
+                      >
+                        Mark read
+                      </button>
+                    )}
                     <button
-                      onClick={handleMarkAllRead}
-                      className="text-xs text-blue-600 hover:underline font-medium"
+                      onClick={handleResetNotifications}
+                      className="text-xs text-slate-400 hover:text-red-600 font-medium cursor-pointer"
+                      title="Clear notifications and reset counter"
                     >
-                      Mark all read
+                      Reset
                     </button>
-                  )}
+                  </div>
+                </div>
+
+                {/* 1-Week Auto Reset Tag */}
+                <div className="mx-3 mt-1 px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                  <span>🕒 Auto-resets after 1 week</span>
+                  <span className="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60">Active (7d)</span>
                 </div>
 
                 {/* Phone Push Notifications Quick Card */}
