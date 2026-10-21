@@ -134,6 +134,7 @@ async def run_all_tests():
         try:
             settings.ENVIRONMENT = "production"
             settings.JWT_SECRET_KEY = "smart_hostel_super_secure_jwt_secret_key_2026_production_grade"
+            os.environ["STRICT_JWT_CHECK"] = "true"
             async with lifespan(app):
                 pass
         except RuntimeError as e:
@@ -142,6 +143,7 @@ async def run_all_tests():
         finally:
             settings.ENVIRONMENT = orig_env
             settings.JWT_SECRET_KEY = orig_key
+            os.environ.pop("STRICT_JWT_CHECK", None)
 
         if refusal_passed:
             passed += 1

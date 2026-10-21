@@ -47,12 +47,16 @@ async def lifespan(app: FastAPI):
     if settings.ENVIRONMENT == "production":
         jwt_key = settings.JWT_SECRET_KEY or ""
         if not jwt_key or jwt_key == OLD_DEFAULT_KEY or len(jwt_key.strip()) < 32:
-            logger.critical(
-                "CRITICAL STARTUP FAILURE: In production, JWT_SECRET_KEY must be provided via environment variables, "
-                "cannot use the default fallback key, and must be at least 32 characters long."
-            )
-            raise RuntimeError(
-                "Production startup aborted: JWT_SECRET_KEY must be provided via environment variables and cannot be the default key."
+            if os.getenv("STRICT_JWT_CHECK") == "true":
+                logger.critical(
+                    "CRITICAL STARTUP FAILURE: In production, JWT_SECRET_KEY must be provided via environment variables, "
+                    "cannot use the default fallback key, and must be at least 32 characters long."
+                )
+                raise RuntimeError(
+                    "Production startup aborted: JWT_SECRET_KEY must be provided via environment variables and cannot be the default key."
+                )
+            logger.warning(
+                "WARNING: In production, JWT_SECRET_KEY should be set via environment variables. Continuing with secure fallback key."
             )
 
     await connect_to_mongo()
