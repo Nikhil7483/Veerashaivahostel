@@ -166,7 +166,8 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 @router.post("/change-password")
 async def change_password(data: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
     db = get_database()
-    if not verify_password(data.old_password, current_user.get("password_hash", "")):
+    current_hash = current_user.get("password_hash", "")
+    if not current_hash or not verify_password(data.old_password, current_hash):
         raise HTTPException(status_code=400, detail="Current password does not match.")
         
     if len(data.new_password) < 8:
@@ -181,8 +182,16 @@ async def change_password(data: ChangePasswordRequest, current_user: dict = Depe
     # Increment token_version so all old tokens are immediately invalidated
     new_token_ver = current_user.get("token_version", 1) + 1
     
+    # Safely build query filter for user document
+    user_oid = current_user.get("_id")
+    if not isinstance(user_oid, ObjectId):
+        raw_id = str(current_user.get("id", ""))
+        user_oid = ObjectId(raw_id) if ObjectId.is_valid(raw_id) else None
+        
+    update_filter = {"_id": user_oid} if user_oid else {"email": current_user["email"]}
+    
     await db.users.update_one(
-        {"_id": ObjectId(current_user["id"])},
+        update_filter,
         {
             "$set": {
                 "password_hash": new_hash,
@@ -193,23 +202,29 @@ async def change_password(data: ChangePasswordRequest, current_user: dict = Depe
         }
     )
     
+    user_id_str = str(user_oid) if user_oid else str(current_user.get("id", current_user["email"]))
+    
     # Issue fresh token with updated token_version and pwd_reset_required cleared
     new_token_data = {
         "sub": current_user["email"],
         "role": current_user["role"],
-        "id": current_user["id"],
+        "id": user_id_str,
         "token_version": new_token_ver,
         "pwd_reset_required": False
     }
     new_access_token = create_access_token(new_token_data)
     
-    await log_audit(
-        current_user["email"],
-        "PASSWORD_CHANGED",
-        "AUTH",
-        current_user["id"],
-        "Password updated; token_version incremented and previous sessions revoked."
-    )
+    try:
+        await log_audit(
+            current_user["email"],
+            "PASSWORD_CHANGED",
+            "AUTH",
+            user_id_str,
+            "Password updated; token_version incremented and previous sessions revoked."
+        )
+    except Exception as e:
+        print(f"Audit log warning: {e}")
+
     return {
         "message": "Password changed successfully. All previous sessions have been invalidated.",
         "access_token": new_access_token,

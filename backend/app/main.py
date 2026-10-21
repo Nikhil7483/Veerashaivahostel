@@ -144,13 +144,45 @@ app.include_router(analytics_router, prefix=v1)
 app.include_router(reports_router, prefix=v1)
 app.include_router(audit_logs_router, prefix=v1)
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import HTTPException as FastAPIHTTPException, RequestValidationError
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=getattr(exc, "headers", None)
+    )
+
+@app.exception_handler(FastAPIHTTPException)
+async def fastapi_http_exception_handler(request: Request, exc: FastAPIHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=getattr(exc, "headers", None)
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()}
+    )
+
 # Priority 5: Global Exception Handler for Sanitized Production Errors
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, (StarletteHTTPException, FastAPIHTTPException)):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=getattr(exc, "headers", None)
+        )
     logger.error(f"Unhandled error on {request.method} {request.url.path}: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error"}
+        content={"detail": f"Internal server error: {str(exc)}"}
     )
 
 # Root endpoint for platform health and keepalive
